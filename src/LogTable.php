@@ -38,7 +38,7 @@ final class LogTable extends Page implements HasTable
         return self::getPlugin()->getNavigationSort();
     }
 
-    public static function getNavigationUrl(): string
+    public static function getSlug(): string
     {
         return self::getPlugin()->getNavigationUrl();
     }
@@ -96,7 +96,7 @@ final class LogTable extends Page implements HasTable
     /**
      * @throws Exception
      */
-    protected static function getPlugin(): FilamentLogViewer
+    private static function getPlugin(): FilamentLogViewer
     {
         return Filament::getCurrentPanel()->getPlugin('filament-log-viewer');
     }
