@@ -69,14 +69,13 @@ final class LogTable extends Page implements HasTable
                 Tables\Columns\TextColumn::make('env')
                     ->label('Environment')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->badge()
-                    ->sortable(),
+                    ->badge(),
                 Tables\Columns\TextColumn::make('file')
                     ->label('File Name')
                     ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('message')
+                    ->searchable()
                     ->label('Summary')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('date')
