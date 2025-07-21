@@ -1,1 +1,50 @@
 # Filament Log Viewer
+
+A Filament plugin to read and display Laravel log files in a clean, searchable table with stack traces and filtering.
+
+## Installation
+
+```bash
+composer require achyutn/filament-log-viewer
+```
+
+Register the plugin inside your Filament panel:
+
+```php
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+
+return $panel
+    ->plugins([
+        FilamentLogViewer::make(),
+    ]);
+```
+
+## Usage
+
+After installation, visit `/logs` in your Filament panel. You will see a table of log entries.
+
+### Table Columns
+
+- **Log Level** – Badge with color mapped from log level
+- **Environment** *(Toggleable)* – Application environment (`local`, `production`, etc.)
+- **File** *(Toggleable)* – Log file name (e.g., `laravel.log`)
+- **Message** – Short summary of the log
+- **Occurred** – Human-readable date/time
+
+Click the view action to inspect stack traces.
+
+## Extending
+
+You can customize navigation label, icon, sort, etc. using:
+
+```php
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+
+FilamentLogViewer::make()
+    ->authorize(fn () => auth()->check())
+    ->navigationGroup('System')
+    ->navigationIcon('heroicon-o-document-text')
+    ->navigationLabel('Log Viewer')
+    ->navigationSort(10)
+    ->navigationUrl('/logs');
+```
