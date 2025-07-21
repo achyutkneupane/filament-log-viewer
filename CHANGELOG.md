@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.0 - 2025-07-21
+
+### [0.2.0](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.1.0...v0.2.0) (2025-07-21)
+
+#### Features
+
+* Log-level wise filers added ([#4](https://github.com/achyutkneupane/filament-log-viewer/issues/4)) ([ee74394](https://github.com/achyutkneupane/filament-log-viewer/commit/ee743947580efc5fc2f2a6549687bd4329cd1737))
+* Tab-wise debugging added ([2b41e4c](https://github.com/achyutkneupane/filament-log-viewer/commit/2b41e4c42e9e7b9f65a4926f777d2d1128da8879))
+* Tabs added according to log level ([6d0a55a](https://github.com/achyutkneupane/filament-log-viewer/commit/6d0a55a35764e0b5d2a3e53e348fbbb10aa95845))
+
 ## v0.1.0 - 2025-07-21
 
 ### [0.1.0](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.0.1...v0.1.0) (2025-07-21)
