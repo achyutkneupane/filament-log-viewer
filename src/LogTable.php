@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Model\Log;
@@ -11,13 +13,13 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 
-class LogTable extends Page implements HasTable
+final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $title = "Logs";
+    protected static ?string $title = 'Logs';
 
-    protected static ?string $navigationIcon = "heroicon-o-document-text";
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament-log-viewer::log-table';
 
@@ -41,7 +43,7 @@ class LogTable extends Page implements HasTable
                 Tables\Columns\TextColumn::make('message')
                     ->label('Summary'),
                 Tables\Columns\TextColumn::make('date')
-                    ->label("Occurred")
+                    ->label('Occurred')
                     ->since()
                     ->dateTimeTooltip()
                     ->sortable(),
@@ -59,9 +61,9 @@ class LogTable extends Page implements HasTable
                                     ->hiddenLabel()
                                     ->columnSpanFull(),
                             ])
-                            ->label('Stack Trace')
+                            ->label('Stack Trace'),
                     ])
-                    ->slideOver()
+                    ->slideOver(),
             ])
             ->defaultSort('date', 'desc');
     }

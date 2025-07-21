@@ -9,6 +9,11 @@ use Filament\Panel;
 
 final class FilamentLogViewer implements Plugin
 {
+    public static function make(): self
+    {
+        return app(self::class);
+    }
+
     public function getId(): string
     {
         return 'filament-log-viewer';
@@ -18,11 +23,6 @@ final class FilamentLogViewer implements Plugin
     {
         $panel
             ->pages([]);
-    }
-
-    public static function make(): FilamentLogViewer
-    {
-        return app(FilamentLogViewer::class);
     }
 
     public function boot(Panel $panel): void

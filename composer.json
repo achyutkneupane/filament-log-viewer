@@ -39,7 +39,8 @@
     "scripts": {
         "lint": [
             "rector",
-            "pint"
+            "pint",
+            "phpstan"
         ],
         "test:type-coverage": "pest",
         "test:lint": [
