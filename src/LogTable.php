@@ -23,29 +23,40 @@ final class LogTable extends Page implements HasTable
 
     protected static string $view = 'filament-log-viewer::log-table';
 
+    /** @throws Exception */
     public static function getNavigationLabel(): string
     {
         return self::getPlugin()->getNavigationLabel();
     }
 
+    /** @throws Exception */
     public static function getNavigationGroup(): string
     {
         return self::getPlugin()->getNavigationGroup();
     }
 
+    /** @throws Exception */
     public static function getNavigationSort(): int
     {
         return self::getPlugin()->getNavigationSort();
     }
 
+    /** @throws Exception */
     public static function getSlug(): string
     {
         return self::getPlugin()->getNavigationUrl();
     }
 
+    /** @throws Exception */
     public static function getNavigationIcon(): string
     {
         return self::getPlugin()->getNavigationIcon();
+    }
+
+    /** @throws Exception */
+    public static function canAccess(): bool
+    {
+        return self::getPlugin()->isAuthorized();
     }
 
     public function table(Table $table): Table
@@ -93,9 +104,7 @@ final class LogTable extends Page implements HasTable
             ->defaultSort('date', 'desc');
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     private static function getPlugin(): FilamentLogViewer
     {
         return Filament::getCurrentPanel()->getPlugin('filament-log-viewer');

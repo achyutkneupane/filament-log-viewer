@@ -29,7 +29,7 @@ final class FilamentLogViewer implements Plugin
     {
         $plugin = app(self::class);
 
-        $plugin->authorize(auth()->check() && $plugin->isAuthorized());
+        $plugin->authorize($plugin->isAuthorized());
         $plugin->navigationGroup($plugin->getNavigationGroup());
         $plugin->navigationIcon($plugin->getNavigationIcon());
         $plugin->navigationLabel($plugin->getNavigationLabel());
