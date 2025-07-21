@@ -19,7 +19,10 @@
             "role": "Maintainer"
         }
     ],
-    "require": {},
+    "require": {
+        "php": ">=8.1",
+        "filament/filament": "^3.0"
+    },
     "require-dev": {
         "laravel/pint": "^1.23",
         "phpstan/phpstan": "^2.1",
