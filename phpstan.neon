@@ -1,0 +1,11 @@
+parameters:
+    level: max
+    paths:
+        - src
+
+    reportUnmatchedIgnoredErrors: true
+
+    ignoreErrors:
+        - '#Call to an undefined method FFI::#'
+        - '#of static method FFI#'
+        - '#of method FFI#'

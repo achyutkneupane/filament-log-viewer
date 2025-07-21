@@ -1,0 +1,51 @@
+{
+    "name": "achyutn/filament-log-viewer",
+    "description": "A Filament package to view and manage Laravel logs.",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "keywords": ["filament", "laravel", "log", "viewer"],
+    "autoload": {
+        "psr-4": {
+            "AchyutN\\FilamentLogViewer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Achyut Neupane",
+            "email": "achyutkneupane@gmail.com",
+            "homepage": "https://achyut.com.np",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "laravel/pint": "^1.23",
+        "phpstan/phpstan": "^2.1",
+        "rector/rector": "^2.1"
+    },
+    "scripts": {
+        "lint": [
+            "rector",
+            "pint"
+        ],
+        "test:type-coverage": "pest",
+        "test:lint": [
+            "pint --test"
+        ],
+        "test:unit": "# pest --parallel --coverage --min=90",
+        "test:types": "phpstan",
+        "test": [
+            "@test:lint",
+            "@test:type-coverage",
+            "@test:unit"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

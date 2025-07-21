@@ -1,0 +1,7 @@
+composer.lock
+vendor
+.DS_Store
+/.idea
+/.vscode
+Thumbs.db
+Generators
