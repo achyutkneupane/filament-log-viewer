@@ -12,23 +12,39 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
 use Filament\Resources\Components\Tab;
-use Filament\Resources\Concerns\HasTabs;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\Url;
 
 final class LogTable extends Page implements HasTable
 {
-    use HasTabs, InteractsWithTable;
+    use InteractsWithTable;
+
+    #[Url(except: null)]
+    public ?string $activeTab = null;
 
     protected static string $view = 'filament-log-viewer::log-table';
+
+    /**
+     * @var array<string | int, Tab>
+     */
+    protected array $cachedTabs;
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(Log::query())
+            ->query(
+                Log::query()
+            )
+            ->modifyQueryUsing(function (Builder $query) {
+                if ($this->activeTab) {
+                    $query->where('log_level', $this->activeTab);
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('log_level')
                     ->badge(),
@@ -74,6 +90,14 @@ final class LogTable extends Page implements HasTable
             ->defaultSort('date', 'desc');
     }
 
+    /**
+     * @return array<string | int, Tab>
+     */
+    public function getCachedTabs(): array
+    {
+        return $this->cachedTabs ??= $this->getTabs();
+    }
+
     public function getTabs(): array
     {
         $all_logs = [
@@ -88,19 +112,21 @@ final class LogTable extends Page implements HasTable
                         ->badge(
                             fn () => Log::query()->where('log_level', $level)->count() ?: null
                         )
-                        ->badgeColor($level->getColor())
-                        ->modifyQueryUsing(function ($query) use ($level) {
-                            return $query->where('log_level', $level);
-                        }),
+                        ->badgeColor($level->getColor()),
                 ];
             })->toArray();
 
         return array_merge($all_logs, $tabs);
     }
 
-    public function getDefaultActiveTab(): string | int | null
+    public function getDefaultActiveTab(): string|null
     {
         return null;
+    }
+
+    public function updateTab(?LogLevel $level): void
+    {
+        $this->activeTab = $level?->value;
     }
 
     /** @throws Exception */
