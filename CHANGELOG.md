@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.1 - 2025-07-21
+
+### [0.2.1](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.2.0...v0.2.1) (2025-07-21)
+
+### Documentation
+
+* Filters added in docs ([6b791b8](https://github.com/achyutkneupane/filament-log-viewer/commit/6b791b8456fa0a72ef7aec4da7cf3126cada0b76))
+* Filters documentation and images added ([#5](https://github.com/achyutkneupane/filament-log-viewer/issues/5)) ([d7ad27b](https://github.com/achyutkneupane/filament-log-viewer/commit/d7ad27b286b08324692c55c1f4ad918ec10c84be))
+* Social image added ([1a827dd](https://github.com/achyutkneupane/filament-log-viewer/commit/1a827dd5769dd655bc4aa5b1d7bd375d35645e8d))
+
 ## v0.2.0 - 2025-07-21
 
 ### [0.2.0](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.1.0...v0.2.0) (2025-07-21)
