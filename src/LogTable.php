@@ -77,7 +77,8 @@ final class LogTable extends Page implements HasTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('message')
-                    ->label('Summary'),
+                    ->label('Summary')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Occurred')
                     ->since()
