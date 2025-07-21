@@ -37,6 +37,12 @@ After installation, visit `/logs` in your Filament panel. You will see a table o
 
 Click the view action to inspect stack traces.
 
+### Filters
+
+You can filter the logs according to log level. The filters are available as tabs above the table:
+
+![Table Filters](https://hamrocdn.com/175hFkEVdrDl)
+
 ## Extending
 
 You can customize navigation label, icon, sort, etc. using:
