@@ -10,6 +10,7 @@ use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -68,6 +69,13 @@ final class LogTable extends Page implements HasTable
                     ->badge(),
                 Tables\Columns\TextColumn::make('env')
                     ->label('Environment')
+                    ->color(fn (string $state) => match ($state) {
+                        'local' => Color::Blue,
+                        'production' => Color::Red,
+                        'staging' => Color::Orange,
+                        'testing' => Color::Gray,
+                        default => Color::Yellow
+                    })
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->badge(),
                 Tables\Columns\TextColumn::make('file')
