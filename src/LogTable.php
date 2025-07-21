@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Model\Log;
+use Exception;
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Page;
@@ -17,11 +19,21 @@ final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $title = 'Logs';
+    protected FilamentLogViewer $plugin;
+
+    protected static ?string $title = 'Logss';
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament-log-viewer::log-table';
+
+    /**
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $this->plugin = $this->getPlugin();
+    }
 
     public function table(Table $table): Table
     {
@@ -66,5 +78,13 @@ final class LogTable extends Page implements HasTable
                     ->slideOver(),
             ])
             ->defaultSort('date', 'desc');
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function getPlugin(): FilamentLogViewer
+    {
+        return Filament::getCurrentPanel()->getPlugin('filament-log-viewer');
     }
 }
