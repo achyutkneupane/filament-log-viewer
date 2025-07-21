@@ -19,20 +19,33 @@ final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected FilamentLogViewer $plugin;
-
-    protected static ?string $title = 'Logss';
-
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament-log-viewer::log-table';
 
-    /**
-     * @throws Exception
-     */
-    public function __construct()
+    public static function getNavigationLabel(): string
     {
-        $this->plugin = $this->getPlugin();
+        return self::getPlugin()->getNavigationLabel();
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return self::getPlugin()->getNavigationGroup();
+    }
+
+    public static function getNavigationSort(): int
+    {
+        return self::getPlugin()->getNavigationSort();
+    }
+
+    public static function getNavigationUrl(): string
+    {
+        return self::getPlugin()->getNavigationUrl();
+    }
+
+    public static function getNavigationIcon(): string
+    {
+        return self::getPlugin()->getNavigationIcon();
     }
 
     public function table(Table $table): Table
@@ -83,7 +96,7 @@ final class LogTable extends Page implements HasTable
     /**
      * @throws Exception
      */
-    protected function getPlugin(): FilamentLogViewer
+    protected static function getPlugin(): FilamentLogViewer
     {
         return Filament::getCurrentPanel()->getPlugin('filament-log-viewer');
     }

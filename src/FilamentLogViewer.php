@@ -21,7 +21,7 @@ final class FilamentLogViewer implements Plugin
 
     public string|Closure $navigationLabel = 'Log Viewer';
 
-    public string|Closure $navigationSort = '9999';
+    public int|Closure $navigationSort = 9999;
 
     public string|Closure $navigationUrl = '/logs';
 
@@ -85,7 +85,7 @@ final class FilamentLogViewer implements Plugin
         return $this;
     }
 
-    public function navigationSort(string|Closure $sort): self
+    public function navigationSort(int|Closure $sort): self
     {
         $this->navigationSort = $sort;
 
@@ -119,7 +119,7 @@ final class FilamentLogViewer implements Plugin
         return $this->evaluate($this->navigationLabel);
     }
 
-    public function getNavigationSort(): string
+    public function getNavigationSort(): int
     {
         return $this->evaluate($this->navigationSort);
     }
