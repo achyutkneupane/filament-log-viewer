@@ -1,10 +1,8 @@
 # Filament Log Viewer
 
+![Filament Log Viewer](https://banners.beyondco.de/Filament%20Log%20Viewer.png?theme=light&packageManager=composer+require&packageName=achyutn%2Ffilament-log-viewer&pattern=hideout&style=style_2&description=A+Filament+package+to+view+and+manage+Laravel+logs.&md=1&showWatermark=0&fontSize=175px&images=document-report)
+
 A Filament plugin to read and display Laravel log files in a clean, searchable table with stack traces and filtering.
-
-![Table Preview](https://hamrocdn.com/4WCWYgw7EPjB)
-
-![Stack Tracing](https://hamrocdn.com/ZrA8W53Nx3CO)
 
 ## Installation
 
@@ -35,7 +33,17 @@ After installation, visit `/logs` in your Filament panel. You will see a table o
 - **Message** – Short summary of the log
 - **Occurred** – Human-readable date/time
 
+![Table Preview](https://hamrocdn.com/4WCWYgw7EPjB)
+
 Click the view action to inspect stack traces.
+
+![Stack Tracing](https://hamrocdn.com/ZrA8W53Nx3CO)
+
+### Filters
+
+You can filter the logs according to log level. The filters are available as tabs above the table:
+
+![Table Filters](https://hamrocdn.com/175hFkEVdrDl)
 
 ## Extending
 
