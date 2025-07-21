@@ -2,6 +2,10 @@
 
 A Filament plugin to read and display Laravel log files in a clean, searchable table with stack traces and filtering.
 
+![Table Preview](https://hamrocdn.com/4WCWYgw7EPjB)
+
+![Stack Tracing](https://hamrocdn.com/ZrA8W53Nx3CO)
+
 ## Installation
 
 ```bash
