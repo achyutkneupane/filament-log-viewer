@@ -11,6 +11,13 @@
             "AchyutN\\FilamentLogViewer\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AchyutN\\FilamentLogViewer\\LogViewerProvider"
+            ]
+        }
+    },
     "authors": [
         {
             "name": "Achyut Neupane",
@@ -21,7 +28,8 @@
     ],
     "require": {
         "php": ">=8.1",
-        "filament/filament": "^3.0"
+        "filament/filament": "^3.0",
+        "calebporzio/sushi": "^2.5"
     },
     "require-dev": {
         "laravel/pint": "^1.23",
