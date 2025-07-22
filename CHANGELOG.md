@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.2.3 - 2025-07-22
+
+### Build System
+
+- Changelog package changed for author tag
+
+### Other Changes
+
+- Update CHANGELOG
+- Merge pull request [#7](https://github.com/achyutkneupane/filament-log-viewer/pull/7) by [achyutkneupane](https://github.com/achyutkneupane) from achyutkneupane/ci/changelog-update
+
 ## v0.2.2 - 2025-07-22
 
 ### [0.2.2](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.2.1...v0.2.2) (2025-07-22)
