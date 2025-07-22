@@ -14,11 +14,13 @@ jobs:
                 uses: mathieudutour/github-tag-action@v6.2
                 with:
                     github_token: ${{ secrets.ACCESS_TOKEN }}
-            -   name: Create changelog text
+            -   name: Build Changelog
                 id: changelog
-                uses: loopwerk/tag-changelog@v1
+                uses: mikepenz/release-changelog-builder-action@v5
                 with:
+                    configuration: ".github/changelog-configuration.json"
                     token: ${{ secrets.ACCESS_TOKEN }}
+                    mode: "HYBRID"
             -   name: Create a GitHub release
                 uses: ncipollo/release-action@v1
                 with:
