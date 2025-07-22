@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.2.2 - 2025-07-22
+
+### [0.2.2](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.2.1...v0.2.2) (2025-07-22)
+
+### Bug Fixes
+
+* Auth check removed in authorization ([e9de419](https://github.com/achyutkneupane/filament-log-viewer/commit/e9de419b5cdce48750745eb62f701795148e4b78))
+* Users are authorized by default ([#6](https://github.com/achyutkneupane/filament-log-viewer/issues/6)) ([a45c8f7](https://github.com/achyutkneupane/filament-log-viewer/commit/a45c8f743332c7ebcf93bbcc641ec45cc7af3b32))
+
+### Code Refactoring
+
+* Pint fixes ([9121fb9](https://github.com/achyutkneupane/filament-log-viewer/commit/9121fb9e99b5393be83f94b46fe94e8d2fa24456))
+
 ## v0.2.1 - 2025-07-21
 
 ### [0.2.1](https://github.com/achyutkneupane/filament-log-viewer/compare/v0.2.0...v0.2.1) (2025-07-21)
