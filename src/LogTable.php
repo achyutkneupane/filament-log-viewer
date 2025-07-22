@@ -10,6 +10,7 @@ use Exception;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Components\Tab;
 use Filament\Support\Colors\Color;
@@ -81,6 +82,20 @@ final class LogTable extends Page implements HasTable
                     $query->where('log_level', $this->activeTab);
                 }
             })
+            ->headerActions([
+                Tables\Actions\Action::make('clear')
+                    ->label('Clear Logs')
+                    ->icon('heroicon-o-trash')
+                    ->color(Color::Red)
+                    ->requiresConfirmation()
+                    ->action(function (): void {
+                        Log::destroyAllLogs();
+                        Notification::make()
+                            ->title('Logs Cleared')
+                            ->success()
+                            ->send();
+                    }),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('log_level')
                     ->badge(),

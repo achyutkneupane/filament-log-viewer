@@ -128,4 +128,20 @@ final class Log extends Model
 
         return json_encode($stackTrace);
     }
+
+    public static function destroyAllLogs(): void
+    {
+        $logFilePath = storage_path('logs');
+        if (! is_dir($logFilePath)) {
+            return;
+        }
+        $files = scandir($logFilePath);
+
+        foreach ($files as $file) {
+            $filePath = $logFilePath . '/' . $file;
+            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+                file_put_contents($filePath, '');
+            }
+        }
+    }
 }
