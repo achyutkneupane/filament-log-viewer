@@ -101,7 +101,7 @@ final class FilamentLogViewer implements Plugin
 
     public function isAuthorized(): bool
     {
-        return auth()->check() && $this->evaluate($this->authorized);
+        return $this->evaluate($this->authorized);
     }
 
     public function getNavigationGroup(): string

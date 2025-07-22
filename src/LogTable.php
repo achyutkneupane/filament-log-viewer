@@ -32,7 +32,43 @@ final class LogTable extends Page implements HasTable
     /**
      * @var array<string | int, Tab>
      */
-    protected array $cachedTabs;
+    private array $cachedTabs;
+
+    /** @throws Exception */
+    public static function getNavigationLabel(): string
+    {
+        return self::getPlugin()->getNavigationLabel();
+    }
+
+    /** @throws Exception */
+    public static function getNavigationGroup(): string
+    {
+        return self::getPlugin()->getNavigationGroup();
+    }
+
+    /** @throws Exception */
+    public static function getNavigationSort(): int
+    {
+        return self::getPlugin()->getNavigationSort();
+    }
+
+    /** @throws Exception */
+    public static function getSlug(): string
+    {
+        return self::getPlugin()->getNavigationUrl();
+    }
+
+    /** @throws Exception */
+    public static function getNavigationIcon(): string
+    {
+        return self::getPlugin()->getNavigationIcon();
+    }
+
+    /** @throws Exception */
+    public static function canAccess(): bool
+    {
+        return self::getPlugin()->isAuthorized();
+    }
 
     public function table(Table $table): Table
     {
@@ -40,7 +76,7 @@ final class LogTable extends Page implements HasTable
             ->query(
                 Log::query()
             )
-            ->modifyQueryUsing(function (Builder $query) {
+            ->modifyQueryUsing(function (Builder $query): void {
                 if ($this->activeTab) {
                     $query->where('log_level', $this->activeTab);
                 }
@@ -50,7 +86,7 @@ final class LogTable extends Page implements HasTable
                     ->badge(),
                 Tables\Columns\TextColumn::make('env')
                     ->label('Environment')
-                    ->color(fn (string $state) => match ($state) {
+                    ->color(fn (string $state): array => match ($state) {
                         'local' => Color::Blue,
                         'production' => Color::Red,
                         'staging' => Color::Orange,
@@ -98,6 +134,7 @@ final class LogTable extends Page implements HasTable
         return $this->cachedTabs ??= $this->getTabs();
     }
 
+    /** @return array<string, mixed> */
     public function getTabs(): array
     {
         $all_logs = [
@@ -106,20 +143,18 @@ final class LogTable extends Page implements HasTable
         ];
 
         $tabs = collect(LogLevel::cases())
-            ->mapWithKeys(function (LogLevel $level) {
-                return [
-                    $level->value => Tab::make($level->getLabel())
-                        ->badge(
-                            fn () => Log::query()->where('log_level', $level)->count() ?: null
-                        )
-                        ->badgeColor($level->getColor()),
-                ];
-            })->toArray();
+            ->mapWithKeys(fn (LogLevel $level) => [
+                $level->value => Tab::make($level->getLabel())
+                    ->badge(
+                        fn () => Log::query()->where('log_level', $level)->count() ?: null
+                    )
+                    ->badgeColor($level->getColor()),
+            ])->toArray();
 
         return array_merge($all_logs, $tabs);
     }
 
-    public function getDefaultActiveTab(): string|null
+    public function getDefaultActiveTab(): null
     {
         return null;
     }
@@ -132,42 +167,8 @@ final class LogTable extends Page implements HasTable
     /** @throws Exception */
     private static function getPlugin(): FilamentLogViewer
     {
-        return Filament::getCurrentPanel()->getPlugin('filament-log-viewer');
-    }
+        $panel = Filament::getCurrentPanel();
 
-    /** @throws Exception */
-    public static function getNavigationLabel(): string
-    {
-        return self::getPlugin()->getNavigationLabel();
-    }
-
-    /** @throws Exception */
-    public static function getNavigationGroup(): string
-    {
-        return self::getPlugin()->getNavigationGroup();
-    }
-
-    /** @throws Exception */
-    public static function getNavigationSort(): int
-    {
-        return self::getPlugin()->getNavigationSort();
-    }
-
-    /** @throws Exception */
-    public static function getSlug(): string
-    {
-        return self::getPlugin()->getNavigationUrl();
-    }
-
-    /** @throws Exception */
-    public static function getNavigationIcon(): string
-    {
-        return self::getPlugin()->getNavigationIcon();
-    }
-
-    /** @throws Exception */
-    public static function canAccess(): bool
-    {
-        return self::getPlugin()->isAuthorized();
+        return $panel?->getPlugin('filament-log-viewer');
     }
 }
