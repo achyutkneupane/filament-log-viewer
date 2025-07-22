@@ -14,10 +14,15 @@ jobs:
                 uses: mathieudutour/github-tag-action@v6.2
                 with:
                     github_token: ${{ secrets.ACCESS_TOKEN }}
+            -   name: Create changelog text
+                id: changelog
+                uses: loopwerk/tag-changelog@v1
+                with:
+                    token: ${{ secrets.ACCESS_TOKEN }}
             -   name: Create a GitHub release
                 uses: ncipollo/release-action@v1
                 with:
                     tag: ${{ steps.tag_version.outputs.new_tag }}
                     name: Release ${{ steps.tag_version.outputs.new_tag }}
-                    body: ${{ steps.tag_version.outputs.changelog }}
+                    body: ${{ steps.changelog.outputs.changes }}
                     token: ${{ secrets.ACCESS_TOKEN }}
