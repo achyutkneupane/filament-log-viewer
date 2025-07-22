@@ -7,6 +7,7 @@ namespace AchyutN\FilamentLogViewer;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Exception;
+use Filament\Contracts\Plugin;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -165,7 +166,7 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
-    private static function getPlugin(): FilamentLogViewer
+    private static function getPlugin(): ?Plugin
     {
         $panel = Filament::getCurrentPanel();
 
