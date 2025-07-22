@@ -1,19 +1,5 @@
 # Changelog
 
-## v0.2.6 - 2025-07-22
-
-### 🏗️ Build System
-
-- ci: Changelog fix (da260e4c75e1bc68c3d9f5bbddb9900bef50be36) by @achyutkneupane
-
-## v0.2.5 - 2025-07-22
-
-4
-
-## v0.2.4 - 2025-07-22
-
-- No changelog
-
 ## v0.2.3 - 2025-07-22
 
 ### Build System
