@@ -1,0 +1,75 @@
+{
+    "categories": [
+        {
+            "key": "new-features",
+            "title": "## 🎉 New Features",
+            "labels": ["feat", "feature"]
+        },
+        {
+            "key": "bug-fixes",
+            "title": "## 🐛 Bug Fixes",
+            "labels": ["fix", "bugfix"]
+        },
+        {
+            "key": "improvements",
+            "title": "## 🔨 Improvements",
+            "labels": ["improvements", "enhancement"]
+        },
+        {
+            "key": "performance",
+            "title": "## 🏎️ Performance Improvements",
+            "labels": ["perf"]
+        },
+        {
+            "key": "build-system",
+            "title": "## 🏗️ Build System",
+            "labels": ["build", "ci"]
+        },
+        {
+            "key": "refactors",
+            "title": "## 🪚 Refactors",
+            "labels": ["refactor"]
+        },
+        {
+            "key": "documentation",
+            "title": "## 📚 Documentation Changes",
+            "labels": ["doc", "docs"]
+        },
+        {
+            "key": "tests",
+            "title": "## 🔍 Tests",
+            "labels": ["test", "tests"]
+        },
+        {
+            "key": "code-style",
+            "title": "## 💅 Code Style Changes",
+            "labels": ["style"]
+        },
+        {
+            "key": "chores",
+            "title": "## 🧹 Chores",
+            "labels": ["chore"]
+        },
+        {
+            "key": "other-changes",
+            "title": "## Other",
+            "labels": ["other"]
+        }
+    ],
+    "ignore_labels": [
+        "other"
+    ],
+    "template": "#{{CHANGELOG}}",
+    "commit_template": "- #{{TITLE}} (#{{MERGE_SHA}}) by @#{{AUTHOR}}",
+    "pr_template": "- #{{TITLE}} (##{{NUMBER}}) by @#{{AUTHOR}}",
+    "empty_template": "- no changes",
+    "label_extractor": [
+        {
+            "method": "regexr",
+            "pattern": "^([a-zA-Z]+):",
+            "target": "$1",
+            "on_property": "title",
+            "on_empty": "other"
+        }
+    ]
+}
