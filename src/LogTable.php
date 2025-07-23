@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Exception;
 use Filament\Facades\Filament;
@@ -71,6 +72,9 @@ final class LogTable extends Page implements HasTable
         return self::getPlugin()->isAuthorized();
     }
 
+    /**
+     * @throws Exception
+     */
     public function table(Table $table): Table
     {
         return $table
@@ -137,6 +141,9 @@ final class LogTable extends Page implements HasTable
                             ->label('Stack Trace'),
                     ])
                     ->slideOver(),
+            ])
+            ->filters([
+                DateRangeFilter::make('date'),
             ])
             ->defaultSort('date', 'desc');
     }

@@ -23,6 +23,22 @@ final class Log extends Model
         'stack' => 'string',
     ];
 
+    public static function destroyAllLogs(): void
+    {
+        $logFilePath = storage_path('logs');
+        if (! is_dir($logFilePath)) {
+            return;
+        }
+        $files = scandir($logFilePath);
+
+        foreach ($files as $file) {
+            $filePath = $logFilePath.'/'.$file;
+            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+                file_put_contents($filePath, '');
+            }
+        }
+    }
+
     /** @return string[] */
     public function getRows(): array
     {
@@ -127,21 +143,5 @@ final class Log extends Model
             ->thenReturn();
 
         return json_encode($stackTrace);
-    }
-
-    public static function destroyAllLogs(): void
-    {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
-            return;
-        }
-        $files = scandir($logFilePath);
-
-        foreach ($files as $file) {
-            $filePath = $logFilePath . '/' . $file;
-            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
-                file_put_contents($filePath, '');
-            }
-        }
     }
 }
