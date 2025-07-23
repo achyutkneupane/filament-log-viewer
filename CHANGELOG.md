@@ -6,10 +6,6 @@
 
 - feat: Date Range Filter added  (#12) by @achyutkneupane
 
-## v0.4.1 - 2025-07-23
-
-- no changes
-
 ## v0.3.1 - 2025-07-23
 
 ### 🧹 Chores
