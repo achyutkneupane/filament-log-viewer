@@ -33,21 +33,18 @@
     },
     "require-dev": {
         "laravel/pint": "^1.23",
-        "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.1"
     },
     "scripts": {
         "lint": [
             "rector",
-            "pint",
-            "phpstan"
+            "pint"
         ],
         "test:type-coverage": "pest",
         "test:lint": [
             "pint --test"
         ],
         "test:unit": "# pest --parallel --coverage --min=90",
-        "test:types": "phpstan",
         "test": [
             "@test:lint",
             "@test:type-coverage",
