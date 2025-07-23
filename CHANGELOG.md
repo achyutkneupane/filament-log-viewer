@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0 - 2025-07-23
+
+### 🎉 New Features
+
+- feat: Date Range Filter added  (#12) by @achyutkneupane
+
 ## v0.4.1 - 2025-07-23
 
 - no changes
