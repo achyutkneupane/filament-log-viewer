@@ -143,7 +143,7 @@ final class LogTable extends Page implements HasTable
                     ->slideOver(),
             ])
             ->filters([
-                DateRangeFilter::make("date"),
+                DateRangeFilter::make('date'),
             ])
             ->defaultSort('date', 'desc');
     }

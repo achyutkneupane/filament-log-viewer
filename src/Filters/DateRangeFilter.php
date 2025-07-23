@@ -43,12 +43,14 @@ final class DateRangeFilter
     {
         $indicators = [];
 
-        if (isset($data['created_from'])) {
+        if (! empty($data['created_from']) && ! empty($data['created_until'])) {
+            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['created_from'])->toFormattedDateString().' to '.Carbon::parse($data['created_until'])->toFormattedDateString())
+                ->removeField('created_from')
+                ->removeField('created_until');
+        } elseif (! empty($data['created_from'])) {
             $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['created_from'])->toFormattedDateString())
                 ->removeField('created_from');
-        }
-
-        if (isset($data['created_until'])) {
+        } elseif (! empty($data['created_until'])) {
             $indicators[] = Indicator::make('Logs until '.Carbon::parse($data['created_until'])->toFormattedDateString())
                 ->removeField('created_until');
         }
