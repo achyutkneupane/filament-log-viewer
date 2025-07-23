@@ -41,9 +41,17 @@ Click the view action to inspect stack traces.
 
 ### Filters
 
+#### Log Levels
+
 You can filter the logs according to log level. The filters are available as tabs above the table:
 
 ![Table Filters](https://hamrocdn.com/175hFkEVdrDl)
+
+#### Date
+
+You can filter logs by date using the date picker in the top right corner of the table. This allows you to select a specific date range to view logs.
+
+![Date Filter](https://hamrocdn.com/q9sILZZYuxlN)
 
 ## Extending
 
