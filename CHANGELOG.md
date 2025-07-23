@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1 - 2025-07-23
+
+### 🧹 Chores
+
+- chore: PHPStan temporarily removed (#11) by @achyutkneupane
+
 ## v0.3.0 - 2025-07-23
 
 ### 🎉 New Features
