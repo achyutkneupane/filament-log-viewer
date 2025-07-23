@@ -8,6 +8,7 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Exception;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -17,6 +18,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Url;
@@ -71,6 +73,9 @@ final class LogTable extends Page implements HasTable
         return self::getPlugin()->isAuthorized();
     }
 
+    /**
+     * @throws Exception
+     */
     public function table(Table $table): Table
     {
         return $table
@@ -137,6 +142,24 @@ final class LogTable extends Page implements HasTable
                             ->label('Stack Trace'),
                     ])
                     ->slideOver(),
+            ])
+            ->filters([
+                Filter::make('date')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('From'),
+                        DatePicker::make('created_until')
+                            ->label('Until'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                        )),
             ])
             ->defaultSort('date', 'desc');
     }
