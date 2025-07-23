@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 - 2025-07-23
+
+### 🎉 New Features
+
+- feat: Clear Logs Action (#10) by @Dipesh79
+
 ## v0.2.8 - 2025-07-23
 
 - no changes
