@@ -20,7 +20,7 @@ jobs:
                 with:
                     configuration: ".github/changelog-configuration.json"
                     token: ${{ secrets.ACCESS_TOKEN }}
-                    mode: "HYBRID"
+                    mode: "PR"
             -   name: Create a GitHub release
                 uses: ncipollo/release-action@v1
                 with:
