@@ -20,19 +20,19 @@ final class DateRangeFilter
             ->label('Date Range')
             ->indicator('Date Range')
             ->form([
-                DatePicker::make('created_from')
+                DatePicker::make('from')
                     ->label('From'),
-                DatePicker::make('created_until')
+                DatePicker::make('until')
                     ->label('Until'),
             ])
             ->query(fn (Builder $query, array $data): Builder => $query
                 ->when(
-                    $data['created_from'],
-                    fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                    $data['from'],
+                    fn (Builder $query, $date): Builder => $query->whereDate($name, '>=', $date),
                 )
                 ->when(
-                    $data['created_until'],
-                    fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                    $data['until'],
+                    fn (Builder $query, $date): Builder => $query->whereDate($name, '<=', $date),
                 ))
             ->indicateUsing(
                 fn (array $data): array => self::indicators($data),
@@ -43,16 +43,16 @@ final class DateRangeFilter
     {
         $indicators = [];
 
-        if (! empty($data['created_from']) && ! empty($data['created_until'])) {
-            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['created_from'])->toFormattedDateString().' to '.Carbon::parse($data['created_until'])->toFormattedDateString())
-                ->removeField('created_from')
-                ->removeField('created_until');
-        } elseif (! empty($data['created_from'])) {
-            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['created_from'])->toFormattedDateString())
-                ->removeField('created_from');
-        } elseif (! empty($data['created_until'])) {
-            $indicators[] = Indicator::make('Logs until '.Carbon::parse($data['created_until'])->toFormattedDateString())
-                ->removeField('created_until');
+        if (! empty($data['from']) && ! empty($data['until'])) {
+            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['from'])->toFormattedDateString().' to '.Carbon::parse($data['until'])->toFormattedDateString())
+                ->removeField('from')
+                ->removeField('until');
+        } elseif (! empty($data['from'])) {
+            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['from'])->toFormattedDateString())
+                ->removeField('from');
+        } elseif (! empty($data['until'])) {
+            $indicators[] = Indicator::make('Logs until '.Carbon::parse($data['until'])->toFormattedDateString())
+                ->removeField('until');
         }
 
         return $indicators;
