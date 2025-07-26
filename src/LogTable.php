@@ -86,20 +86,6 @@ final class LogTable extends Page implements HasTable
                     $query->where('log_level', $this->activeTab);
                 }
             })
-            ->headerActions([
-                Tables\Actions\Action::make('clear')
-                    ->label('Clear Logs')
-                    ->icon('heroicon-o-trash')
-                    ->color(Color::Red)
-                    ->requiresConfirmation()
-                    ->action(function (): void {
-                        Log::destroyAllLogs();
-                        Notification::make()
-                            ->title('Logs Cleared')
-                            ->success()
-                            ->send();
-                    }),
-            ])
             ->columns([
                 Tables\Columns\TextColumn::make('log_level')
                     ->badge(),
@@ -184,6 +170,24 @@ final class LogTable extends Page implements HasTable
     public function updateTab(?LogLevel $level): void
     {
         $this->activeTab = $level?->value;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('clear')
+                ->label('Clear Logs')
+                ->icon('heroicon-o-trash')
+                ->color(Color::Red)
+                ->requiresConfirmation()
+                ->action(function (): void {
+                    Log::destroyAllLogs();
+                    Notification::make()
+                        ->title('Logs Cleared')
+                        ->success()
+                        ->send();
+                }),
+        ];
     }
 
     /** @throws Exception */
