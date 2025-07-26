@@ -176,6 +176,7 @@ final class LogTable extends Page implements HasTable
     {
         return [
             \Filament\Actions\Action::make('clear')
+                ->visible(Log::query()->count() > 0)
                 ->label('Clear Logs')
                 ->icon('heroicon-o-trash')
                 ->color(Color::Red)
