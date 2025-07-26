@@ -71,7 +71,8 @@ FilamentLogViewer::make()
     ->navigationIcon('heroicon-o-document-text')
     ->navigationLabel('Log Viewer')
     ->navigationSort(10)
-    ->navigationUrl('/logs');
+    ->navigationUrl('/logs')
+    ->pollingTime(null); // Set to null to disable polling
 ```
 
 ## License

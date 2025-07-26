@@ -128,6 +128,7 @@ final class LogTable extends Page implements HasTable
                     ])
                     ->slideOver(),
             ])
+            ->poll(self::getPlugin()->getPollingTime())
             ->filters([
                 DateRangeFilter::make('date'),
             ])
