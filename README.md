@@ -72,7 +72,7 @@ FilamentLogViewer::make()
     ->navigationLabel('Log Viewer')
     ->navigationSort(10)
     ->navigationUrl('/logs')
-    ->pollingTime('10s');
+    ->pollingTime(null); // Set to null to disable polling
 ```
 
 ## License
