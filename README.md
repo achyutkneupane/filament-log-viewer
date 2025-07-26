@@ -71,7 +71,8 @@ FilamentLogViewer::make()
     ->navigationIcon('heroicon-o-document-text')
     ->navigationLabel('Log Viewer')
     ->navigationSort(10)
-    ->navigationUrl('/logs');
+    ->navigationUrl('/logs')
+    ->pollingTime('10s');
 ```
 
 ## License
