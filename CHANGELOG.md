@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0 - 2025-07-26
+
+### 🎉 New Features
+
+- feat: Configurable polling added in log-table (#15) by @achyutkneupane
+
 ## v0.4.3 - 2025-07-26
 
 ### 🪚 Refactors
