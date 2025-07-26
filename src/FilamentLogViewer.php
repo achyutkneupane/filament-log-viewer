@@ -25,7 +25,7 @@ final class FilamentLogViewer implements Plugin
 
     public string|Closure $navigationUrl = '/logs';
 
-    public string|Closure $pollingTime = '10s';
+    public string|null|Closure $pollingTime = null;
 
     public static function make(): self
     {
@@ -102,7 +102,7 @@ final class FilamentLogViewer implements Plugin
         return $this;
     }
 
-    public function pollingTime(string|Closure $time): self
+    public function pollingTime(string|null|Closure $time): self
     {
         $this->pollingTime = $time;
 
@@ -139,7 +139,7 @@ final class FilamentLogViewer implements Plugin
         return $this->evaluate($this->navigationUrl);
     }
 
-    public function getPollingTime(): string
+    public function getPollingTime(): string|null
     {
         return $this->evaluate($this->pollingTime);
     }
