@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Panel;
+use Filament\Resources\Components\Tab;
 use Filament\Support\Colors\Color;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -30,7 +29,12 @@ final class LogTable extends Page implements HasTable
     #[Url(except: null)]
     public ?string $activeTab = null;
 
-    protected string $view = 'filament-log-viewer::log-table';
+    protected static string $view = 'filament-log-viewer::log-table';
+
+    /**
+     * @var array<string | int, Tab>
+     */
+    private array $cachedTabs;
 
     /** @throws Exception */
     public static function getNavigationLabel(): string
@@ -51,7 +55,7 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
-    public static function getSlug(?Panel $panel = null): string
+    public static function getSlug(): string
     {
         return self::getPlugin()->getNavigationUrl();
     }
@@ -83,9 +87,9 @@ final class LogTable extends Page implements HasTable
                 }
             })
             ->columns([
-                TextColumn::make('log_level')
+                Tables\Columns\TextColumn::make('log_level')
                     ->badge(),
-                TextColumn::make('env')
+                Tables\Columns\TextColumn::make('env')
                     ->label('Environment')
                     ->color(fn (string $state): array => match ($state) {
                         'local' => Color::Blue,
@@ -96,23 +100,23 @@ final class LogTable extends Page implements HasTable
                     })
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->badge(),
-                TextColumn::make('file')
+                Tables\Columns\TextColumn::make('file')
                     ->label('File Name')
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('message')
+                Tables\Columns\TextColumn::make('message')
                     ->searchable()
                     ->label('Summary')
                     ->wrap(),
-                TextColumn::make('date')
+                Tables\Columns\TextColumn::make('date')
                     ->label('Occurred')
                     ->since()
                     ->dateTimeTooltip()
                     ->sortable(),
             ])
-            ->recordActions([
-                ViewAction::make('view')
-                    ->schema([
+            ->actions([
+                Tables\Actions\ViewAction::make('view')
+                    ->infolist([
                         RepeatableEntry::make('stack')
                             ->hiddenLabel()
                             ->schema([
@@ -128,18 +132,54 @@ final class LogTable extends Page implements HasTable
             ->filters([
                 DateRangeFilter::make('date'),
             ])
-            ->deferFilters(false)
-            ->deferColumnManager(false)
             ->defaultSort('date', 'desc');
+    }
+
+    /**
+     * @return array<string | int, Tab>
+     */
+    public function getCachedTabs(): array
+    {
+        return $this->cachedTabs ??= $this->getTabs();
+    }
+
+    /** @return array<string, mixed> */
+    public function getTabs(): array
+    {
+        $all_logs = [
+            null => Tab::make('All Logs')
+                ->badge(fn () => Log::query()->count() ?: null),
+        ];
+
+        $tabs = collect(LogLevel::cases())
+            ->mapWithKeys(fn (LogLevel $level) => [
+                $level->value => Tab::make($level->getLabel())
+                    ->badge(
+                        fn () => Log::query()->where('log_level', $level)->count() ?: null
+                    )
+                    ->badgeColor($level->getColor()),
+            ])->toArray();
+
+        return array_merge($all_logs, $tabs);
+    }
+
+    public function getDefaultActiveTab(): null
+    {
+        return null;
+    }
+
+    public function updateTab(?LogLevel $level): void
+    {
+        $this->activeTab = $level?->value;
     }
 
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('clear')
+            \Filament\Actions\Action::make('clear')
                 ->visible(Log::query()->count() > 0)
                 ->label('Clear Logs')
-                ->icon(Heroicon::Trash)
+                ->icon('heroicon-o-trash')
                 ->color(Color::Red)
                 ->requiresConfirmation()
                 ->action(function (): void {
@@ -155,6 +195,8 @@ final class LogTable extends Page implements HasTable
     /** @throws Exception */
     private static function getPlugin(): FilamentLogViewer
     {
-        return filament('filament-log-viewer');
+        $panel = Filament::getCurrentPanel();
+
+        return $panel?->getPlugin('filament-log-viewer');
     }
 }
