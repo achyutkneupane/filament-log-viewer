@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0 - 2025-08-04
+
+### 🏗️ Build System
+
+- ci: Releases version on workflow dispatch (#19) by @achyutkneupane
+
 ## v0.5.1-filament-v3.0 - 2025-08-04
 
 ### 🏗️ Build System
