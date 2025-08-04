@@ -75,6 +75,13 @@ FilamentLogViewer::make()
     ->pollingTime(null); // Set to null to disable polling
 ```
 
+## Filament Compatibility
+
+| Version             | Filament Version |
+|---------------------|------------------|
+| `^0.x`              | Filament v3      |
+| `^1.0`              | Filament v4      |
+
 ## License
 
 This package is open-sourced software licensed under the [MIT license](LICENSE.md).
