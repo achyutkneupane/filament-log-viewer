@@ -28,7 +28,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "filament/filament": "^3.0",
+        "filament/filament": "^4.0",
         "calebporzio/sushi": "^2.5"
     },
     "require-dev": {

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.2 - 2025-08-04
+
+### 🏗️ Build System
+
+- ci: `filament-v3` as default branch (#17) by @achyutkneupane
+- ci: release branch updated (#18) by @achyutkneupane
+
 ## v0.5.1-filament-v3.0 - 2025-08-04
 
 ### 🏗️ Build System
