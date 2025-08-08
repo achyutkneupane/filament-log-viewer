@@ -59,9 +59,4 @@ trait LogLevelTabFilter
 
         return array_merge($all_logs, $tabs);
     }
-
-    public function getActiveTab(): string
-    {
-        return $this->unscopedLogLevel;
-    }
 }

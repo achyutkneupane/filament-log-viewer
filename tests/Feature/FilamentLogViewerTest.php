@@ -12,6 +12,10 @@ beforeEach(function () {
     actingAs($this->testUser);
 });
 
+afterEach(function () {
+    $this->deleteAllLogs();
+});
+
 it('renders with default settings', function () {
     $this->get($this->plugin->getNavigationUrl())
         ->assertSuccessful()
@@ -41,10 +45,28 @@ it('allows customization of navigation group', function () {
         ->assertSee('Custom Group');
 });
 
-it('shows log viewer UI with tabs', function () {
-    $this->get($this->plugin->getNavigationUrl())
-        ->assertSuccessful()
-        ->assertSee('All Logs')
-        ->assertSee('fi-badge')
-        ->assertSee('fi-active');
+describe('tabs', function () {
+    it('shows log viewer UI with tabs', function () {
+        $this->get($this->plugin->getNavigationUrl())
+            ->assertSuccessful()
+            ->assertSee('All Logs')
+            ->assertSee('fi-badge')
+            ->assertSee('fi-active');
+    });
+
+
+    it('doesn\'t show mail tab if no mail log', function () {
+        $this->get($this->plugin->getNavigationUrl())
+            ->assertSuccessful()
+            ->assertDontSee('Mail');
+    });
+
+    it('shows mail tab if mail log exists', function () {
+        $this->writeMailLog();
+
+        $this->get($this->plugin->getNavigationUrl())
+            ->assertSuccessful()
+            ->assertSee('Mail')
+            ->assertSee('fi-badge');
+    });
 });
