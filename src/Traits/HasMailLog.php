@@ -78,8 +78,8 @@ trait HasMailLog
             'mail' => [
                 'plain' => $plainMail,
                 'html' => $htmlMail,
-                'sender' => $sender,
-                'receiver' => $receiver,
+                'sender' => self::extractNameAndEmail($sender),
+                'receiver' => self::extractNameAndEmail($receiver),
                 'subject' => $subject,
                 'sent_date' => $mailDate,
             ],
@@ -120,5 +120,18 @@ trait HasMailLog
         $htmlMail = quoted_printable_decode($htmlMail);
 
         return [$plainMail, $htmlMail];
+    }
+
+    public static function extractNameAndEmail(string $address): array
+    {
+        if (preg_match('/^(.*?)\s*<([^>]+)>$/', $address, $matches)) {
+            $name = trim($matches[1]);
+            $email = trim($matches[2]);
+        } else {
+            $name = '';
+            $email = trim($address);
+        }
+
+        return [$name, $email];
     }
 }
