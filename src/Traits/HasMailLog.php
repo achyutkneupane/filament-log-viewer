@@ -74,13 +74,15 @@ trait HasMailLog
             $mailDate = $carbon->format('Y-m-d h:i:s A');
         }
 
+        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", $plainMail);
+
         return [
             'date' => trim($date),
             'env' => trim($env),
             'log_level' => LogLevel::MAIL,
             'message' => $subject,
             'mail' => [
-                'plain' => $plainMail,
+                'plain' => $markdownPlain,
                 'html' => $htmlMail,
                 'sender' => self::extractNameAndEmail($sender),
                 'receiver' => self::extractNameAndEmail($receiver),
@@ -121,7 +123,7 @@ trait HasMailLog
         }
 
         $plainMail = quoted_printable_decode($plainMail);
-        $htmlMail = quoted_printable_decode($htmlMail);
+        $plainMail = preg_replace('/\r\n|\r|\n/', "\n\n", $plainMail);
 
         return [$plainMail, $htmlMail];
     }
@@ -138,7 +140,7 @@ trait HasMailLog
 
         return [
             'name' => $name,
-            'email' => $email
+            'email' => $email,
         ];
     }
 }
