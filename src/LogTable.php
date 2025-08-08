@@ -7,11 +7,10 @@ namespace AchyutN\FilamentLogViewer;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
+use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -19,7 +18,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -140,34 +138,7 @@ final class LogTable extends Page implements HasTable
                         currentPage: $page,
                     );
                 })
-            ->columns([
-                TextColumn::make('log_level')
-                    ->badge(),
-                TextColumn::make('env')
-                    ->label('Environment')
-                    ->color(fn (string $state): array => match ($state) {
-                        'local' => Color::Blue,
-                        'production' => Color::Red,
-                        'staging' => Color::Orange,
-                        'testing' => Color::Gray,
-                        default => Color::Yellow
-                    })
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->badge(),
-                TextColumn::make('file')
-                    ->label('File Name')
-                    ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('message')
-                    ->label('Summary')
-                    ->searchable()
-                    ->wrap(),
-                TextColumn::make('date')
-                    ->label('Occurred')
-                    ->since()
-                    ->sortable()
-                    ->dateTimeTooltip(),
-            ])
+            ->columns(LogTableSchema::columns())
             ->recordActions([
                 Action::make('view')
                     ->icon(Heroicon::Eye)
