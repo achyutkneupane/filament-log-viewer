@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
+use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
@@ -14,6 +15,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Panel;
+use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
@@ -170,16 +172,7 @@ final class LogTable extends Page implements HasTable
                 Action::make('view')
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
-                    ->schema([
-                        RepeatableEntry::make('stack')
-                            ->hiddenLabel()
-                            ->schema([
-                                TextEntry::make('trace')
-                                    ->hiddenLabel()
-                                    ->columnSpanFull(),
-                            ])
-                            ->label('Stack Trace'),
-                    ])
+                    ->schema(fn (Schema $schema) => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading('Stack Trace')
