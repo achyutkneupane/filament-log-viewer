@@ -109,7 +109,7 @@ abstract class TestCase extends BaseTestCase
     public function writeMailLog(string $filename = "laravel.log"): void
     {
         $mailContentArray = [
-            '[2025-08-09 00:18:13] local.DEBUG: From: Laravel <hello@example.com>',
+            '[2025-08-09 00:18:13] local.DEBUG: From: hello@example.com',
             'To: Achyut Neupane <achyutkneupane@gmail.com>',
             'Subject: Test Email',
             'MIME-Version: 1.0',

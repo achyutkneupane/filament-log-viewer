@@ -49,7 +49,7 @@ trait HasMailLog
         return self::parseMailLines($raw, $date, $env, $file);
     }
 
-    public static function parseMailLines(string $raw, string $date, string $env, string $file): array
+    private static function parseMailLines(string $raw, string $date, string $env, string $file): array
     {
         [$plainMail, $htmlMail] = self::extractMail($raw);
 
@@ -93,7 +93,7 @@ trait HasMailLog
         ];
     }
 
-    public static function extractMail(string $raw): array
+    private static function extractMail(string $raw): array
     {
         $plainMail = '';
         $htmlMail = '';
@@ -128,7 +128,7 @@ trait HasMailLog
         return [$plainMail, $htmlMail];
     }
 
-    public static function extractNameAndEmail(string $address): array
+    private static function extractNameAndEmail(string $address): array
     {
         if (preg_match('/^(.*?)\s*<([^>]+)>$/', $address, $matches)) {
             $name = trim($matches[1]);
