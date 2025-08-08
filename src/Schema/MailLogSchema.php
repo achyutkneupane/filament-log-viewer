@@ -47,7 +47,6 @@ final class MailLogSchema
                     ]),
                 Tabs::make('Content')
                     ->columnSpanFull()
-                    ->default('HTML')
                     ->tabs([
                         Tab::make('Plain Text')
                             ->schema([
