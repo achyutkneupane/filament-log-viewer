@@ -74,7 +74,7 @@ trait HasMailLog
             $mailDate = $carbon->format('Y-m-d h:i:s A');
         }
 
-        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", $plainMail);
+        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", (string) $plainMail);
 
         return [
             'date' => trim($date),
@@ -98,11 +98,7 @@ trait HasMailLog
         $plainMail = '';
         $htmlMail = '';
 
-        if (preg_match('/boundary=([^\s]+)/', $raw, $matches)) {
-            $boundary = trim($matches[1], '"');
-        } else {
-            $boundary = null;
-        }
+        $boundary = preg_match('/boundary=([^\s]+)/', $raw, $matches) ? trim($matches[1], '"') : null;
 
         if ($boundary) {
             $parts = preg_split('/--'.preg_quote($boundary, '/').'/', $raw);
@@ -111,18 +107,18 @@ trait HasMailLog
                 $part = trim($part);
 
                 if (mb_stripos($part, 'Content-Type: text/plain') !== false) {
-                    $plainMail = trim(preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
+                    $plainMail = trim((string) preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
                     $plainMail = preg_replace('/^Content-(Type|Transfer-Encoding):.*\r?\n?/mi', '', $plainMail);
                 }
 
                 if (mb_stripos($part, 'Content-Type: text/html') !== false) {
-                    $htmlMail = trim(preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
+                    $htmlMail = trim((string) preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
                     $htmlMail = preg_replace('/^Content-(Type|Transfer-Encoding):.*\r?\n?/mi', '', $htmlMail);
                 }
             }
         }
 
-        $plainMail = quoted_printable_decode($plainMail);
+        $plainMail = quoted_printable_decode((string) $plainMail);
         $plainMail = preg_replace('/\r\n|\r|\n/', "\n\n", $plainMail);
 
         return [$plainMail, $htmlMail];

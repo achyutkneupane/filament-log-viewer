@@ -54,7 +54,6 @@ describe('tabs', function () {
             ->assertSee('fi-active');
     });
 
-
     it('doesn\'t show mail tab if no mail log', function () {
         $this->get($this->plugin->getNavigationUrl())
             ->assertSuccessful()
