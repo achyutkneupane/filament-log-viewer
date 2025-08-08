@@ -41,18 +41,84 @@ trait HasMailLog
             return [];
         }
 
+        $raw = $extractedLine['message'];
+        $date = $extractedLine['date'] ?? '';
+        $env = $extractedLine['env'] ?? '';
+
+        return self::parseMailLines($raw, $date, $env, $file);
+    }
+
+    public static function parseMailLines(string $raw, string $date, string $env, string $file): array
+    {
+        [$plainMail, $htmlMail] = self::extractMail($raw);
+
+        $sender = '';
+        $receiver = '';
+        $subject = '';
+        $mailDate = '';
+
+        if (preg_match('/^From:\s*(.+)$/mi', $raw, $m)) {
+            $sender = trim($m[1]);
+        }
+        if (preg_match('/^To:\s*(.+)$/mi', $raw, $m)) {
+            $receiver = trim($m[1]);
+        }
+        if (preg_match('/^Subject:\s*(.+)$/mi', $raw, $m)) {
+            $subject = trim($m[1]);
+        }
+        if (preg_match('/^Date:\s*(.+)$/mi', $raw, $m)) {
+            $mailDate = trim($m[1]);
+        }
+
+        return [
+            'date' => trim($date),
+            'env' => trim($env),
+            'log_level' => LogLevel::MAIL,
+            'message' => self::extractMessage($raw),
+            'mail' => [
+                'plain' => $plainMail,
+                'html' => $htmlMail,
+                'sender' => $sender,
+                'receiver' => $receiver,
+                'subject' => $subject,
+                'sent_date' => $mailDate,
+            ],
+            'file' => $file,
+        ];
+    }
+
+    public static function extractMail(string $raw): array
+    {
         $plainMail = '';
         $htmlMail = '';
 
-        return [
-            'date' => trim($extractedLine['date']),
-            'env' => trim($extractedLine['env']),
-            'log_level' => LogLevel::MAIL,
-            'message' => self::extractMessage($extractedLine['message']),
-            'stack' => '[]',
-            'plain_mail' => $plainMail,
-            'html_mail' => $htmlMail,
-            'file' => $file,
-        ];
+        if (preg_match('/boundary=([^\s]+)/', $raw, $matches)) {
+            $boundary = trim($matches[1], '"');
+        } else {
+            $boundary = null;
+        }
+
+        if ($boundary) {
+            $parts = preg_split('/--'.preg_quote($boundary, '/').'/', $raw);
+
+            foreach ($parts as $part) {
+                $part = trim($part);
+
+                if (mb_stripos($part, 'Content-Type: text/plain') !== false) {
+                    $plainMail = trim(preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
+                    $plainMail = preg_replace('/^Content-(Type|Transfer-Encoding):.*\r?\n?/mi', '', $plainMail);
+                }
+
+                if (mb_stripos($part, 'Content-Type: text/html') !== false) {
+                    $htmlMail = trim(preg_replace('/^.*?\r?\n\r?\n/s', '', $part));
+                    $htmlMail = preg_replace('/^Content-(Type|Transfer-Encoding):.*\r?\n?/mi', '', $htmlMail);
+                }
+            }
+        }
+
+        $plainMail = quoted_printable_decode($plainMail);
+        $htmlMail = quoted_printable_decode($htmlMail);
+
+        return [$plainMail, $htmlMail];
     }
 }
