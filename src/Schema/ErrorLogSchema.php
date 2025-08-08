@@ -17,6 +17,7 @@ final class ErrorLogSchema
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->key('error-log')
             ->components([
                 RepeatableEntry::make('stack')
                     ->hiddenLabel()

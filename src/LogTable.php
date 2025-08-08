@@ -74,6 +74,7 @@ final class LogTable extends Page implements HasTable
      */
     public function table(Table $table): Table
     {
+//        throw new Exception("Errrrrir");
         return $table
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
@@ -81,8 +82,6 @@ final class LogTable extends Page implements HasTable
                         ->map(function (array $log): array {
                             if (array_key_exists('stack', $log) && is_string($log['stack'])) {
                                 $log['stack'] = json_decode($log['stack'], true);
-                            } else {
-                                $log['stack'] = [];
                             }
 
                             return $log;

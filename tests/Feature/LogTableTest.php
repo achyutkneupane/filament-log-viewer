@@ -8,6 +8,7 @@ use AchyutN\FilamentLogViewer\LogTable;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 
 use function Pest\Livewire\livewire;
@@ -89,6 +90,25 @@ describe('columns', function () {
                     $column->getColor('staging') === Color::Orange &&
                     $column->getColor('testing') === Color::Gray &&
                     $column->getColor('default') === Color::Yellow;
+            });
+    });
+
+    it('has table row\'s actions', function () {
+        livewire(LogTable::class)
+            ->assertTableColumnExists('date', function (TextColumn $column) {
+                $viewAction = array_key_exists('view', $column->getTable()->getFlatActions())
+                    ? $column->getTable()->getFlatActions()['view']
+                    : null;
+
+                expect($viewAction)
+                    ->toBeInstanceOf(Action::class);
+
+                $labelCheck = $viewAction->getLabel() === 'View';
+                $nameCheck = $viewAction->getName() === 'view';
+                $colorCheck = $viewAction->getColor() === Color::Gray;
+                $iconCheck = $viewAction->getIcon() === Heroicon::Eye;
+
+                return $labelCheck && $nameCheck && $colorCheck && $iconCheck;
             });
     });
 });
