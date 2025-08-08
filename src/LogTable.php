@@ -74,7 +74,6 @@ final class LogTable extends Page implements HasTable
      */
     public function table(Table $table): Table
     {
-//        throw new Exception("Errrrrir");
         return $table
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {

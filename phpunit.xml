@@ -14,6 +14,9 @@
         <include>
             <directory>./src</directory>
         </include>
+        <exclude>
+            <directory suffix=".blade.php">./src</directory>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
