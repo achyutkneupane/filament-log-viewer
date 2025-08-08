@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0 - 2025-08-08
+
+- no changes
+
 ## v1.1.3 - 2025-08-06
 
 ### 🏗️ Build System
