@@ -38,7 +38,9 @@ trait LogLevelTabFilter
                 ->badge(fn (): ?int => Log::getLogCount() ?: null),
         ];
 
-        $tabs = collect(LogLevel::cases())
+        $exceptMail = array_filter(LogLevel::cases(), fn (LogLevel $level): bool => $level !== LogLevel::MAIL);
+
+        $tabs = collect($exceptMail)
             ->mapWithKeys(fn (LogLevel $level) => [
                 $level->value => Tab::make($level->getLabel())
                     ->id($level->value)
@@ -48,11 +50,13 @@ trait LogLevelTabFilter
                     ->badgeColor($level->getColor()),
             ])->toArray();
 
-        return array_merge($all_logs, $tabs);
-    }
+        if (Log::getLogCount('mail') > 0) {
+            $tabs['mail'] = Tab::make('Mail')
+                ->id('mail')
+                ->badge(fn (): ?int => Log::getLogCount('mail') ?: null)
+                ->badgeColor(LogLevel::MAIL->getColor());
+        }
 
-    public function getActiveTab(): string
-    {
-        return $this->unscopedLogLevel;
+        return array_merge($all_logs, $tabs);
     }
 }

@@ -48,6 +48,12 @@ Click the view action to inspect stack traces.
 
 ![Stack Tracing](https://hamrocdn.com/wPKsaqoXH5H4)
 
+### Mail Preview
+
+If your logs contain mail messages, you can preview them directly from the table. You can click on `Mail` tab which is visible only if mail are present.
+
+![Mail Preview](https://hamrocdn.com/NMuQQkyhAZib)
+
 ### Filters
 
 #### Log Levels

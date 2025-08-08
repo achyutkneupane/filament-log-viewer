@@ -18,6 +18,7 @@ enum LogLevel: string implements HasColor, HasLabel
     case INFO = 'info';
     case NOTICE = 'notice';
     case WARNING = 'warning';
+    case MAIL = 'mail';
 
     public function getLabel(): ?string
     {
@@ -30,6 +31,7 @@ enum LogLevel: string implements HasColor, HasLabel
             self::INFO => 'Info',
             self::NOTICE => 'Notice',
             self::WARNING => 'Warning',
+            self::MAIL => 'Mail',
         };
     }
 
@@ -44,6 +46,7 @@ enum LogLevel: string implements HasColor, HasLabel
             self::INFO => Color::hex('#2196F3'),
             self::NOTICE => Color::hex('#4CAF50'),
             self::WARNING => Color::hex('#FFC107'),
+            self::MAIL => Color::hex('#9C27B0'),
         };
     }
 }

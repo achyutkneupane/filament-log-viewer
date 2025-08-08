@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
+use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
+use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
+use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Panel;
+use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -77,7 +79,9 @@ final class LogTable extends Page implements HasTable
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     $records = Collection::wrap(Log::getRows())
                         ->map(function (array $log): array {
-                            $log['stack'] = json_decode($log['stack'] ?? []);
+                            if (array_key_exists('stack', $log) && is_string($log['stack'])) {
+                                $log['stack'] = json_decode($log['stack'], true);
+                            }
 
                             return $log;
                         })
@@ -134,52 +138,27 @@ final class LogTable extends Page implements HasTable
                         currentPage: $page,
                     );
                 })
-            ->columns([
-                TextColumn::make('log_level')
-                    ->badge(),
-                TextColumn::make('env')
-                    ->label('Environment')
-                    ->color(fn (string $state): array => match ($state) {
-                        'local' => Color::Blue,
-                        'production' => Color::Red,
-                        'staging' => Color::Orange,
-                        'testing' => Color::Gray,
-                        default => Color::Yellow
-                    })
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->badge(),
-                TextColumn::make('file')
-                    ->label('File Name')
-                    ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('message')
-                    ->label('Summary')
-                    ->searchable()
-                    ->wrap(),
-                TextColumn::make('date')
-                    ->label('Occurred')
-                    ->since()
-                    ->sortable()
-                    ->dateTimeTooltip(),
-            ])
+            ->columns(LogTableSchema::columns())
             ->recordActions([
                 Action::make('view')
+                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
-                    ->schema([
-                        RepeatableEntry::make('stack')
-                            ->hiddenLabel()
-                            ->schema([
-                                TextEntry::make('trace')
-                                    ->hiddenLabel()
-                                    ->columnSpanFull(),
-                            ])
-                            ->label('Stack Trace'),
-                    ])
+                    ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading('Stack Trace')
                     ->modalDescription(fn (array $record): string => $record['message'])
+                    ->slideOver(),
+                Action::make('read')
+                    ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
+                    ->icon(Heroicon::Envelope)
+                    ->color(Color::hex('#9C27B0'))
+                    ->schema(fn (Schema $schema): Schema => MailLogSchema::configure($schema))
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false)
+                    ->modalHeading(fn (array $record): string => $record['mail']['subject'] ? 'Subject: '.$record['mail']['subject'] : 'Mail Log')
+                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? 'Sent on: '.$record['mail']['sent_date'] : null)
                     ->slideOver(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
