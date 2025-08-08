@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Traits;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use Carbon\Carbon;
 
 trait HasMailLog
 {
@@ -68,13 +69,16 @@ trait HasMailLog
         }
         if (preg_match('/^Date:\s*(.+)$/mi', $raw, $m)) {
             $mailDate = trim($m[1]);
+            $carbon = Carbon::parse($mailDate);
+            $carbon->setTimezone(config('app.timezone'));
+            $mailDate = $carbon->format('Y-m-d h:i:s A');
         }
 
         return [
             'date' => trim($date),
             'env' => trim($env),
             'log_level' => LogLevel::MAIL,
-            'message' => self::extractMessage($raw),
+            'message' => $subject,
             'mail' => [
                 'plain' => $plainMail,
                 'html' => $htmlMail,
@@ -132,6 +136,9 @@ trait HasMailLog
             $email = trim($address);
         }
 
-        return [$name, $email];
+        return [
+            'name' => $name,
+            'email' => $email
+        ];
     }
 }

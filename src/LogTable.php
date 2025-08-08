@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
+use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
@@ -141,6 +143,7 @@ final class LogTable extends Page implements HasTable
             ->columns(LogTableSchema::columns())
             ->recordActions([
                 Action::make('view')
+                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema) => ErrorLogSchema::configure($schema))
@@ -148,6 +151,16 @@ final class LogTable extends Page implements HasTable
                     ->modalCancelAction(false)
                     ->modalHeading('Stack Trace')
                     ->modalDescription(fn (array $record): string => $record['message'])
+                    ->slideOver(),
+                Action::make('read')
+                    ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
+                    ->icon(Heroicon::Envelope)
+                    ->color(Color::hex('#9C27B0'))
+                    ->schema(fn (Schema $schema) => MailLogSchema::configure($schema))
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false)
+                    ->modalHeading(fn (array $record) => $record['mail']['subject'] ? 'Subject: '.$record['mail']['subject'] : 'Mail Log')
+                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? 'Sent on: '.$record['mail']['sent_date'] : null)
                     ->slideOver(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
