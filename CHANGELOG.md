@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.1 - 2025-08-08
+
+### 🎉 New Features
+
+- feat: add mail log reader with plain text & HTML preview (#40) by @achyutkneupane
+
+### 🔍 Tests
+
+- test: Sonar cloud exclusions added & more tests added (#39) by @achyutkneupane
+
 ## v1.2.0 - 2025-08-08
 
 - no changes
