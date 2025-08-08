@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Illuminate\Pipeline\Pipeline;
 
 final class Log
 {
+    use HasMailLog;
+
     public static function destroyAllLogs(): void
     {
         $logFilePath = storage_path('logs');
@@ -110,6 +113,10 @@ final class Log
 
         if (! isset($matches['level']) || ! isset($matches['message'])) {
             return null;
+        }
+
+        if (self::isMailStack($matches['message'])) {
+            return self::parseMail($matches, $file);
         }
 
         return [
