@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
+use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
 
 final class Log
@@ -90,11 +91,15 @@ final class Log
             }
 
             $path = $directory.DIRECTORY_SEPARATOR.$item;
+            $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
+            $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
+            $pathWithoutLogsPrefix = str_replace('/logs/', '', $pathAfterRemovingFileName);
+
 
             if (is_dir($path)) {
                 $files = array_merge($files, self::getNestedFiles($path));
             } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
-                $files[] = $item;
+                $files[] = $pathWithoutLogsPrefix.basename($path);
             }
         }
 
