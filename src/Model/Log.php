@@ -23,7 +23,7 @@ final class Log
 
         foreach ($files as $file) {
             $filePath = $logFilePath.'/'.$file;
-            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+            if (is_file($filePath) && pathinfo((string) $file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
             }
         }
@@ -46,16 +46,17 @@ final class Log
             if (! is_file($filePath)) {
                 continue;
             }
-            if (pathinfo($file, PATHINFO_EXTENSION) !== 'log') {
+            if (pathinfo((string) $file, PATHINFO_EXTENSION) !== 'log') {
                 continue;
             }
 
             $logs = array_merge($logs, self::processLogFile($filePath, $file));
         }
 
-        usort($logs, function ($a, $b) {
+        usort($logs, function (array $a, array $b): int {
             $dateA = Carbon::parse($a['date']);
             $dateB = Carbon::parse($b['date']);
+
             return $dateB->timestamp <=> $dateA->timestamp;
         });
 
@@ -94,7 +95,11 @@ final class Log
         $items = scandir($directory);
 
         foreach ($items as $item) {
-            if ($item === '.' || $item === '..') {
+            if ($item === '.') {
+                continue;
+            }
+
+            if ($item === '..') {
                 continue;
             }
 
@@ -102,7 +107,6 @@ final class Log
             $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
             $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
             $pathWithoutLogsPrefix = str_replace('/logs/', '', $pathAfterRemovingFileName);
-
 
             if (is_dir($path)) {
                 $files = array_merge($files, self::getNestedFiles($path));
