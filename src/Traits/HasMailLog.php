@@ -118,7 +118,7 @@ trait HasMailLog
             }
         }
 
-        $plainMail = quoted_printable_decode((string) $plainMail);
+        $plainMail = (string) $plainMail;
         $plainMail = preg_replace('/\r\n|\r|\n/', "\n\n", $plainMail);
 
         return [$plainMail, $htmlMail];
