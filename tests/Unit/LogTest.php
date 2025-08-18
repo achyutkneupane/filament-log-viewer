@@ -57,7 +57,7 @@ describe('destroyAllLogs', function () {
         $nestedLog = file_get_contents(storage_path('logs/nested-folder/nested.log'));
 
         expect($nestedLog)->toBe('');
-    })->only();
+    });
 
     it('does nothing if log folder does not exist', function () {
         $this->deleteAllLogs();

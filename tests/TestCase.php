@@ -18,12 +18,15 @@ use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
+use FilesystemIterator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Log\LogServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 #[AllowDynamicProperties]
@@ -145,11 +148,26 @@ abstract class TestCase extends BaseTestCase
 
     protected function deleteAllLogs(): void
     {
-        collect(glob(storage_path('logs/*')))->each(function ($file) {
-            if (is_file($file)) {
-                unlink($file);
+        $logsPath = storage_path('logs');
+
+        if (! is_dir($logsPath)) {
+            return;
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($logsPath, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                unlink($file->getPathname());
             }
-        });
+
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
+            }
+        }
     }
 
     protected function setUpDatabase(): void
