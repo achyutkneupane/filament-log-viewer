@@ -39,7 +39,9 @@ final class Log
 
         $logs = [];
 
-        foreach (self::getNestedFiles($logFilePath) as $file) {
+        $logDirectoryItems = self::getNestedFiles($logFilePath);
+
+        foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
             if (! is_file($filePath)) {
                 continue;
@@ -50,6 +52,12 @@ final class Log
 
             $logs = array_merge($logs, self::processLogFile($filePath, $file));
         }
+
+        usort($logs, function ($a, $b) {
+            $dateA = Carbon::parse($a['date']);
+            $dateB = Carbon::parse($b['date']);
+            return $dateB->timestamp <=> $dateA->timestamp;
+        });
 
         return array_filter($logs);
     }
