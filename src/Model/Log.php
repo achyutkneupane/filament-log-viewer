@@ -13,15 +13,23 @@ final class Log
 {
     use HasMailLog;
 
+    private static string $logFilePath = '';
+
+    private static function getLogFilePath(): string
+    {
+        if (self::$logFilePath === '') {
+            self::$logFilePath = storage_path('logs');
+        }
+
+        return self::$logFilePath;
+    }
+
     public static function destroyAllLogs(): void
     {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
-            return;
-        }
-        $files = self::getNestedFiles($logFilePath);
+        $logDirectoryItems = self::getAllLogFiles();
+        $logFilePath = self::getLogFilePath();
 
-        foreach ($files as $file) {
+        foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
             if (is_file($filePath) && pathinfo((string) $file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
@@ -32,14 +40,9 @@ final class Log
     /** @return array<string, array<string, string>> */
     public static function getRows(): array
     {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
-            return [];
-        }
-
         $logs = [];
-
-        $logDirectoryItems = self::getNestedFiles($logFilePath);
+        $logDirectoryItems = self::getAllLogFiles();
+        $logFilePath = self::getLogFilePath();
 
         foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
@@ -87,6 +90,18 @@ final class Log
         }
 
         return count(self::getLogsByLogLevel($logLevel));
+    }
+
+    public static function getAllLogFiles(): array
+    {
+        $logFilePath = storage_path('logs');
+        if (! is_dir($logFilePath)) {
+            return [];
+        }
+
+        $files = self::getNestedFiles($logFilePath);
+
+        return array_map(fn ($file) => str_replace(storage_path(), '', $file), $files);
     }
 
     private static function getNestedFiles(string $directory): array
