@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
+use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
 
 final class Log
@@ -18,11 +19,11 @@ final class Log
         if (! is_dir($logFilePath)) {
             return;
         }
-        $files = scandir($logFilePath);
+        $files = self::getNestedFiles($logFilePath);
 
         foreach ($files as $file) {
             $filePath = $logFilePath.'/'.$file;
-            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+            if (is_file($filePath) && pathinfo((string) $file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
             }
         }
@@ -38,17 +39,26 @@ final class Log
 
         $logs = [];
 
-        foreach (scandir($logFilePath) as $file) {
+        $logDirectoryItems = self::getNestedFiles($logFilePath);
+
+        foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
             if (! is_file($filePath)) {
                 continue;
             }
-            if (pathinfo($file, PATHINFO_EXTENSION) !== 'log') {
+            if (pathinfo((string) $file, PATHINFO_EXTENSION) !== 'log') {
                 continue;
             }
 
             $logs = array_merge($logs, self::processLogFile($filePath, $file));
         }
+
+        usort($logs, function (array $a, array $b): int {
+            $dateA = Carbon::parse($a['date']);
+            $dateB = Carbon::parse($b['date']);
+
+            return $dateB->timestamp <=> $dateA->timestamp;
+        });
 
         return array_filter($logs);
     }
@@ -77,6 +87,35 @@ final class Log
         }
 
         return count(self::getLogsByLogLevel($logLevel));
+    }
+
+    private static function getNestedFiles(string $directory): array
+    {
+        $files = [];
+        $items = scandir($directory);
+
+        foreach ($items as $item) {
+            if ($item === '.') {
+                continue;
+            }
+
+            if ($item === '..') {
+                continue;
+            }
+
+            $path = $directory.DIRECTORY_SEPARATOR.$item;
+            $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
+            $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
+            $pathWithoutLogsPrefix = str_replace('/logs/', '', $pathAfterRemovingFileName);
+
+            if (is_dir($path)) {
+                $files = array_merge($files, self::getNestedFiles($path));
+            } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
+                $files[] = $pathWithoutLogsPrefix.basename($path);
+            }
+        }
+
+        return $files;
     }
 
     private static function processLogFile(string $filePath, string $file): array

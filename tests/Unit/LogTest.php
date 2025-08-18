@@ -23,6 +23,15 @@ describe('log files', function () {
         expect($stackTraceLog)
             ->toContain('local.ERROR: Sample log with stack trace');
     });
+
+    it('fetches log files from nested folders', function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+
+        $otherLog = file_get_contents(storage_path('logs/nested-folder/nested.log'));
+
+        expect($otherLog)
+            ->toContain('nested.NOTICE: Another notice log');
+    });
 });
 
 describe('destroyAllLogs', function () {
@@ -38,6 +47,16 @@ describe('destroyAllLogs', function () {
         expect($otherLog)->toBe('');
         expect($notALog)->toBe('This is not a log');
         expect($stackTraceLog)->toBe('');
+    });
+
+    it('deletes nested log files', function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+
+        Log::destroyAllLogs();
+
+        $nestedLog = file_get_contents(storage_path('logs/nested-folder/nested.log'));
+
+        expect($nestedLog)->toBe('');
     });
 
     it('does nothing if log folder does not exist', function () {
@@ -63,10 +82,12 @@ describe('getRows', function () {
     });
 
     it('returns all logs from .log files', function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+
         $logs = Log::getRows();
 
         expect($logs)->toBeArray();
-        expect($logs)->toHaveCount(4);
+        expect($logs)->toHaveCount(5);
         expect($logs)
             ->each
             ->toHaveKey('date')
@@ -79,21 +100,21 @@ describe('getRows', function () {
             ->sequence(
                 function ($log) {
                     return $log
-                        ->date->toBe('2024-08-06 20:15:00')
-                        ->env->toBe('local')
-                        ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
-                        ->message->toBe('Sample log')
+                        ->date->toBe('2024-08-06 20:19:00')
+                        ->env->toBe('nested')
+                        ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::NOTICE)
+                        ->message->toBe('Another notice log')
                         ->stack->toBe('[]')
-                        ->file->toBe('laravel.log');
+                        ->file->toBe('nested-folder/nested.log');
                 },
                 function ($log) {
                     return $log
-                        ->date->toBe('2024-08-06 20:16:00')
+                        ->date->toBe('2024-08-06 20:18:00')
                         ->env->toBe('local')
-                        ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
-                        ->message->toBe('Another log')
-                        ->stack->toBe('[]')
-                        ->file->toBe('other.log');
+                        ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
+                        ->message->toBe('Another log with stack trace at /path/to/another_file.php:789')
+                        ->stack->not->toBeNull()
+                        ->file->toBe('stack-trace.log');
                 },
                 function ($log) {
                     return $log
@@ -106,13 +127,22 @@ describe('getRows', function () {
                 },
                 function ($log) {
                     return $log
-                        ->date->toBe('2024-08-06 20:18:00')
+                        ->date->toBe('2024-08-06 20:16:00')
+                        ->env->toBe('local')
+                        ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
+                        ->message->toBe('Another log')
+                        ->stack->toBe('[]')
+                        ->file->toBe('other.log');
+                },
+                function ($log) {
+                    return $log
+                        ->date->toBe('2024-08-06 20:15:00')
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
-                        ->message->toBe('Another log with stack trace at /path/to/another_file.php:789')
-                        ->stack->not->toBeNull()
-                        ->file->toBe('stack-trace.log');
-                }
+                        ->message->toBe('Sample log')
+                        ->stack->toBe('[]')
+                        ->file->toBe('laravel.log');
+                },
             );
     });
 
