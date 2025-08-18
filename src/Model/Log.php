@@ -38,7 +38,7 @@ final class Log
 
         $logs = [];
 
-        foreach (scandir($logFilePath) as $file) {
+        foreach (self::getNestedFiles($logFilePath) as $file) {
             $filePath = $logFilePath.'/'.$file;
             if (! is_file($filePath)) {
                 continue;
@@ -77,6 +77,28 @@ final class Log
         }
 
         return count(self::getLogsByLogLevel($logLevel));
+    }
+
+    private static function getNestedFiles(string $directory): array
+    {
+        $files = [];
+        $items = scandir($directory);
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $directory.DIRECTORY_SEPARATOR.$item;
+
+            if (is_dir($path)) {
+                $files = array_merge($files, self::getNestedFiles($path));
+            } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
+                $files[] = $item;
+            }
+        }
+
+        return $files;
     }
 
     private static function processLogFile(string $filePath, string $file): array

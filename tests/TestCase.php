@@ -120,6 +120,10 @@ abstract class TestCase extends BaseTestCase
             mkdir(storage_path('logs'), 0755, true);
         }
 
+        if (! is_dir(storage_path('logs/nested-folder'))) {
+            mkdir(storage_path('logs/nested-folder'), 0755, true);
+        }
+
         $this->writeLog('laravel.log', '[2024-08-06 20:15:00] local.ERROR: Sample log');
         $this->writeLog('other.log', '[2024-08-06 20:16:00] local.INFO: Another log');
         $this->writeLog('not-a-log.txt', 'This is not a log');
