@@ -19,7 +19,7 @@ final class Log
         if (! is_dir($logFilePath)) {
             return;
         }
-        $files = scandir($logFilePath);
+        $files = self::getNestedFiles($logFilePath);
 
         foreach ($files as $file) {
             $filePath = $logFilePath.'/'.$file;
