@@ -49,6 +49,16 @@ describe('destroyAllLogs', function () {
         expect($stackTraceLog)->toBe('');
     });
 
+    it('deletes nested log files', function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+
+        Log::destroyAllLogs();
+
+        $nestedLog = file_get_contents(storage_path('logs/nested-folder/nested.log'));
+
+        expect($nestedLog)->toBe('');
+    })->only();
+
     it('does nothing if log folder does not exist', function () {
         $this->deleteAllLogs();
 
