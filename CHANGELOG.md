@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.3.1 - 2025-08-19
+
+### 🎉 New Features
+
+- feat: Fetches and deleted nested log files (#46) by @achyutkneupane
+  Closes #45
+- feat: filter the logs by log file (#48) by @achyutkneupane
+  Closes #44
+  Closes #41
+
+### 🐛 Bug Fixes
+
+- fix: fixes the Unexpected encoding on plain text email (#43) by @achyutkneupane
+  Closes #42
+
+### 🏗️ Build System
+
+- ci: updates GitHub Actions to run with matrix strategy (#47) by @achyutkneupane
+  
+- ci: Body added in PR template (#49) by @achyutkneupane
+  
+
 ## v1.3.0 - 2025-08-19
 
 - no changes
