@@ -17,6 +17,7 @@ final class FileFilter
     /** @throws Exception */
     public static function make(string $name = 'file'): SelectFilter
     {
+//        dd(Log::getFilesForFilter());
         return SelectFilter::make($name)
             ->label('File')
             ->options(Log::getFilesForFilter())
