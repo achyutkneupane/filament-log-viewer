@@ -50,7 +50,7 @@ describe('tabs', function () {
         $this->get($this->plugin->getNavigationUrl())
             ->assertSuccessful()
             ->assertSee('All Logs')
-            ->assertSee('fi-badge')
+            ->assertSee('fi-tabs-item')
             ->assertSee('fi-active');
     });
 

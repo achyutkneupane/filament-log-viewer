@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
 use AchyutN\FilamentLogViewer\LogTable;
+use AchyutN\FilamentLogViewer\Model\Log;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 
 use function Pest\Livewire\livewire;
 
@@ -116,7 +119,29 @@ describe('columns', function () {
 describe('filters', function () {
     it('has table filters', function () {
         livewire(LogTable::class)
-            ->assertTableFilterExists('date');
+            ->assertTableFilterExists('date')
+            ->assertTableFilterExists('file');
+    });
+
+    it('has date filter', function () {
+        livewire(LogTable::class)
+            ->assertTableFilterExists('date', function (Filter $filter) {
+                return $filter->getName() === 'date' &&
+                    $filter->getLabel() === 'Date Range';
+            });
+    });
+
+    it('has file selector filter', function () {
+        livewire(LogTable::class)
+            ->assertTableFilterExists('file', function (SelectFilter $filter) {
+                expect($filter)
+                    ->toBeInstanceOf(SelectFilter::class);
+
+                return $filter->getName() === 'file' &&
+                    $filter->getLabel() === 'File' &&
+                    $filter->getOptions() === Log::getFilesForFilter() &&
+                    $filter->getIndicator() === 'File';
+            });
     });
 
     it('has indicators for date range', function () {
@@ -148,6 +173,16 @@ describe('filters', function () {
             ])
             ->assertDontSeeText('Logs from')
             ->assertDontSeeText('Logs until');
+    });
+
+    it('has indicators for file filter', function () {
+        livewire(LogTable::class)
+            ->filterTable('file', 'other.log')
+            ->assertSeeText('File: other.log');
+
+        livewire(LogTable::class)
+            ->filterTable('file', null)
+            ->assertDontSeeText('File:');
     });
 
     it('table is unscoped by default', function () {

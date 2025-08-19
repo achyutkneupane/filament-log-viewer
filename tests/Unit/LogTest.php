@@ -70,6 +70,23 @@ describe('destroyAllLogs', function () {
     });
 });
 
+describe('getAllLogFiles', function () {
+    beforeEach(function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+    });
+
+    it('returns all log files in the logs directory', function () {
+        $logFiles = Log::getAllLogFiles();
+
+        expect($logFiles)->toBeArray();
+        expect($logFiles)->toHaveCount(4);
+        expect($logFiles)->toContain('laravel.log');
+        expect($logFiles)->toContain('other.log');
+        expect($logFiles)->toContain('stack-trace.log');
+        expect($logFiles)->toContain('nested-folder/nested.log');
+    });
+});
+
 describe('getRows', function () {
     it('does nothing if log folder does not exist', function () {
         $this->deleteAllLogs();

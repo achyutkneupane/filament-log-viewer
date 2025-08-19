@@ -8,20 +8,20 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Collection;
 
 final class Log
 {
     use HasMailLog;
 
+    private static string $logFilePath = '';
+
     public static function destroyAllLogs(): void
     {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
-            return;
-        }
-        $files = self::getNestedFiles($logFilePath);
+        $logDirectoryItems = self::getAllLogFiles();
+        $logFilePath = self::getLogFilePath();
 
-        foreach ($files as $file) {
+        foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
             if (is_file($filePath) && pathinfo((string) $file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
@@ -32,14 +32,9 @@ final class Log
     /** @return array<string, array<string, string>> */
     public static function getRows(): array
     {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
-            return [];
-        }
-
         $logs = [];
-
-        $logDirectoryItems = self::getNestedFiles($logFilePath);
+        $logDirectoryItems = self::getAllLogFiles();
+        $logFilePath = self::getLogFilePath();
 
         foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
@@ -87,6 +82,56 @@ final class Log
         }
 
         return count(self::getLogsByLogLevel($logLevel));
+    }
+
+    public static function getAllLogFiles(): array
+    {
+        $logFilePath = storage_path('logs');
+        if (! is_dir($logFilePath)) {
+            return [];
+        }
+
+        $files = self::getNestedFiles($logFilePath);
+
+        return array_map(fn ($file) => str_replace(storage_path(), '', $file), $files);
+    }
+
+    public static function getFilesForFilter(): array
+    {
+        $logFilePath = self::getAllLogFiles();
+
+        return Collection::wrap($logFilePath)
+            ->mapWithKeys(function (string $file): array {
+                $filePath = str_replace(storage_path(), '', $file);
+
+                return [$filePath => $filePath];
+            })
+            ->reduce(function ($carry, $item) {
+                if (str_contains($item, '/')) {
+                    $parts = explode('/', $item);
+                    $lastPart = array_pop($parts);
+                    $directory = implode('/', $parts);
+
+                    if (! isset($carry[$directory])) {
+                        $carry[$directory] = [];
+                    }
+
+                    $carry[$directory][$item] = $lastPart;
+                } else {
+                    $carry[$item] = $item;
+                }
+
+                return $carry;
+            }, []);
+    }
+
+    private static function getLogFilePath(): string
+    {
+        if (self::$logFilePath === '') {
+            self::$logFilePath = storage_path('logs');
+        }
+
+        return self::$logFilePath;
     }
 
     private static function getNestedFiles(string $directory): array
