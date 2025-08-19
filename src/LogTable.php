@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
+use AchyutN\FilamentLogViewer\Filters\FileFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
@@ -22,6 +23,7 @@ use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -165,9 +167,11 @@ final class LogTable extends Page implements HasTable
             ->filters(
                 [
                     DateRangeFilter::make('date'),
+                    FileFilter::make(),
                 ]
             )
             ->filtersFormWidth(Width::ExtraLarge)
+            ->filtersLayout(FiltersLayout::AboveContent)
             ->filtersFormColumns(1)
             ->deferFilters(false)
             ->deferColumnManager(false);

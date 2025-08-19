@@ -8,21 +8,13 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Collection;
 
 final class Log
 {
     use HasMailLog;
 
     private static string $logFilePath = '';
-
-    private static function getLogFilePath(): string
-    {
-        if (self::$logFilePath === '') {
-            self::$logFilePath = storage_path('logs');
-        }
-
-        return self::$logFilePath;
-    }
 
     public static function destroyAllLogs(): void
     {
@@ -102,6 +94,29 @@ final class Log
         $files = self::getNestedFiles($logFilePath);
 
         return array_map(fn ($file) => str_replace(storage_path(), '', $file), $files);
+    }
+
+    public static function getFilesForFilter(): array
+    {
+        $logFilePath = self::getAllLogFiles();
+        return Collection::wrap($logFilePath)
+            ->mapWithKeys(function (string $file): array {
+                $fileName = basename($file);
+                $filePath = str_replace(storage_path(), '', $file);
+
+                return [$fileName => $filePath];
+            })
+            ->sortKeys()
+            ->toArray();
+    }
+
+    private static function getLogFilePath(): string
+    {
+        if (self::$logFilePath === '') {
+            self::$logFilePath = storage_path('logs');
+        }
+
+        return self::$logFilePath;
     }
 
     private static function getNestedFiles(string $directory): array
