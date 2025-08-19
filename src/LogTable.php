@@ -175,13 +175,15 @@ final class LogTable extends Page implements HasTable
             ->poll(self::getPlugin()->getPollingTime())
             ->filters(
                 [
-                    DateRangeFilter::make('date'),
-                    FileFilter::make(),
+                    DateRangeFilter::make('date')
+                        ->columnSpan(2),
+                    FileFilter::make()
+                        ->columnSpan(1),
                 ]
             )
-            ->filtersFormWidth(Width::ExtraLarge)
-            ->filtersLayout(FiltersLayout::AboveContent)
-            ->filtersFormColumns(1)
+            ->filtersFormWidth(Width::Large)
+            ->filtersLayout(FiltersLayout::AboveContentCollapsible)
+            ->filtersFormColumns(3)
             ->deferFilters(false)
             ->deferColumnManager(false);
     }
