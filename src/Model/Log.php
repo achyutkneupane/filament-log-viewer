@@ -99,15 +99,30 @@ final class Log
     public static function getFilesForFilter(): array
     {
         $logFilePath = self::getAllLogFiles();
+
         return Collection::wrap($logFilePath)
             ->mapWithKeys(function (string $file): array {
-                $fileName = basename($file);
                 $filePath = str_replace(storage_path(), '', $file);
 
-                return [$fileName => $filePath];
+                return [$filePath => $filePath];
             })
-            ->sortKeys()
-            ->toArray();
+            ->reduce(function ($carry, $item) {
+                if (str_contains($item, '/')) {
+                    $parts = explode('/', $item);
+                    $lastPart = array_pop($parts);
+                    $directory = implode('/', $parts);
+
+                    if (! isset($carry[$directory])) {
+                        $carry[$directory] = [];
+                    }
+
+                    $carry[$directory][$item] = $lastPart;
+                } else {
+                    $carry[$item] = $item;
+                }
+
+                return $carry;
+            }, []);
     }
 
     private static function getLogFilePath(): string
