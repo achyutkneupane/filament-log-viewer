@@ -61,7 +61,7 @@
     ],
     "template": "#{{CHANGELOG}}",
     "commit_template": "- #{{TITLE}} (#{{MERGE_SHA}}) by @#{{AUTHOR}}",
-    "pr_template": "- #{{TITLE}} (##{{NUMBER}}) by @#{{AUTHOR}}",
+    "pr_template": "- #{{TITLE}} (##{{NUMBER}}) by @#{{AUTHOR}} \n #{{BODY}}",
     "empty_template": "- no changes",
     "label_extractor": [
         {
