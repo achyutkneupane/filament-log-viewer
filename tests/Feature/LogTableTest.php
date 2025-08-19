@@ -137,12 +137,12 @@ describe('filters', function () {
                 expect($filter)
                     ->toBeInstanceOf(SelectFilter::class);
 
-                return $filter->$filter->getName() === 'file' &&
+                return $filter->getName() === 'file' &&
                     $filter->getLabel() === 'File' &&
-                    $filter->getOptions() == Log::getFilesForFilter() &&
+                    $filter->getOptions() === Log::getFilesForFilter() &&
                     $filter->getIndicator() === 'File';
             });
-    })->only();
+    });
 
     it('has indicators for date range', function () {
         livewire(LogTable::class)

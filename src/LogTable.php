@@ -111,6 +111,15 @@ final class LogTable extends Page implements HasTable
                             )
                         )
                         ->when(
+                            filled($filters['file']),
+                            fn (Collection $data): Collection => $data->filter(
+                                fn (array $log): bool => str_contains(
+                                    mb_strtolower((string) $log['file']),
+                                    mb_strtolower((string) $filters['file']['value'] ?? '')
+                                )
+                            )
+                        )
+                        ->when(
                             filled($sortColumn),
                             fn (Collection $data): Collection => $data->sortBy(
                                 $sortColumn,
