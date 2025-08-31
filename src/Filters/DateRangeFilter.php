@@ -15,14 +15,21 @@ final class DateRangeFilter
     /** @throws Exception */
     public static function make(string $name = 'date_range'): Filter
     {
+        if ($name == 'test_date') $label = 'Date Range';
+        else $label = __('filament-log-viewer::log.table.filters.' . $name . '.label');
+
         return Filter::make($name)
             ->label('Date Range')
-            ->indicator('Date Range')
+            ->indicator(__('filament-log-viewer::log.table.filters.' . $name . '.indicator'))
             ->schema([
                 DatePicker::make('from')
-                    ->label('From'),
+                    ->label(
+                        $name == 'test_date' ? 'From' : __('filament-log-viewer::log.table.filters.' . $name . '.from')
+                    ),
                 DatePicker::make('until')
-                    ->label('Until'),
+                    ->label(
+                        $name == 'test_date' ? 'Until' : __('filament-log-viewer::log.table.filters.' . $name . '.until')
+                    ),
             ])
             ->columns()
             ->indicateUsing(
@@ -35,15 +42,14 @@ final class DateRangeFilter
         $indicators = [];
 
         if (! empty($data['from']) && ! empty($data['until'])) {
-            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['from'])->toFormattedDateString().' to '.Carbon::parse($data['until'])->toFormattedDateString())
+            $indicators[] = Indicator::make(__('filament-log-viewer::log.table.filters.indicators.logs_from_to', ['from' => Carbon::parse($data['from'])->toFormattedDateString(), 'until' => Carbon::parse($data['until'])->toFormattedDateString()]))
                 ->removeField('from')
                 ->removeField('until');
         } elseif (! empty($data['from'])) {
-            $indicators[] = Indicator::make('Logs from '.Carbon::parse($data['from'])->toFormattedDateString())
+            $indicators[] = Indicator::make(__('filament-log-viewer::log.table.filters.indicators.logs_from', ['from' => Carbon::parse($data['from'])->toFormattedDateString()]))
                 ->removeField('from');
         } elseif (! empty($data['until'])) {
-            $indicators[] = Indicator::make('Logs until '.Carbon::parse($data['until'])->toFormattedDateString())
-                ->removeField('until');
+            $indicators[] = Indicator::make(__('filament-log-viewer::log.table.filters.indicators.logs_until', ['until' => Carbon::parse($data['until'])->toFormattedDateString()]))->removeField('until');
         }
 
         return $indicators;

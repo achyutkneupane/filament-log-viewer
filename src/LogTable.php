@@ -4,29 +4,30 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
-use AchyutN\FilamentLogViewer\Enums\LogLevel;
-use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
-use AchyutN\FilamentLogViewer\Filters\FileFilter;
+use Exception;
+use Filament\Panel;
+use Filament\Pages\Page;
+use Filament\Tables\Table;
+use Filament\Actions\Action;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
+use Filament\Support\Colors\Color;
+use Illuminate\Support\Collection;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Contracts\HasTable;
 use AchyutN\FilamentLogViewer\Model\Log;
+use Filament\Notifications\Notification;
+use Filament\Tables\Enums\FiltersLayout;
+use Illuminate\Contracts\Support\Htmlable;
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Filament\Tables\Concerns\InteractsWithTable;
+use AchyutN\FilamentLogViewer\Filters\FileFilter;
+use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
-use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
+use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
-use Exception;
-use Filament\Actions\Action;
-use Filament\Notifications\Notification;
-use Filament\Pages\Page;
-use Filament\Panel;
-use Filament\Schemas\Schema;
-use Filament\Support\Colors\Color;
-use Filament\Support\Enums\Width;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Enums\FiltersLayout;
-use Filament\Tables\Table;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 final class LogTable extends Page implements HasTable
 {
@@ -34,6 +35,21 @@ final class LogTable extends Page implements HasTable
     use LogLevelTabFilter;
 
     protected string $view = 'filament-log-viewer::log-table';
+
+    public function getHeading(): string | Htmlable
+    {
+        return __('filament-log-viewer::log.navigation.heading');
+    }
+
+    public function getSubheading(): string | Htmlable | null
+    {
+        return __('filament-log-viewer::log.navigation.subheading');
+    }
+
+    public function getTitle(): string | Htmlable
+    {
+        return __('filament-log-viewer::log.navigation.title');
+    }
 
     /** @throws Exception */
     public static function getNavigationLabel(): string
@@ -150,24 +166,26 @@ final class LogTable extends Page implements HasTable
             ->columns(LogTableSchema::columns())
             ->recordActions([
                 Action::make('view')
+                    ->label(__('filament-log-viewer::log.table.actions.view.label'))
                     ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading('Stack Trace')
+                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
                     ->modalDescription(fn (array $record): string => $record['message'])
                     ->slideOver(),
                 Action::make('read')
+                    ->label(__('filament-log-viewer::log.table.actions.read.label'))
                     ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
                     ->icon(Heroicon::Envelope)
                     ->color(Color::hex('#9C27B0'))
                     ->schema(fn (Schema $schema): Schema => MailLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(fn (array $record): string => $record['mail']['subject'] ? 'Subject: '.$record['mail']['subject'] : 'Mail Log')
-                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? 'Sent on: '.$record['mail']['sent_date'] : null)
+                    ->modalHeading(fn (array $record): string => $record['mail']['subject'] ? __('filament-log-viewer::log.table.actions.read.subject').': '.$record['mail']['subject'] : __('filament-log-viewer::log.table.actions.read.mail_log'))
+                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? __('filament-log-viewer::log.table.actions.read.sent_date').': '.$record['mail']['sent_date'] : null)
                     ->slideOver(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
@@ -190,21 +208,21 @@ final class LogTable extends Page implements HasTable
     {
         return [
             Action::make('refresh')
-                ->label('Refresh')
+                ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
                 ->icon(Heroicon::ArrowPath)
                 ->outlined()
                 ->action(function (): void {
                     $this->refresh();
                 }),
             Action::make('clear')
-                ->label('Clear Logs')
+                ->label(__('filament-log-viewer::log.table.actions.clear.label'))
                 ->icon(Heroicon::Trash)
                 ->color(Color::Red)
                 ->requiresConfirmation()
                 ->action(function (): void {
                     Log::destroyAllLogs();
                     Notification::make()
-                        ->title('Logs Cleared')
+                        ->title(__('filament-log-viewer::log.table.actions.clear.success'))
                         ->success()
                         ->send();
                 }),

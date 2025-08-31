@@ -32,22 +32,22 @@ trait PluginVariables
 
     public function getNavigationGroup(): string
     {
-        return $this->evaluate($this->navigationGroup);
+        return $this->evaluate(__('filament-log-viewer::log.navigation.group'));
     }
 
     public function getNavigationIcon(): string
     {
-        return $this->evaluate($this->navigationIcon);
+        return $this->evaluate(__('filament-log-viewer::log.navigation.icon'));
     }
 
     public function getNavigationLabel(): string
     {
-        return $this->evaluate($this->navigationLabel);
+        return $this->evaluate(__('filament-log-viewer::log.navigation.label'));
     }
 
     public function getNavigationSort(): int
     {
-        return $this->evaluate($this->navigationSort);
+        return $this->evaluate((int) __('filament-log-viewer::log.navigation.sort'));
     }
 
     public function getNavigationUrl(): string

@@ -33,7 +33,7 @@ trait LogLevelTabFilter
     public function getTabs(): array
     {
         $all_logs = [
-            $this->unscopedLogLevel => Tab::make('All Logs')
+            $this->unscopedLogLevel => Tab::make(__('filament-log-viewer::log.levels.all'))
                 ->id($this->unscopedLogLevel)
                 ->badge(fn (): ?int => Log::getLogCount() ?: null),
         ];
@@ -52,6 +52,7 @@ trait LogLevelTabFilter
 
         if (Log::getLogCount('mail') > 0) {
             $tabs['mail'] = Tab::make('Mail')
+                ->label(__('filament-log-viewer::log.levels.mail'))
                 ->id('mail')
                 ->badge(fn (): ?int => Log::getLogCount('mail') ?: null)
                 ->badgeColor(LogLevel::MAIL->getColor());

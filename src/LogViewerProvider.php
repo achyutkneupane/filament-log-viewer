@@ -17,5 +17,10 @@ final class LogViewerProvider extends BaseServiceProvider
             dirname(__DIR__).'/src/resources/views',
             'filament-log-viewer'
         );
+
+        $this->loadTranslationsFrom(
+            dirname(__DIR__).'/src/resources/lang',
+            'filament-log-viewer'
+        );
     }
 }
