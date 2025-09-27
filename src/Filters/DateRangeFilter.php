@@ -15,20 +15,19 @@ final class DateRangeFilter
     /** @throws Exception */
     public static function make(string $name = 'date_range'): Filter
     {
-        if ($name == 'test_date') $label = 'Date Range';
-        else $label = __('filament-log-viewer::log.table.filters.' . $name . '.label');
+        $label = $name === 'test_date' ? 'Date Range' : __('filament-log-viewer::log.table.filters.'.$name.'.label');
 
         return Filter::make($name)
             ->label($label)
-            ->indicator(__('filament-log-viewer::log.table.filters.' . $name . '.indicator'))
+            ->indicator(__('filament-log-viewer::log.table.filters.'.$name.'.indicator'))
             ->schema([
                 DatePicker::make('from')
                     ->label(
-                        $name == 'test_date' ? 'From' : __('filament-log-viewer::log.table.filters.' . $name . '.from')
+                        $name === 'test_date' ? 'From' : __('filament-log-viewer::log.table.filters.'.$name.'.from')
                     ),
                 DatePicker::make('until')
                     ->label(
-                        $name == 'test_date' ? 'Until' : __('filament-log-viewer::log.table.filters.' . $name . '.until')
+                        $name === 'test_date' ? 'Until' : __('filament-log-viewer::log.table.filters.'.$name.'.until')
                     ),
             ])
             ->columns()

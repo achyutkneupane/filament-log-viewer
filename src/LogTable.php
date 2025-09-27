@@ -4,30 +4,30 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
-use Exception;
-use Filament\Panel;
-use Filament\Pages\Page;
-use Filament\Tables\Table;
-use Filament\Actions\Action;
-use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
-use Filament\Support\Colors\Color;
-use Illuminate\Support\Collection;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Contracts\HasTable;
-use AchyutN\FilamentLogViewer\Model\Log;
-use Filament\Notifications\Notification;
-use Filament\Tables\Enums\FiltersLayout;
-use Illuminate\Contracts\Support\Htmlable;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Filament\Tables\Concerns\InteractsWithTable;
+use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Filters\FileFilter;
-use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
+use AchyutN\FilamentLogViewer\Model\Log;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
-use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
+use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Panel;
+use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 final class LogTable extends Page implements HasTable
 {
@@ -35,21 +35,6 @@ final class LogTable extends Page implements HasTable
     use LogLevelTabFilter;
 
     protected string $view = 'filament-log-viewer::log-table';
-
-    public function getHeading(): string | Htmlable
-    {
-        return __('filament-log-viewer::log.navigation.heading');
-    }
-
-    public function getSubheading(): string | Htmlable | null
-    {
-        return __('filament-log-viewer::log.navigation.subheading');
-    }
-
-    public function getTitle(): string | Htmlable
-    {
-        return __('filament-log-viewer::log.navigation.title');
-    }
 
     /** @throws Exception */
     public static function getNavigationLabel(): string
@@ -85,6 +70,21 @@ final class LogTable extends Page implements HasTable
     public static function canAccess(): bool
     {
         return self::getPlugin()->isAuthorized();
+    }
+
+    public function getHeading(): string|Htmlable
+    {
+        return __('filament-log-viewer::log.navigation.heading');
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return __('filament-log-viewer::log.navigation.subheading');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('filament-log-viewer::log.navigation.title');
     }
 
     /**

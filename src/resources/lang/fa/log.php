@@ -5,9 +5,9 @@ declare(strict_types=1);
 return [
     'placeholder' => '-',
     'navigation' => [
-		'title' => 'نمایشگر لاگ',
-		'heading' => 'نمایشگر لاگ',
-		'subheading' => '',
+        'title' => 'نمایشگر لاگ',
+        'heading' => 'نمایشگر لاگ',
+        'subheading' => '',
         'group' => 'سیستم',
         'label' => 'نمایشگر لاگ',
     ],
@@ -40,7 +40,7 @@ return [
                 'logs_from_to' => 'لاگ‌ها از :start تا :until',
                 'logs_from' => 'لاگ‌ها از :start',
                 'logs_until' => 'لاگ‌ها تا :until',
-            ]
+            ],
         ],
         'actions' => [
             'view' => [

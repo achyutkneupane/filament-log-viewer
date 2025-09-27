@@ -14,7 +14,7 @@ final class FileFilter
     public static function make(string $name = 'file'): SelectFilter
     {
         return SelectFilter::make($name)
-            ->label($name == 'test_file' ? 'File' : __('filament-log-viewer::log.table.filters.' . $name . '.label'))
+            ->label($name === 'test_file' ? 'File' : __('filament-log-viewer::log.table.filters.'.$name.'.label'))
             ->options(Log::getFilesForFilter())
             ->indicator('File');
     }

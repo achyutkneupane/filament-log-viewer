@@ -40,7 +40,7 @@ return [
                 'logs_from_to' => 'Journaux du :start au :until',
                 'logs_from' => 'Journaux à partir du :start',
                 'logs_until' => 'Journaux jusqu\'au :until',
-            ]
+            ],
         ],
         'actions' => [
             'view' => [

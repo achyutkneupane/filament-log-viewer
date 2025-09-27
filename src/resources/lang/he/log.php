@@ -40,7 +40,7 @@ return [
                 'logs_from_to' => 'לוגים מ־:start עד :until',
                 'logs_from' => 'לוגים מ־:start',
                 'logs_until' => 'לוגים עד :until',
-            ]
+            ],
         ],
         'actions' => [
             'view' => [

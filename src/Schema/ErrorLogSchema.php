@@ -26,7 +26,7 @@ final class ErrorLogSchema
                             ->hiddenLabel()
                             ->columnSpanFull(),
                     ])
-                    ->label(__('filament-log-viewer::log.schema.error-log.stack'))
+                    ->label(__('filament-log-viewer::log.schema.error-log.stack')),
             ]);
     }
 }
