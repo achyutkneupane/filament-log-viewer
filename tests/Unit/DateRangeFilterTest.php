@@ -5,10 +5,10 @@ declare(strict_types=1);
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 
 it('renders DateRangeFilter', function () {
-    $filters = DateRangeFilter::make('test_filter');
+    $filters = DateRangeFilter::make();
 
     expect($filters)->toBeInstanceOf(Filament\Tables\Filters\Filter::class);
-    expect($filters->getName())->toBe('test_filter');
+    expect($filters->getName())->toBe('date_range');
     expect($filters->getLabel())->toBe('Date Range');
     expect($filters->getColumns())->toBe(2);
     expect($filters->getSchemaComponents())->toHaveCount(2);

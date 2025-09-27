@@ -38,11 +38,11 @@ it('only gives access to authorized users', function () {
 });
 
 it('allows customization of navigation group', function () {
-    $this->plugin->navigationGroup('Custom Group');
+    $this->plugin->navigationGroup('System');
 
     $this->get($this->plugin->getNavigationUrl())
         ->assertSuccessful()
-        ->assertSee('Custom Group');
+        ->assertSee('System');
 });
 
 describe('tabs', function () {
