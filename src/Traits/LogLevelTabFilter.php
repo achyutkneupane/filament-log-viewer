@@ -35,7 +35,7 @@ trait LogLevelTabFilter
         $all_logs = [
             $this->unscopedLogLevel => Tab::make(__('filament-log-viewer::log.levels.all'))
                 ->id($this->unscopedLogLevel)
-                ->badge(fn (): ?int => Log::getLogCount() ?: null),
+                ->badge(fn (): int => Log::getLogCount()),
         ];
 
         $exceptMail = array_filter(LogLevel::cases(), fn (LogLevel $level): bool => $level !== LogLevel::MAIL);
