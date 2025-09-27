@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4.1 - 2025-09-27
+
+- no changes
+
 ## v1.4 - 2025-09-27
 
 - no changes
