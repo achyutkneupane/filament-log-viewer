@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.4 - 2025-09-27
+
+- no changes
+
 ## v1.3.1 - 2025-08-19
 
 ### 🎉 New Features
