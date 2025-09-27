@@ -27,6 +27,8 @@ return [
             'file' => [
                 'label' => 'Archivo',
                 'indicator' => 'Filtrado por archivo',
+                'from' => 'Desde',
+                'until' => 'Hasta',
             ],
             'date' => [
                 'label' => 'Fecha',
@@ -37,8 +39,8 @@ return [
                 'indicator' => 'Filtrado por rango de fechas',
             ],
             'indicators' => [
-                'logs_from_to' => 'Logs desde :start hasta :until',
-                'logs_from' => 'Logs desde :start',
+                'logs_from_to' => 'Logs desde :from hasta :until',
+                'logs_from' => 'Logs desde :from',
                 'logs_until' => 'Logs hasta :until',
             ],
         ],

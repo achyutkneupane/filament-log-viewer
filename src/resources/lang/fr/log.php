@@ -27,6 +27,8 @@ return [
             'file' => [
                 'label' => 'Fichier',
                 'indicator' => 'Filtré par fichier',
+                'from' => 'De',
+                'until' => 'Jusqu\'à',
             ],
             'date' => [
                 'label' => 'Date',
@@ -37,8 +39,8 @@ return [
                 'indicator' => 'Filtré par plage de dates',
             ],
             'indicators' => [
-                'logs_from_to' => 'Journaux du :start au :until',
-                'logs_from' => 'Journaux à partir du :start',
+                'logs_from_to' => 'Journaux du :from au :until',
+                'logs_from' => 'Journaux à partir du :from',
                 'logs_until' => 'Journaux jusqu\'au :until',
             ],
         ],

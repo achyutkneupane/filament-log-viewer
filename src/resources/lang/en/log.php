@@ -31,14 +31,16 @@ return [
             'date' => [
                 'label' => 'Date',
                 'indicator' => 'Filtered by date',
+                'from' => 'From',
+                'until' => 'Until',
             ],
             'date_range' => [
                 'label' => 'Date Range',
                 'indicator' => 'Filtered by date range',
             ],
             'indicators' => [
-                'logs_from_to' => 'Logs from :start to :until',
-                'logs_from' => 'Logs from :start',
+                'logs_from_to' => 'Logs from :from to :until',
+                'logs_from' => 'Logs from :from',
                 'logs_until' => 'Logs until :until',
             ],
         ],

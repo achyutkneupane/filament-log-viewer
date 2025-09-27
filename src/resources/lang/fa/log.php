@@ -27,6 +27,8 @@ return [
             'file' => [
                 'label' => 'فایل',
                 'indicator' => 'فیلتر بر اساس فایل',
+                'from' => 'از',
+                'until' => 'تا',
             ],
             'date' => [
                 'label' => 'تاریخ',
@@ -37,8 +39,8 @@ return [
                 'indicator' => 'فیلتر بر اساس بازه زمانی',
             ],
             'indicators' => [
-                'logs_from_to' => 'لاگ‌ها از :start تا :until',
-                'logs_from' => 'لاگ‌ها از :start',
+                'logs_from_to' => 'لاگ‌ها از :from تا :until',
+                'logs_from' => 'لاگ‌ها از :from',
                 'logs_until' => 'لاگ‌ها تا :until',
             ],
         ],

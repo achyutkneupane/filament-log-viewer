@@ -31,14 +31,16 @@ return [
             'date' => [
                 'label' => 'التاريخ',
                 'indicator' => 'مفلتر حسب التاريخ',
+                'from' => 'من',
+                'until' => 'حتى',
             ],
             'date_range' => [
                 'label' => 'النطاق الزمني',
                 'indicator' => 'مفلتر حسب النطاق الزمني',
             ],
             'indicators' => [
-                'logs_from_to' => 'السجلات من :start إلى :until',
-                'logs_from' => 'السجلات من :start',
+                'logs_from_to' => 'السجلات من :from إلى :until',
+                'logs_from' => 'السجلات من :from',
                 'logs_until' => 'السجلات حتى :until',
             ],
         ],

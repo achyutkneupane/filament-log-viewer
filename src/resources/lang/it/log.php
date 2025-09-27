@@ -28,6 +28,8 @@ return [
             'file' => [
                 'label' => 'File',
                 'indicator' => 'Filtrato per file',
+                'from' => 'Da',
+                'until' => 'A',
             ],
             'date' => [
                 'label' => 'Data',
@@ -38,8 +40,8 @@ return [
                 'indicator' => 'Filtrato per intervallo di date',
             ],
             'indicators' => [
-                'logs_from_to' => 'Log da :start a :until',
-                'logs_from' => 'Log da :start',
+                'logs_from_to' => 'Log da :from a :until',
+                'logs_from' => 'Log da :from',
                 'logs_until' => 'Log fino a :until',
             ],
         ],

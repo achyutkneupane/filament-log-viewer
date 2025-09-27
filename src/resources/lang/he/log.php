@@ -27,6 +27,8 @@ return [
             'file' => [
                 'label' => 'קובץ',
                 'indicator' => 'מסונן לפי קובץ',
+                'from' => 'מ־',
+                'until' => 'עד',
             ],
             'date' => [
                 'label' => 'תאריך',
@@ -37,8 +39,8 @@ return [
                 'indicator' => 'מסונן לפי טווח תאריכים',
             ],
             'indicators' => [
-                'logs_from_to' => 'לוגים מ־:start עד :until',
-                'logs_from' => 'לוגים מ־:start',
+                'logs_from_to' => 'לוגים מ־:from עד :until',
+                'logs_from' => 'לוגים מ־:from',
                 'logs_until' => 'לוגים עד :until',
             ],
         ],
