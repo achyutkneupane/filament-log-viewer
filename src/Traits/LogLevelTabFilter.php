@@ -41,7 +41,7 @@ trait LogLevelTabFilter
         $exceptMail = array_filter(LogLevel::cases(), fn (LogLevel $level): bool => $level !== LogLevel::MAIL);
 
         $tabs = collect($exceptMail)
-            ->mapWithKeys(fn (LogLevel $level) => [
+            ->mapWithKeys(fn (LogLevel $level): array => [
                 $level->value => Tab::make($level->getLabel())
                     ->id($level->value)
                     ->badge(
