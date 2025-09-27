@@ -23,7 +23,6 @@ use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -198,7 +197,6 @@ final class LogTable extends Page implements HasTable
                 ]
             )
             ->filtersFormWidth(Width::Large)
-            ->filtersLayout(FiltersLayout::AboveContentCollapsible)
             ->filtersFormColumns(3)
             ->deferFilters(false)
             ->deferColumnManager(false);
