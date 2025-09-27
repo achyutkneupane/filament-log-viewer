@@ -10,8 +10,6 @@ return [
         'subheading' => '',
         'group' => 'النظام',
         'label' => 'عارض السجلات',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
     'table' => [
         'columns' => [
@@ -20,6 +18,29 @@ return [
             'file' => 'اسم الملف',
             'message' => 'ملخص',
             'date' => 'وقت الحدوث',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'البيئة',
+                'indicator' => 'مفلتر حسب البيئة',
+            ],
+            'file' => [
+                'label' => 'الملف',
+                'indicator' => 'مفلتر حسب الملف',
+            ],
+            'date' => [
+                'label' => 'التاريخ',
+                'indicator' => 'مفلتر حسب التاريخ',
+            ],
+            'date_range' => [
+                'label' => 'النطاق الزمني',
+                'indicator' => 'مفلتر حسب النطاق الزمني',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'السجلات من :start إلى :until',
+                'logs_from' => 'السجلات من :start',
+                'logs_until' => 'السجلات حتى :until',
+            ]
         ],
         'actions' => [
             'view' => [

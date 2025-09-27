@@ -10,8 +10,6 @@ return [
 		'subheading' => '',
         'group' => 'سیستم',
         'label' => 'نمایشگر لاگ',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
     'table' => [
         'columns' => [
@@ -20,6 +18,29 @@ return [
             'file' => 'نام فایل',
             'message' => 'خلاصه',
             'date' => 'زمان وقوع',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'محیط',
+                'indicator' => 'فیلتر بر اساس محیط',
+            ],
+            'file' => [
+                'label' => 'فایل',
+                'indicator' => 'فیلتر بر اساس فایل',
+            ],
+            'date' => [
+                'label' => 'تاریخ',
+                'indicator' => 'فیلتر بر اساس تاریخ',
+            ],
+            'date_range' => [
+                'label' => 'بازه زمانی',
+                'indicator' => 'فیلتر بر اساس بازه زمانی',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'لاگ‌ها از :start تا :until',
+                'logs_from' => 'لاگ‌ها از :start',
+                'logs_until' => 'لاگ‌ها تا :until',
+            ]
         ],
         'actions' => [
             'view' => [

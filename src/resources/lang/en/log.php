@@ -10,8 +10,6 @@ return [
 		'subheading' => '',
 		'group' => 'System',
 		'label' => 'Log Viewer',
-		'icon' => 'heroicon-o-document-text',
-		'sort' => 100,
 	],
 	'table' => [
 		'columns' => [
@@ -21,6 +19,29 @@ return [
 			'message' => 'Summary',
 			'date' => 'Occurred',
 		],
+		'filters' => [
+            'env' => [
+				'label' => 'Environment',
+				'indicator' => 'Filtered by environment',
+			],
+            'file' => [
+				'label' => 'File',
+				'indicator' => 'Filtered by file',
+			],
+            'date' => [
+				'label' => 'Date',
+				'indicator' => 'Filtered by date',
+			],
+            'date_range' => [
+				'label' => 'Date Range',
+				'indicator' => 'Filtered by date range',
+			],
+			'indicators' => [
+				'logs_from_to' => 'Logs from :start to :until',
+				'logs_from' => 'Logs from :start',
+				'logs_until' => 'Logs until :until',
+			]
+        ],
 		'actions' => [
 			'view' => [
 				'label' => 'View',

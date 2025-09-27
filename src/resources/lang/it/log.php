@@ -10,9 +10,8 @@ return [
         'subheading' => '',
         'group' => 'Sistema',
         'label' => 'Visualizzatore Log',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
+
     'table' => [
         'columns' => [
             'log_level' => 'Livello Log',
@@ -20,6 +19,29 @@ return [
             'file' => 'Nome File',
             'message' => 'Riepilogo',
             'date' => 'Data',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'Ambiente',
+                'indicator' => 'Filtrato per ambiente',
+            ],
+            'file' => [
+                'label' => 'File',
+                'indicator' => 'Filtrato per file',
+            ],
+            'date' => [
+                'label' => 'Data',
+                'indicator' => 'Filtrato per data',
+            ],
+            'date_range' => [
+                'label' => 'Intervallo di date',
+                'indicator' => 'Filtrato per intervallo di date',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'Log da :start a :until',
+                'logs_from' => 'Log da :start',
+                'logs_until' => 'Log fino a :until',
+            ]
         ],
         'actions' => [
             'view' => [

@@ -19,7 +19,7 @@ final class DateRangeFilter
         else $label = __('filament-log-viewer::log.table.filters.' . $name . '.label');
 
         return Filter::make($name)
-            ->label('Date Range')
+            ->label($label)
             ->indicator(__('filament-log-viewer::log.table.filters.' . $name . '.indicator'))
             ->schema([
                 DatePicker::make('from')

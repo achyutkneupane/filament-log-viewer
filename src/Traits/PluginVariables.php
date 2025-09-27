@@ -42,12 +42,12 @@ trait PluginVariables
 
     public function getNavigationLabel(): string
     {
-        return $this->evaluate(__('filament-log-viewer::log.navigation.label'));
+        return $this->evaluate(self::$navigationIcon);
     }
 
     public function getNavigationSort(): int
     {
-        return $this->evaluate((int) __('filament-log-viewer::log.navigation.sort'));
+        return $this->evaluate(self::$navigationSort);
     }
 
     public function getNavigationUrl(): string

@@ -10,8 +10,6 @@ return [
         'subheading' => '',
         'group' => 'מערכת',
         'label' => 'מציג לוגים',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
     'table' => [
         'columns' => [
@@ -20,6 +18,29 @@ return [
             'file' => 'שם הקובץ',
             'message' => 'סיכום',
             'date' => 'זמן התרחשות',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'סביבה',
+                'indicator' => 'מסונן לפי סביבה',
+            ],
+            'file' => [
+                'label' => 'קובץ',
+                'indicator' => 'מסונן לפי קובץ',
+            ],
+            'date' => [
+                'label' => 'תאריך',
+                'indicator' => 'מסונן לפי תאריך',
+            ],
+            'date_range' => [
+                'label' => 'טווח תאריכים',
+                'indicator' => 'מסונן לפי טווח תאריכים',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'לוגים מ־:start עד :until',
+                'logs_from' => 'לוגים מ־:start',
+                'logs_until' => 'לוגים עד :until',
+            ]
         ],
         'actions' => [
             'view' => [

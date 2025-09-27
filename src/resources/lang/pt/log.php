@@ -10,8 +10,6 @@ return [
         'subheading' => '',
         'group' => 'Sistema',
         'label' => 'Visualizador de Logs',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
     'table' => [
         'columns' => [
@@ -20,6 +18,29 @@ return [
             'file' => 'Nome do Arquivo',
             'message' => 'Resumo',
             'date' => 'Ocorrência',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'Ambiente',
+                'indicator' => 'Filtrado por ambiente',
+            ],
+            'file' => [
+                'label' => 'Arquivo',
+                'indicator' => 'Filtrado por arquivo',
+            ],
+            'date' => [
+                'label' => 'Data',
+                'indicator' => 'Filtrado por data',
+            ],
+            'date_range' => [
+                'label' => 'Intervalo de Datas',
+                'indicator' => 'Filtrado por intervalo de datas',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'Logs de :start até :until',
+                'logs_from' => 'Logs a partir de :start',
+                'logs_until' => 'Logs até :until',
+            ],
         ],
         'actions' => [
             'view' => [

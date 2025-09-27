@@ -10,8 +10,6 @@ return [
         'subheading' => '',
         'group' => 'System',
         'label' => 'Log-Anzeige',
-        'icon' => 'heroicon-o-document-text',
-        'sort' => 100,
     ],
     'table' => [
         'columns' => [
@@ -20,6 +18,29 @@ return [
             'file' => 'Dateiname',
             'message' => 'Zusammenfassung',
             'date' => 'Aufgetreten',
+        ],
+        'filters' => [
+            'env' => [
+                'label' => 'Umgebung',
+                'indicator' => 'Gefiltert nach Umgebung',
+            ],
+            'file' => [
+                'label' => 'Datei',
+                'indicator' => 'Gefiltert nach Datei',
+            ],
+            'date' => [
+                'label' => 'Datum',
+                'indicator' => 'Gefiltert nach Datum',
+            ],
+            'date_range' => [
+                'label' => 'Zeitraum',
+                'indicator' => 'Gefiltert nach Zeitraum',
+            ],
+            'indicators' => [
+                'logs_from_to' => 'Logs von :start bis :until',
+                'logs_from' => 'Logs ab :start',
+                'logs_until' => 'Logs bis :until',
+            ]
         ],
         'actions' => [
             'view' => [
