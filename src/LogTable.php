@@ -24,7 +24,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -71,17 +70,17 @@ final class LogTable extends Page implements HasTable
         return self::getPlugin()->isAuthorized();
     }
 
-    public function getHeading(): string|Htmlable
+    public function getHeading(): string
     {
         return __('filament-log-viewer::log.navigation.heading');
     }
 
-    public function getSubheading(): string|Htmlable|null
+    public function getSubheading(): string
     {
         return __('filament-log-viewer::log.navigation.subheading');
     }
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string
     {
         return __('filament-log-viewer::log.navigation.title');
     }
