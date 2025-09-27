@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.4.2 - 2025-09-27
+
+### 🎉 New Features
+
+- feat: Add new language translations (#51) by @amidesfahani
+  This pull request introduces translation files for several new languages to improve localization. 🌍
+
+Added support for:
+
+- Arabic (ar)
+- Spanish (es)
+- German (de)
+- Farsi (fa)
+- Hebrew (he)
+- French (fr)
+- Italian (it)
+- Portuguese (pt)
+
+### 🏗️ Build System
+
+- ci: updates GitHub Actions workflow to use `pull_request` event (#54) by @achyutkneupane
+  Changes the trigger event for the PR linting workflow and updates the checkout action version.
+- ci: updates SonarQube scan action to version 6 (#55) by @achyutkneupane
+
+### 🪚 Refactors
+
+- refactor: updates coverage exclusions in `sonar-project.properties` (#56) by @achyutkneupane
+  
+- refactor: excludes language files from PHPUnit tests (#57) by @achyutkneupane
+  
+
 ## v1.4.1 - 2025-09-27
 
 - no changes
