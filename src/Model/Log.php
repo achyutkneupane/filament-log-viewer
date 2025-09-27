@@ -93,7 +93,7 @@ final class Log
 
         $files = self::getNestedFiles($logFilePath);
 
-        return array_map(fn ($file) => str_replace(storage_path(), '', $file), $files);
+        return array_map(fn ($file): string|array => str_replace(storage_path(), '', $file), $files);
     }
 
     public static function getFilesForFilter(): array
