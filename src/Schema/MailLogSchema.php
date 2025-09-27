@@ -18,37 +18,37 @@ final class MailLogSchema
      */
     public static function configure(Schema $schema): Schema
     {
-        $placeholder = 'N/A';
+        $placeholder = __('filament-log-viewer::log.placeholder');
 
         return $schema
             ->columns()
             ->components([
-                Fieldset::make('Sender')
+                Fieldset::make(__('filament-log-viewer::log.mail.sender.label'))
                     ->schema([
                         TextEntry::make('mail.sender.name')
-                            ->label('Name')
+                            ->label(__('filament-log-viewer::log.mail.sender.name'))
                             ->badge()
                             ->placeholder($placeholder),
                         TextEntry::make('mail.sender.email')
-                            ->label('Email')
+                            ->label(__('filament-log-viewer::log.mail.sender.email'))
                             ->badge()
                             ->placeholder($placeholder),
                     ]),
-                Fieldset::make('Receiver')
+                Fieldset::make(__('filament-log-viewer::log.mail.receiver.label'))
                     ->schema([
                         TextEntry::make('mail.receiver.name')
-                            ->label('Name')
+                            ->label(__('filament-log-viewer::log.mail.receiver.name'))
                             ->badge()
                             ->placeholder($placeholder),
                         TextEntry::make('mail.receiver.email')
-                            ->label('Email')
+                            ->label(__('filament-log-viewer::log.mail.receiver.email'))
                             ->badge()
                             ->placeholder($placeholder),
                     ]),
-                Tabs::make('Content')
+                Tabs::make(__('filament-log-viewer::log.mail.content'))
                     ->columnSpanFull()
                     ->tabs([
-                        Tab::make('Plain Text')
+                        Tab::make(__('filament-log-viewer::log.mail.plain'))
                             ->schema([
                                 TextEntry::make('mail.plain')
                                     ->label('')
@@ -56,7 +56,7 @@ final class MailLogSchema
                                     ->markdown()
                                     ->placeholder($placeholder),
                             ]),
-                        Tab::make('HTML')
+                        Tab::make(__('filament-log-viewer::log.mail.html'))
                             ->schema([
                                 TextEntry::make('mail.html')
                                     ->label('')

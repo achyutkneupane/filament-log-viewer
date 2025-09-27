@@ -23,15 +23,15 @@ enum LogLevel: string implements HasColor, HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::ALERT => 'Alert',
-            self::CRITICAL => 'Critical',
-            self::DEBUG => 'Debug',
-            self::EMERGENCY => 'Emergency',
-            self::ERROR => 'Error',
-            self::INFO => 'Info',
-            self::NOTICE => 'Notice',
-            self::WARNING => 'Warning',
-            self::MAIL => 'Mail',
+            self::ALERT => __('filament-log-viewer::log.levels.alert'),
+            self::CRITICAL => __('filament-log-viewer::log.levels.critical'),
+            self::DEBUG => __('filament-log-viewer::log.levels.debug'),
+            self::EMERGENCY => __('filament-log-viewer::log.levels.emergency'),
+            self::ERROR => __('filament-log-viewer::log.levels.error'),
+            self::INFO => __('filament-log-viewer::log.levels.info'),
+            self::NOTICE => __('filament-log-viewer::log.levels.notice'),
+            self::WARNING => __('filament-log-viewer::log.levels.warning'),
+            self::MAIL => __('filament-log-viewer::log.levels.mail'),
         };
     }
 

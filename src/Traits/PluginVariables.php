@@ -32,7 +32,7 @@ trait PluginVariables
 
     public function getNavigationGroup(): string
     {
-        return $this->evaluate($this->navigationGroup);
+        return $this->evaluate(__('filament-log-viewer::log.navigation.group'));
     }
 
     public function getNavigationIcon(): string

@@ -61,7 +61,7 @@ describe('actions', function () {
             ->callAction('clear')
             ->assertSuccessful()
             ->mountAction('submit')
-            ->assertNotified('Logs Cleared');
+            ->assertNotified('All logs have been cleared!');
     });
 });
 
@@ -127,7 +127,7 @@ describe('filters', function () {
         livewire(LogTable::class)
             ->assertTableFilterExists('date', function (Filter $filter) {
                 return $filter->getName() === 'date' &&
-                    $filter->getLabel() === 'Date Range';
+                    $filter->getLabel() === 'Date';
             });
     });
 

@@ -17,9 +17,10 @@ final class LogTableSchema
     {
         return [
             TextColumn::make('log_level')
+                ->label(__('filament-log-viewer::log.table.columns.log_level'))
                 ->badge(),
             TextColumn::make('env')
-                ->label('Environment')
+                ->label(__('filament-log-viewer::log.table.columns.env'))
                 ->color(fn (string $state): array => match ($state) {
                     'local' => Color::Blue,
                     'production' => Color::Red,
@@ -30,15 +31,15 @@ final class LogTableSchema
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->badge(),
             TextColumn::make('file')
-                ->label('File Name')
+                ->label(__('filament-log-viewer::log.table.columns.file'))
                 ->badge()
                 ->toggleable(isToggledHiddenByDefault: true),
             TextColumn::make('message')
-                ->label('Summary')
+                ->label(__('filament-log-viewer::log.table.columns.message'))
                 ->searchable()
                 ->wrap(),
             TextColumn::make('date')
-                ->label('Occurred')
+                ->label(__('filament-log-viewer::log.table.columns.date'))
                 ->since()
                 ->sortable()
                 ->dateTimeTooltip(),
