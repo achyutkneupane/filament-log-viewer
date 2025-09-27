@@ -16,6 +16,7 @@
         </include>
         <exclude>
             <directory suffix=".blade.php">./src</directory>
+            <directory>./src/resources/lang</directory>
         </exclude>
     </source>
     <php>
