@@ -37,17 +37,17 @@ trait PluginVariables
 
     public function getNavigationIcon(): string
     {
-        return $this->evaluate(__('filament-log-viewer::log.navigation.icon'));
+        return $this->evaluate($this->navigationIcon);
     }
 
     public function getNavigationLabel(): string
     {
-        return $this->evaluate(self::$navigationIcon);
+        return $this->evaluate($this->navigationLabel);
     }
 
     public function getNavigationSort(): int
     {
-        return $this->evaluate(self::$navigationSort);
+        return $this->evaluate($this->navigationSort);
     }
 
     public function getNavigationUrl(): string
