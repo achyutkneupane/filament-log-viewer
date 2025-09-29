@@ -1,21 +1,5 @@
 # Changelog
 
-## v0.6 - 2025-09-29
-
-### 🎉 New Features
-
-- feat: Add new language translations (#51) by @amidesfahani
-
-### 🏗️ Build System
-
-- ci: updates GitHub Actions workflow to use `pull_request` event (#54) by @achyutkneupane
-- ci: updates SonarQube scan action to version 6 (#55) by @achyutkneupane
-
-### 🪚 Refactors
-
-- refactor: updates coverage exclusions in `sonar-project.properties` (#56) by @achyutkneupane
-- refactor: excludes language files from PHPUnit tests (#57) by @achyutkneupane
-
 ## v1.4.2 - 2025-09-27
 
 ### 🎉 New Features
