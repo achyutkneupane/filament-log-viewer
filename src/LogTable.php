@@ -148,14 +148,14 @@ final class LogTable extends Page implements HasTable
     {
         $all_logs = [
             null => Tab::make('All Logs')
-                ->badge(fn () => Log::query()->count() ?: null),
+                ->badge(fn (): int => Log::query()->count()),
         ];
 
         $tabs = collect(LogLevel::cases())
-            ->mapWithKeys(fn (LogLevel $level) => [
+            ->mapWithKeys(fn (LogLevel $level): array => [
                 $level->value => Tab::make($level->getLabel())
                     ->badge(
-                        fn () => Log::query()->where('log_level', $level)->count() ?: null
+                        fn (): int => Log::query()->where('log_level', $level)->count()
                     )
                     ->badgeColor($level->getColor()),
             ])->toArray();
