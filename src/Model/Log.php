@@ -80,7 +80,7 @@ final class Log extends Model
             }
         }
 
-        return array_filter($logs);
+        return array_values(array_filter($logs));
     }
 
     protected function casts(): array
