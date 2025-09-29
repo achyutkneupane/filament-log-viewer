@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6 - 2025-09-29
+
+### What's Changed
+
+* ci: Changes to PR Lint Github Action file by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/59
+* fix: return array values from filtered logs by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/58
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v0.5.3...v0.6
+
 ## v1.4.2 - 2025-09-27
 
 ### 🎉 New Features
