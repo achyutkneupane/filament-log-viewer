@@ -139,7 +139,7 @@ final class FilamentLogViewer implements Plugin
         return $this->evaluate($this->navigationUrl);
     }
 
-    public function getPollingTime(): string|null
+    public function getPollingTime(): ?string
     {
         return $this->evaluate($this->pollingTime);
     }
