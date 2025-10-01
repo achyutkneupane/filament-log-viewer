@@ -149,7 +149,8 @@ final class Log
             $path = $directory.DIRECTORY_SEPARATOR.$item;
             $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
             $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
-            $pathWithoutLogsPrefix = str_replace('/logs/', '', $pathAfterRemovingFileName);
+            $normalized = str_replace('\\', '/', $pathAfterRemovingFileName);
+            $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
 
             if (is_dir($path)) {
                 $files = array_merge($files, self::getNestedFiles($path));
