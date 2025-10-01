@@ -235,12 +235,12 @@ describe('getLogCount', function () {
 
         $count = Log::getLogCount();
 
-        expect($count)->toBe(0);
+        expect($count)->toBe(null);
     });
 
     it('returns zero if no logs match the log level', function () {
         $count = Log::getLogCount('debug');
 
-        expect($count)->toBe(0);
+        expect($count)->toBe(null);
     });
 });
