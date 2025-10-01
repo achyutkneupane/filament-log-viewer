@@ -13,11 +13,11 @@ trait PluginVariables
 
     public bool|Closure $authorized = true;
 
-    public string|Closure $navigationGroup = 'System';
+    public string|Closure|null $navigationGroup = null;
 
     public string|Closure $navigationIcon = 'heroicon-o-document-text';
 
-    public string|Closure $navigationLabel = 'Log Viewer';
+    public string|Closure|null $navigationLabel = null;
 
     public int|Closure $navigationSort = 9999;
 
@@ -30,9 +30,9 @@ trait PluginVariables
         return $this->evaluate($this->authorized);
     }
 
-    public function getNavigationGroup(): string
+    public function getNavigationGroup(): ?string
     {
-        return $this->evaluate(__('filament-log-viewer::log.navigation.group'));
+        return $this->evaluate($this->navigationGroup);
     }
 
     public function getNavigationIcon(): string
@@ -40,7 +40,7 @@ trait PluginVariables
         return $this->evaluate($this->navigationIcon);
     }
 
-    public function getNavigationLabel(): string
+    public function getNavigationLabel(): ?string
     {
         return $this->evaluate($this->navigationLabel);
     }
