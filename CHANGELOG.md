@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.4.3 - 2025-10-01
+
+### What's Changed
+
+* Enhances navigation group and label handling by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/62
+* Updates log count method to return null for zero counts by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/63
+
 ## v0.6 - 2025-09-29
 
 ### What's Changed
