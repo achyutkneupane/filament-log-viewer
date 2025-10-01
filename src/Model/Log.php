@@ -75,13 +75,11 @@ final class Log
         return $logLevelWise;
     }
 
-    public static function getLogCount(string $logLevel = 'all-logs'): int
+    public static function getLogCount(string $logLevel = 'all-logs'): ?int
     {
-        if ($logLevel === 'all-logs') {
-            return count(self::getRows());
-        }
+        $count = $logLevel === 'all-logs' ? count(self::getRows()) : count(self::getLogsByLogLevel($logLevel));
 
-        return count(self::getLogsByLogLevel($logLevel));
+        return $count === 0 ? null : $count;
     }
 
     public static function getAllLogFiles(): array
