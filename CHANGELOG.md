@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.4.4 - 2025-10-01
+
+### What's Changed
+
+* Normalizes path separators before removing logs prefix by @inerba in https://github.com/achyutkneupane/filament-log-viewer/pull/64
+
+### New Contributors
+
+* @inerba made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/64
+
 ## v1.4.3 - 2025-10-01
 
 ### What's Changed
