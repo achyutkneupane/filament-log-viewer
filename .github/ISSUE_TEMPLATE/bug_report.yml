@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug or issue with filament-log-viewer
-title: "<title>"
+title: "[BUG] "
 assignees:
     - achyutkneupane
 body:
