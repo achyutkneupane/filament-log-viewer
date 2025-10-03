@@ -55,7 +55,6 @@ body:
               - **filament-log-viewer**:
               - **PHP**:
               - **Database**:
-              - **OS/Browser** (if applicable):
           render: markdown
       validations:
           required: true
