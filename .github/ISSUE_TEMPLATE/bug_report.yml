@@ -1,0 +1,73 @@
+name: Bug Report
+description: Report a bug or issue with filament-log-viewer
+title: "<title>"
+body:
+    - type: checkboxes
+      attributes:
+          label: Is there an existing issue for this?
+          description: Please search to see if an issue already exists for the bug you encountered.
+          options:
+              - label: I have searched the existing issues
+                required: true
+
+    - type: textarea
+      attributes:
+          label: Expected Behavior
+          description: What you expected to happen.
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: Actual Behavior
+          description: What is happening instead.
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: Steps to Reproduce
+          description: Steps to reproduce the problem.
+          placeholder: |
+              1. Go to ...
+              2. Click on ...
+              3. See error ...
+      validations:
+          required: false
+
+    - type: textarea
+      attributes:
+          label: Log/Stack Trace (if applicable)
+          description: Paste the relevant log entry or PHP stack trace here.
+      validations:
+          required: false
+
+    - type: textarea
+      attributes:
+          label: Environment Details
+          description: |
+              Please provide versions of the relevant components.
+          value: |
+              - **Laravel Framework**:
+              - **Filament**:
+              - **filament-log-viewer**:
+              - **PHP**:
+              - **Database**:
+              - **OS/Browser** (if applicable):
+          render: markdown
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: Visual Representation (Optional)
+          description: Screenshots, GIFs, or videos that show the problem.
+      validations:
+          required: false
+
+    - type: textarea
+      attributes:
+          label: Anything else?
+          description: Links, references, or any extra context that may help us debug.
+      validations:
+          required: false
