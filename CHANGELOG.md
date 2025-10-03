@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.4.5 - 2025-10-03
+
+### What's Changed
+
+* docs: adds bug report template for issue tracking by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/67
+* chore: bug report template from markdown to YAML format by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/68
+
 ## v1.4.4 - 2025-10-01
 
 ### What's Changed
