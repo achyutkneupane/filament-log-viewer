@@ -229,11 +229,9 @@ final class Log
                 return [trim($matches['message']), null];
             }
 
-            $loopParsed = [];
-
-            foreach ($decoded as $key => $value) {
-                $loopParsed[$key] = is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value;
-            }
+            $loopParsed = array_map(function ($value) {
+                return is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value;
+            }, $decoded);
 
             return [
                 trim($matches['message']),
