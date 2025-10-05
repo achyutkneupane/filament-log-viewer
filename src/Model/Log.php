@@ -225,13 +225,32 @@ final class Log
             $json = trim($matches['json']);
             $decoded = json_decode($json, true);
 
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+                return [trim($matches['message']), null];
+            }
+
+            $loopParsed = [];
+
+            foreach ($decoded as $key => $value) {
+                $loopParsed[$key] = is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value;
+            }
+
             return [
                 trim($matches['message']),
-                json_last_error() === JSON_ERROR_NONE ? $decoded : null,
+                $loopParsed,
             ];
         }
 
         return [$raw, null];
+    }
+
+    private static function looksLikeJson(string $value): bool
+    {
+        $value = trim($value);
+
+        return
+            (str_starts_with($value, '{') && str_ends_with($value, '}')) ||
+            (str_starts_with($value, '[') && str_ends_with($value, ']'));
     }
 
     private static function extractStack(string $raw): string
