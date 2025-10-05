@@ -7,6 +7,7 @@ namespace AchyutN\FilamentLogViewer\Schema;
 use Exception;
 use Filament\Infolists\Components\CodeEntry;
 use Filament\Schemas\Schema;
+use Phiki\Grammar\Grammar;
 
 final class JSONLogSchema
 {
@@ -18,7 +19,8 @@ final class JSONLogSchema
         return $schema
             ->key('json-log')
             ->components([
-                CodeEntry::make('context'),
+                CodeEntry::make('context')
+                    ->grammar(Grammar::Json),
             ]);
     }
 }
