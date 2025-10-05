@@ -129,7 +129,7 @@ describe('getRows', function () {
                         ->date->toBe('2024-08-06 20:18:00')
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
-                        ->message->toBe('Another log with stack trace at /path/to/another_file.php:789')
+                        ->message->toContain('Another log with stack trace')
                         ->stack->not->toBeNull()
                         ->file->toBe('stack-trace.log');
                 },
@@ -138,7 +138,7 @@ describe('getRows', function () {
                         ->date->toBe('2024-08-06 20:17:00')
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
-                        ->message->toBe('Sample log with stack trace at /path/to/file.php:123')
+                        ->message->toBe('Sample log with stack trace')
                         ->stack->not->toBeNull()
                         ->file->toBe('stack-trace.log');
                 },

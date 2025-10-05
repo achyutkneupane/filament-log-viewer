@@ -132,12 +132,12 @@ abstract class TestCase extends BaseTestCase
         $this->writeLog('not-a-log.txt', 'This is not a log');
 
         $stackTraces = [
-            '[2024-08-06 20:17:00] local.ERROR: Sample log with stack trace at /path/to/file.php:123',
+            '[2024-08-06 20:17:00] local.ERROR: Sample log with stack trace {"exception":" at /path/to/file.php:123',
             '[stacktrace]',
             '#0 /path/to/another_file.php(456): someFunction()',
             '#1 {main}',
             '"}',
-            '[2024-08-06 20:18:00] local.ERROR: Another log with stack trace at /path/to/another_file.php:789',
+            '[2024-08-06 20:18:00] local.ERROR: Another log with stack trace {"exception":"at /path/to/another_file.php:789',
             '[stacktrace]',
             '#0 /path/to/yet_another_file.php(101): anotherFunction()',
             '#1 {main}',
