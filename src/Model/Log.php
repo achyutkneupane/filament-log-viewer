@@ -229,7 +229,7 @@ final class Log
                 return [trim($matches['message']), null];
             }
 
-            $loopParsed = array_map(fn ($value) => is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value, $decoded);
+            $loopParsed = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value, $decoded);
 
             return [
                 trim($matches['message']),
