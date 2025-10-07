@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.5 - 2025-10-07
+
+### What's Changed
+
+* docs: adds bug report template for issue tracking by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/67
+* chore: bug report template from markdown to YAML format by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/68
+* feat: adds PT_BR translation by @jeffersongoncalves in https://github.com/achyutkneupane/filament-log-viewer/pull/69
+* feat: Parses and displays JSON with CodeEntry and Phiki by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/70
+
+### New Contributors
+
+* @jeffersongoncalves made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/69
+
 ## v1.4.5 - 2025-10-03
 
 ### What's Changed
