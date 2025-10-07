@@ -202,25 +202,36 @@ final class Log
             return self::parseMail($matches, $file);
         }
 
+        $messagePart = trim($matches['message']);
+
+        [$message, $context] = self::splitMessageAndContext($messagePart);
+
         return [
             'date' => trim($matches['date']),
             'env' => trim($matches['env']),
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
-            'message' => self::extractMessage($matches['message']),
+            'message' => $message,
+            'context' => $context,
             'stack' => self::extractStack($matches['message']),
             'file' => $file,
         ];
     }
 
-    private static function extractMessage(string $raw): string
+    private static function splitMessageAndContext(string $raw): array
     {
-        $split = preg_split('/[\n{]/', $raw, 2);
+        $pattern = '/^(?<message>.*?)(?<json>\{.*\})$/s';
 
-        if (is_array($split) && isset($split[0])) {
-            return trim($split[0]);
+        if (preg_match($pattern, $raw, $matches)) {
+            $json = trim($matches['json']);
+            $decoded = json_decode($json, true);
+
+            return [
+                trim($matches['message']),
+                json_last_error() === JSON_ERROR_NONE ? $decoded : null,
+            ];
         }
 
-        return trim($raw);
+        return [$raw, null];
     }
 
     private static function extractStack(string $raw): string
