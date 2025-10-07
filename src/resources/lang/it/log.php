@@ -69,6 +69,9 @@ return [
         'error-log' => [
             'stack' => 'Traccia dello Stack',
         ],
+        'json-log' => [
+            'context' => 'Contesto',
+        ],
     ],
     'mail' => [
         'sender' => [

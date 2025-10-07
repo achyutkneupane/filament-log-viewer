@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'Rastreamento da Pilha',
         ],
+        'json-log' => [
+            'context' => 'Contexto',
+        ],
     ],
     'mail' => [
         'sender' => [

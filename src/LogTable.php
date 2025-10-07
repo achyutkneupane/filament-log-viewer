@@ -9,6 +9,7 @@ use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Filters\FileFilter;
 use AchyutN\FilamentLogViewer\Model\Log;
 use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
+use AchyutN\FilamentLogViewer\Schema\JSONLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
 use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
@@ -166,9 +167,22 @@ final class LogTable extends Page implements HasTable
                 Action::make('view')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
                     ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
+                    ->hidden(fn (array $record): bool => count($record['stack']) === 0)
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(false)
+                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
+                    ->modalDescription(fn (array $record): string => $record['message'])
+                    ->slideOver(),
+                Action::make('view-json')
+                    ->label(__('filament-log-viewer::log.table.actions.view.label'))
+                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
+                    ->hidden(fn (array $record): bool => $record['context'] === null)
+                    ->icon(Heroicon::Eye)
+                    ->color(Color::Gray)
+                    ->schema(fn (Schema $schema): Schema => JSONLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
