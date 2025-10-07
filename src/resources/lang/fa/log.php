@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'ردیابی پشته',
         ],
+        'json-log' => [
+            'context' => 'متن',
+        ],
     ],
     'mail' => [
         'sender' => [

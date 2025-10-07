@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'Trace de la Pile',
         ],
+        'json-log' => [
+            'context' => 'Contexte',
+        ],
     ],
     'mail' => [
         'sender' => [

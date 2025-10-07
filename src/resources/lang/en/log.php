@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'Stack Trace',
         ],
+        'json-log' => [
+            'context' => 'Context',
+        ],
     ],
     'mail' => [
         'sender' => [

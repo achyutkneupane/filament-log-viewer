@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'מעקב מחסנית',
         ],
+        'json-log' => [
+            'context' => 'קונטקסט',
+        ],
     ],
     'mail' => [
         'sender' => [

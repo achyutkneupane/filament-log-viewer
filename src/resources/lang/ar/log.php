@@ -68,6 +68,9 @@ return [
         'error-log' => [
             'stack' => 'تتبع المكدس',
         ],
+        'json-log' => [
+            'context' => 'السياق',
+        ],
     ],
     'mail' => [
         'sender' => [
