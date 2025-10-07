@@ -8,7 +8,6 @@ use Exception;
 use Filament\Infolists\Components\CodeEntry;
 use Filament\Schemas\Schema;
 use Phiki\Grammar\Grammar;
-use Phiki\Theme\Theme;
 
 final class JSONLogSchema
 {
@@ -21,11 +20,8 @@ final class JSONLogSchema
             ->key('json-log')
             ->components([
                 CodeEntry::make('context')
-                    ->copyable()
-                    ->copyMessage('Copied to Clipboard')
-                    ->lightTheme(Theme::CatppuccinMocha)
-                    ->darkTheme(Theme::CatppuccinMocha)
-                    ->grammar(Grammar::Json),
+                    ->grammar(Grammar::Json)
+                    ->label(__('filament-log-viewer::log.schema.json-log.context')),
             ]);
     }
 }
