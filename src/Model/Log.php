@@ -26,7 +26,7 @@ use Illuminate\Support\Collection;
  *     message: string,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: string|array<string>|null,
+ *     stack: string,
  *     file: string
  * }
  */
@@ -43,13 +43,13 @@ final class Log
 
         foreach ($logDirectoryItems as $file) {
             $filePath = $logFilePath.'/'.$file;
-            if (is_file($filePath) && pathinfo((string) $file, PATHINFO_EXTENSION) === 'log') {
+            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
             }
         }
     }
 
-    /** @return list<LogRow> */
+    /** @return array<int<0, max>, LogRow> */
     public static function getRows(): array
     {
         $logs = [];
@@ -75,11 +75,10 @@ final class Log
             return $dateB->timestamp <=> $dateA->timestamp;
         });
 
-        /** @var list<LogRow> $logs */
         return array_filter($logs);
     }
 
-    /** @return list<LogRow> */
+    /** @return array<int<0, max>, LogRow> */
     public static function getLogsByLogLevel(string $logLevel = 'all-logs'): array
     {
         if ($logLevel === 'all-logs') {
@@ -107,7 +106,7 @@ final class Log
         return $count === 0 ? null : $count;
     }
 
-    /** @return array<int, string|list<string>> */
+    /** @return array<int, string> */
     public static function getAllLogFiles(): array
     {
         $logFilePath = storage_path('logs');
@@ -125,7 +124,7 @@ final class Log
     {
         $logFilePath = self::getAllLogFiles();
 
-        return Collection::wrap($logFilePath)
+        return (array) Collection::wrap($logFilePath)
             ->mapWithKeys(function (string $file): array {
                 $filePath = str_replace(storage_path(), '', $file);
 
@@ -191,7 +190,7 @@ final class Log
     }
 
     /**
-     * @return list<LogRow>
+     * @return array<int<0, max>, LogRow>
      */
     private static function processLogFile(string $filePath, string $file): array
     {
@@ -234,7 +233,13 @@ final class Log
         }
 
         if (self::isMailStack($matches['message'])) {
-            return self::parseMail($matches, $file);
+            $mailLine = [
+                'date' => $matches['date'] ?? null,
+                'env' => $matches['env'] ?? null,
+                'message' => $matches['message'],
+            ];
+
+            return self::parseMail($mailLine, $file);
         }
 
         $messagePart = trim($matches['message']);
@@ -242,8 +247,8 @@ final class Log
         [$message, $context] = self::splitMessageAndContext($messagePart);
 
         return [
-            'date' => trim($matches['date']),
-            'env' => trim($matches['env']),
+            'date' => array_key_exists('date', $matches) ? trim($matches['date']) : '',
+            'env' => array_key_exists('env', $matches) ? trim($matches['env']) : '',
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'context' => $context,
@@ -293,23 +298,12 @@ final class Log
             ->through([
                 fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
                 fn ($parts, $next) => $next(isset($parts[1]) ? trim($parts[1]) : null),
-                function ($emptyOrParts, $next) {
-                    if (empty($emptyOrParts)) {
-                        return null;
-                    }
-
-                    return $next($emptyOrParts);
-                },
                 fn ($emptyOrParts, $next) => $next(explode("\n", (string) $emptyOrParts)),
                 fn ($stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
                 fn ($slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
             ->thenReturn();
 
-        if (empty($stackTrace)) {
-            return json_encode([]);
-        }
-
-        return json_encode($stackTrace);
+        return json_encode($stackTrace) ?: '[]';
     }
 }

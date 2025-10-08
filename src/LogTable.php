@@ -28,7 +28,11 @@ use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-/** @phpstan-import-type LogRow from Log */
+/**
+ * @phpstan-import-type LogRow from Log
+ *
+ * @phpstan-type LogCollection Collection<covariant int|string, LogRow>
+ */
 final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;

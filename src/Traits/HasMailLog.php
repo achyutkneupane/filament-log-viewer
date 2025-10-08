@@ -104,7 +104,7 @@ trait HasMailLog
                 'subject' => $subject,
                 'sent_date' => $mailDate,
             ],
-            'stack' => [],
+            'stack' => '[]',
             'context' => null,
             'file' => $file,
         ];
@@ -119,6 +119,7 @@ trait HasMailLog
         $boundary = preg_match('/boundary=([^\s]+)/', $raw, $matches) ? trim($matches[1], '"') : null;
 
         if ($boundary) {
+            /** @var list<string> $parts */
             $parts = preg_split('/--'.preg_quote($boundary, '/').'/', $raw);
 
             foreach ($parts as $part) {

@@ -20,7 +20,7 @@ enum LogLevel: string implements HasColor, HasLabel
     case WARNING = 'warning';
     case MAIL = 'mail';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::ALERT => __('filament-log-viewer::log.levels.alert'),

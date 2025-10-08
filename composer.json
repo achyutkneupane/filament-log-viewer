@@ -37,6 +37,7 @@
         "phiki/phiki": "^2.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.23",
         "orchestra/testbench": "^10.4",
         "pestphp/pest": "^3.8",

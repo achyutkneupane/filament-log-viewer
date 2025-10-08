@@ -1,8 +1,9 @@
 includes:
+    - vendor/larastan/larastan/extension.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    level: 6
+    level: 7
 
     paths:
         - src
