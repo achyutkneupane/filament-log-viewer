@@ -42,6 +42,7 @@
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.2",
         "pestphp/pest-plugin-livewire": "^3.0",
+        "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.1"
     },
     "scripts": {
