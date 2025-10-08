@@ -35,7 +35,7 @@ enum LogLevel: string implements HasColor, HasLabel
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): array
     {
         return match ($this) {
             self::ALERT => Color::hex('#FF0000'),
