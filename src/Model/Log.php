@@ -29,7 +29,7 @@ final class Log
         }
     }
 
-    /** @return array<string, array<string, string>> */
+    /** @return list<array<string, string>> */
     public static function getRows(): array
     {
         $logs = [];

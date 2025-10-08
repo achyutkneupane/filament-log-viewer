@@ -240,9 +240,12 @@ final class LogTable extends Page implements HasTable
         ];
     }
 
-    /** @throws Exception */
+    /**
+     * @throws Exception
+     */
     private static function getPlugin(): FilamentLogViewer
     {
+        /** @var FilamentLogViewer */
         return filament('filament-log-viewer');
     }
 }
