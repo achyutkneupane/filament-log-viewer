@@ -28,6 +28,7 @@ use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
+/** @phpstan-import-type LogRow from Log */
 final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -96,9 +97,7 @@ final class LogTable extends Page implements HasTable
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     $records = Collection::wrap(Log::getRows())
                         ->map(function (array $log): array {
-                            if (array_key_exists('stack', $log) && $log['stack']) {
-                                $log['stack'] = json_decode($log['stack'], true);
-                            }
+                            $log['stack'] = json_decode($log['stack'], true);
 
                             return $log;
                         })
@@ -128,7 +127,7 @@ final class LogTable extends Page implements HasTable
                         ->when(
                             filled($filters['file']['value']),
                             fn (Collection $data): Collection => $data->filter(
-                                fn (array $log): bool => mb_strtolower((string) $log['file']) ===
+                                fn (array $log): bool => mb_strtolower($log['file']) ===
                                     mb_strtolower((string) $filters['file']['value'])
                             )
                         )
@@ -147,7 +146,7 @@ final class LogTable extends Page implements HasTable
                             filled($search),
                             fn (Collection $data): Collection => $data->filter(
                                 fn (array $log): bool => str_contains(
-                                    mb_strtolower((string) $log['message']),
+                                    mb_strtolower($log['message']),
                                     mb_strtolower((string) $search)
                                 )
                             )

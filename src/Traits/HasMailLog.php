@@ -5,8 +5,18 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Traits;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use AchyutN\FilamentLogViewer\Model\Log;
 use Carbon\Carbon;
 
+/**
+ * @phpstan-import-type LogRow from Log
+ *
+ * @phpstan-type MailLine array{
+ *      date: string,
+ *      env: string,
+ *      message: string,
+ *   }
+ */
 trait HasMailLog
 {
     public static function isMailStack(?string $logStack): bool
@@ -32,14 +42,18 @@ trait HasMailLog
         return true;
     }
 
-    public static function parseMail(array $extractedLine, string $file): array
+    /**
+     * @param  MailLine  $extractedLine
+     * @return LogRow|null
+     */
+    public static function parseMail(array $extractedLine, string $file): ?array
     {
         if (
             (array_key_exists('message', $extractedLine) && ! self::isMailStack($extractedLine['message'])) &&
             ! array_key_exists('date', $extractedLine) &&
             ! array_key_exists('env', $extractedLine)
         ) {
-            return [];
+            return null;
         }
 
         $raw = $extractedLine['message'];
@@ -49,6 +63,7 @@ trait HasMailLog
         return self::parseMailLines($raw, $date, $env, $file);
     }
 
+    /** @return LogRow */
     private static function parseMailLines(string $raw, string $date, string $env, string $file): array
     {
         [$plainMail, $htmlMail] = self::extractMail($raw);
@@ -95,6 +110,7 @@ trait HasMailLog
         ];
     }
 
+    /** @return array{0: string, 1: string} */
     private static function extractMail(string $raw): array
     {
         $plainMail = '';
@@ -126,6 +142,7 @@ trait HasMailLog
         return [$plainMail, $htmlMail];
     }
 
+    /** @return array{name: string, email: string} */
     private static function extractNameAndEmail(string $address): array
     {
         if (preg_match('/^(.*?)\s*<([^>]+)>$/', $address, $matches)) {

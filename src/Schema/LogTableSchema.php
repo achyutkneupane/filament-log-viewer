@@ -6,11 +6,14 @@ namespace AchyutN\FilamentLogViewer\Schema;
 
 use Exception;
 use Filament\Support\Colors\Color;
+use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 
 final class LogTableSchema
 {
     /**
+     * @return array<Column>
+     *
      * @throws Exception
      */
     public static function columns(): array

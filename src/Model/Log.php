@@ -10,6 +10,26 @@ use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 
+/**
+ * @phpstan-type MailDetails array{
+ *     plain: string,
+ *     html: string,
+ *     sender: array{name: string, email: string}|null,
+ *     receiver: array{name: string, email: string}|null,
+ *     subject: string,
+ *     sent_date: string
+ * }
+ * @phpstan-type LogRow array{
+ *     date: string,
+ *     env: string,
+ *     log_level: LogLevel,
+ *     message: string,
+ *     mail: MailDetails|null,
+ *     context: array<string, mixed>|null,
+ *     stack: string|array<string>|null,
+ *     file: string
+ * }
+ */
 final class Log
 {
     use HasMailLog;
@@ -29,7 +49,7 @@ final class Log
         }
     }
 
-    /** @return list<array<string, string>> */
+    /** @return list<LogRow> */
     public static function getRows(): array
     {
         $logs = [];
@@ -55,9 +75,11 @@ final class Log
             return $dateB->timestamp <=> $dateA->timestamp;
         });
 
+        /** @var list<LogRow> $logs */
         return array_filter($logs);
     }
 
+    /** @return list<LogRow> */
     public static function getLogsByLogLevel(string $logLevel = 'all-logs'): array
     {
         if ($logLevel === 'all-logs') {
@@ -70,7 +92,7 @@ final class Log
             $logLevelEnum = $log['log_level'];
 
             $logHasLogLevel = array_key_exists('log_level', $log);
-            if ($logHasLogLevel && $logLevelEnum->value === $logLevel) {
+            if ($logLevelEnum->value === $logLevel) {
                 $logLevelWise[] = $log;
             }
         }
@@ -85,6 +107,7 @@ final class Log
         return $count === 0 ? null : $count;
     }
 
+    /** @return array<int, string|list<string>> */
     public static function getAllLogFiles(): array
     {
         $logFilePath = storage_path('logs');
@@ -94,9 +117,10 @@ final class Log
 
         $files = self::getNestedFiles($logFilePath);
 
-        return array_map(fn ($file): string|array => str_replace(storage_path(), '', $file), $files);
+        return array_map(fn (string $file): string => str_replace(storage_path(), '', $file), $files);
     }
 
+    /** @return array<string, string|array<string, string>> */
     public static function getFilesForFilter(): array
     {
         $logFilePath = self::getAllLogFiles();
@@ -135,6 +159,7 @@ final class Log
         return self::$logFilePath;
     }
 
+    /** @return list<string> */
     private static function getNestedFiles(string $directory): array
     {
         $files = [];
@@ -165,6 +190,9 @@ final class Log
         return $files;
     }
 
+    /**
+     * @return list<LogRow>
+     */
     private static function processLogFile(string $filePath, string $file): array
     {
         $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -191,6 +219,10 @@ final class Log
         return array_filter($logs);
     }
 
+    /**
+     * @param  array<int, string>  $lines
+     * @return LogRow|null
+     */
     private static function parseLogEntry(array $lines, string $file): ?array
     {
         $entry = implode("\n", $lines);
@@ -215,11 +247,13 @@ final class Log
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'context' => $context,
+            'mail' => null,
             'stack' => self::extractStack($matches['message']),
             'file' => $file,
         ];
     }
 
+    /** @return array{0: string, 1: array<string, mixed>|null} */
     private static function splitMessageAndContext(string $raw): array
     {
         $pattern = '/^(?<message>.*?)(?<json>\{.*\})$/s';

@@ -36,6 +36,10 @@ final class DateRangeFilter
             );
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<int, Indicator>
+     */
     private static function indicators(array $data): array
     {
         $indicators = [];
