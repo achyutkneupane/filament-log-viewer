@@ -66,8 +66,11 @@ final class Log
 
         $logLevelWise = [];
         foreach (self::getRows() as $log) {
-            $logHasLogLevel = array_key_exists('log_level', $log) && $log['log_level'] instanceof LogLevel;
-            if ($logHasLogLevel && $log['log_level']->value === $logLevel) {
+            /** @var LogLevel $logLevelEnum */
+            $logLevelEnum = $log['log_level'];
+
+            $logHasLogLevel = array_key_exists('log_level', $log);
+            if ($logHasLogLevel && $logLevelEnum->value === $logLevel) {
                 $logLevelWise[] = $log;
             }
         }
