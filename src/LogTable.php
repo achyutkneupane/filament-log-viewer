@@ -97,7 +97,9 @@ final class LogTable extends Page implements HasTable
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     $records = Collection::wrap(Log::getRows())
                         ->map(function (array $log): array {
-                            $log['stack'] = json_decode($log['stack'], true);
+                            if ($log['log_level'] !== LogLevel::MAIL) {
+                                $log['stack'] = json_decode($log['stack'], true);
+                            }
 
                             return $log;
                         })
