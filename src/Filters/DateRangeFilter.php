@@ -10,6 +10,9 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 
+/**
+ * @phpstan-type DateRangeFilterData array{from?: string, until?: string}
+ */
 final class DateRangeFilter
 {
     /** @throws Exception */
@@ -37,7 +40,7 @@ final class DateRangeFilter
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param  DateRangeFilterData  $data
      * @return array<int, Indicator>
      */
     private static function indicators(array $data): array

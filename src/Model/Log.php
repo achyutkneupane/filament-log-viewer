@@ -295,6 +295,7 @@ final class Log
     /** @return list<StackTrace> */
     private static function extractStack(string $raw): array
     {
+        /** @var list<StackTrace> */
         return app(Pipeline::class)
             ->send($raw)
             ->through([

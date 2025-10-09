@@ -85,7 +85,9 @@ trait HasMailLog
         if (preg_match('/^Date:\s*(.+)$/mi', $raw, $m)) {
             $mailDate = trim($m[1]);
             $carbon = Carbon::parse($mailDate);
-            $carbon->setTimezone(config('app.timezone'));
+            /** @var string $timezone */
+            $timezone = config('app.timezone');
+            $carbon->setTimezone($timezone);
             $mailDate = $carbon->format('Y-m-d h:i:s A');
         }
 
