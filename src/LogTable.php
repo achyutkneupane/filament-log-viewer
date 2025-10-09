@@ -252,6 +252,7 @@ final class LogTable extends Page implements HasTable
         }
 
         $file = mb_strtolower($filters['file']['value']);
+
         return $records->filter(fn (array $log): bool => mb_strtolower($log['file']) === $file);
     }
 

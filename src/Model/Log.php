@@ -104,7 +104,7 @@ final class Log
     {
         $count = $logLevel === 'all-logs' ? count(self::getRows()) : count(self::getLogsByLogLevel($logLevel));
 
-        return $count === 0 ? null : $count;
+        return $count > 0 ? $count : null;
     }
 
     /** @return array<int, string> */
