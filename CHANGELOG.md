@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.1 - 2025-10-09
+
+### What's Changed
+
+* Adds PHPStan analysis step to CI workflow by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/71
+* PHPStan type-safe level `max` by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/72
+
 ## v1.5 - 2025-10-07
 
 ### What's Changed
