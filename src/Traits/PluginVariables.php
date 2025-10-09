@@ -27,36 +27,42 @@ trait PluginVariables
 
     public function isAuthorized(): bool
     {
-        return $this->evaluate($this->authorized);
+        return (bool) $this->evaluate($this->authorized);
     }
 
-    public function getNavigationGroup(): ?string
+    public function getNavigationGroup(): string
     {
-        return $this->evaluate($this->navigationGroup);
+        /** @phpstan-var string */
+        return $this->evaluate($this->navigationGroup) ?? '';
     }
 
     public function getNavigationIcon(): string
     {
+        /** @phpstan-var string */
         return $this->evaluate($this->navigationIcon);
     }
 
-    public function getNavigationLabel(): ?string
+    public function getNavigationLabel(): string
     {
-        return $this->evaluate($this->navigationLabel);
+        /** @phpstan-var string */
+        return $this->evaluate($this->navigationLabel) ?? '';
     }
 
     public function getNavigationSort(): int
     {
+        /** @var int */
         return $this->evaluate($this->navigationSort);
     }
 
     public function getNavigationUrl(): string
     {
+        /** @var string */
         return $this->evaluate($this->navigationUrl);
     }
 
     public function getPollingTime(): ?string
     {
+        /** @var string|null */
         return $this->evaluate($this->pollingTime);
     }
 }

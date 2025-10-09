@@ -28,6 +28,12 @@ use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
+/**
+ * @phpstan-import-type LogRow from Log
+ *
+ * @phpstan-type LogCollection Collection<int|string, LogRow>
+ * @phpstan-type FilterData array{date?: array{from?: string, until?: string}, file?: array{value: string}}
+ */
 final class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
@@ -94,64 +100,19 @@ final class LogTable extends Page implements HasTable
         return $table
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
-                    $records = Collection::wrap(Log::getRows())
-                        ->map(function (array $log): array {
-                            if (array_key_exists('stack', $log) && is_string($log['stack'])) {
-                                $log['stack'] = json_decode($log['stack'], true);
-                            }
+                    $records = Collection::wrap(Log::getRows());
 
-                            return $log;
-                        })
-                        ->when(
-                            ! $this->tableIsUnscoped(),
-                            fn (Collection $data): Collection => $data->where(
-                                'log_level',
-                                $this->activeTab
-                            ),
-                        )
-                        ->when(
-                            filled($filters['date']['from']),
-                            fn (Collection $data): Collection => $data->where(
-                                'date',
-                                '>=',
-                                $filters['date']['from']
-                            )
-                        )
-                        ->when(
-                            filled($filters['date']['until']),
-                            fn (Collection $data): Collection => $data->where(
-                                'date',
-                                '<=',
-                                $filters['date']['until']
-                            )
-                        )
-                        ->when(
-                            filled($filters['file']['value']),
-                            fn (Collection $data): Collection => $data->filter(
-                                fn (array $log): bool => mb_strtolower((string) $log['file']) ===
-                                    mb_strtolower((string) $filters['file']['value'] ?? '')
-                            )
-                        )
-                        ->when(
-                            filled($sortColumn),
-                            fn (Collection $data): Collection => $data->sortBy(
-                                $sortColumn,
-                                SORT_DESC,
-                                $sortDirection === 'desc',
-                            ),
-                            fn (Collection $data): Collection => $data->sortByDesc(
-                                'date'
-                            )
-                        )
-                        ->when(
-                            filled($search),
-                            fn (Collection $data): Collection => $data->filter(
-                                fn (array $log): bool => str_contains(
-                                    mb_strtolower((string) $log['message']),
-                                    mb_strtolower((string) $search)
-                                )
-                            )
-                        );
+                    $records = $this->applyTabFilter($records);
+                    /** @var FilterData $filters */
+                    $records = $this->applyDateFilter($records, $filters);
+                    /** @var FilterData $filters */
+                    $records = $this->applyFileFilter($records, $filters);
+                    $records = $this->applySearchFilter($records, $search);
+
+                    $records = filled($sortColumn)
+                        ? $records->sortBy($sortColumn, SORT_DESC, $sortDirection === 'desc')
+                        : $records->sortByDesc('date');
+
                     $paginatedRecords = $records
                         ->forPage($page, $recordsPerPage);
 
@@ -166,15 +127,22 @@ final class LogTable extends Page implements HasTable
             ->recordActions([
                 Action::make('view')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
-                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
-                    ->hidden(fn (array $record): bool => count($record['stack']) === 0)
+                    ->visible(
+                        fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL
+                    )
+                    ->hidden(
+                        fn (array $record): bool => count((array) $record['stack']) === 0
+                    )
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(fn (array $record): string => $record['message'])
+                    ->modalDescription(function (array $record): string {
+                        /** @var LogRow $record */
+                        return $record['message'];
+                    })
                     ->slideOver(),
                 Action::make('view-json')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -186,7 +154,10 @@ final class LogTable extends Page implements HasTable
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(fn (array $record): string => $record['message'])
+                    ->modalDescription(function (array $record): string {
+                        /** @var LogRow $record */
+                        return $record['message'];
+                    })
                     ->slideOver(),
                 Action::make('read')
                     ->label(__('filament-log-viewer::log.table.actions.read.label'))
@@ -196,8 +167,24 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => MailLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(fn (array $record): string => $record['mail']['subject'] ? __('filament-log-viewer::log.table.actions.read.subject').': '.$record['mail']['subject'] : __('filament-log-viewer::log.table.actions.read.mail_log'))
-                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? __('filament-log-viewer::log.table.actions.read.sent_date').': '.$record['mail']['sent_date'] : null)
+                    ->modalHeading(function (array $record): string {
+                        /** @var LogRow $record */
+                        $mail = $record['mail'];
+                        if ($mail && isset($mail['subject']) && $mail['subject'] !== '') {
+                            return __('filament-log-viewer::log.table.actions.read.subject').': '.$mail['subject'];
+                        }
+
+                        return __('filament-log-viewer::log.table.actions.read.mail_log');
+                    })
+                    ->modalDescription(function (array $record): ?string {
+                        /** @var LogRow $record */
+                        $mail = $record['mail'];
+                        if ($mail && isset($mail['sent_date']) && $mail['sent_date'] !== '') {
+                            return __('filament-log-viewer::log.table.actions.read.sent_date').': '.$mail['sent_date'];
+                        }
+
+                        return null;
+                    })
                     ->slideOver(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
@@ -240,9 +227,76 @@ final class LogTable extends Page implements HasTable
         ];
     }
 
-    /** @throws Exception */
+    /**
+     * @throws Exception
+     */
     private static function getPlugin(): FilamentLogViewer
     {
+        /** @var FilamentLogViewer */
         return filament('filament-log-viewer');
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @return LogCollection
+     */
+    private function applyTabFilter(Collection $records): Collection
+    {
+        if ($this->tableIsUnscoped()) {
+            return $records;
+        }
+
+        return $records->filter(fn (array $log): bool => $log['log_level']->value === $this->activeTab);
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @param  FilterData|null  $filters
+     * @return LogCollection
+     */
+    private function applyDateFilter(Collection $records, ?array $filters): Collection
+    {
+        if (empty($filters['date'])) {
+            return $records;
+        }
+
+        return $records
+            ->when(filled($filters['date']['from']), fn ($q) => $q->filter(
+                fn (array $log): bool => $log['date'] >= $filters['date']['from']
+            ))
+            ->when(filled($filters['date']['until']), fn ($q) => $q->filter(
+                fn (array $log): bool => $log['date'] <= $filters['date']['until']
+            ));
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @param  FilterData|null  $filters
+     * @return LogCollection
+     */
+    private function applyFileFilter(Collection $records, ?array $filters): Collection
+    {
+        if (! $filters || (array_key_exists('file', $filters) === false || blank($filters['file']['value']))) {
+            return $records;
+        }
+
+        $file = mb_strtolower($filters['file']['value']);
+
+        return $records->filter(fn (array $log): bool => mb_strtolower($log['file']) === $file);
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @return LogCollection
+     */
+    private function applySearchFilter(Collection $records, ?string $search): Collection
+    {
+        if (blank($search)) {
+            return $records;
+        }
+
+        $needle = mb_strtolower($search);
+
+        return $records->filter(fn (array $log): bool => str_contains(mb_strtolower($log['message']), $needle));
     }
 }

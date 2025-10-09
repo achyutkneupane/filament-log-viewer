@@ -121,7 +121,7 @@ describe('getRows', function () {
                         ->env->toBe('nested')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::NOTICE)
                         ->message->toBe('Another notice log')
-                        ->stack->toBe('[]')
+                        ->stack->toBe([])
                         ->file->toBe('nested-folder/nested.log');
                 },
                 function ($log) {
@@ -148,7 +148,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
                         ->message->toBe('Another log')
-                        ->stack->toBe('[]')
+                        ->stack->toBe([])
                         ->file->toBe('other.log');
                 },
                 function ($log) {
@@ -157,7 +157,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
                         ->message->toBe('Sample log')
-                        ->stack->toBe('[]')
+                        ->stack->toBe([])
                         ->file->toBe('laravel.log');
                 },
             );
@@ -209,7 +209,7 @@ describe('getLogsByLogLevel', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
                         ->message->toBe('Another log')
-                        ->stack->toBe('[]')
+                        ->stack->toBe([])
                         ->file->toBe('other.log');
                 }
             );
