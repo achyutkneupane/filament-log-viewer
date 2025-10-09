@@ -32,19 +32,19 @@ trait PluginVariables
 
     public function getNavigationGroup(): string
     {
-        /** @var string */
+        /** @phpstan-var string */
         return $this->evaluate($this->navigationGroup) ?? '';
     }
 
     public function getNavigationIcon(): string
     {
-        /** @var string */
+        /** @phpstan-var string */
         return $this->evaluate($this->navigationIcon);
     }
 
     public function getNavigationLabel(): string
     {
-        /** @var string */
+        /** @phpstan-var string */
         return $this->evaluate($this->navigationLabel) ?? '';
     }
 

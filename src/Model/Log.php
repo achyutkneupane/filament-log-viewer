@@ -125,7 +125,7 @@ final class Log
     {
         $logFilePath = self::getAllLogFiles();
 
-        /** @var array<string, string|array<string, string>> */
+        /** @phpstan-var array<string, string|array<string, string>> */
         return (array) Collection::wrap($logFilePath)
             ->mapWithKeys(function (string $file): array {
                 $filePath = str_replace(storage_path(), '', $file);
@@ -137,7 +137,7 @@ final class Log
                  * @param  array<string, string|array<string, string>>  $carry
                  * @return array<string, string|array<string, string>>
                  */
-                function (array $carry, string $item) {
+                function (array $carry, string $item): array {
                     if (str_contains($item, '/')) {
                         $parts = explode('/', $item);
                         $lastPart = array_pop($parts);

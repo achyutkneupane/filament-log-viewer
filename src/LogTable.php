@@ -171,7 +171,7 @@ final class LogTable extends Page implements HasTable
                         /** @var LogRow $record */
                         $mail = $record['mail'];
                         if ($mail && isset($mail['subject']) && $mail['subject'] !== '') {
-                            return __('filament-log-viewer::log.table.actions.read.subject').': '.(string) $mail['subject'];
+                            return __('filament-log-viewer::log.table.actions.read.subject').': '.$mail['subject'];
                         }
 
                         return __('filament-log-viewer::log.table.actions.read.mail_log');
@@ -180,7 +180,7 @@ final class LogTable extends Page implements HasTable
                         /** @var LogRow $record */
                         $mail = $record['mail'];
                         if ($mail && isset($mail['sent_date']) && $mail['sent_date'] !== '') {
-                            return __('filament-log-viewer::log.table.actions.read.sent_date').': '.(string) $mail['sent_date'];
+                            return __('filament-log-viewer::log.table.actions.read.sent_date').': '.$mail['sent_date'];
                         }
 
                         return null;
