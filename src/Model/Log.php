@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
  *     subject: string,
  *     sent_date: string
  * }
+ * @phpstan-type StackTrace array{trace: string}
  * @phpstan-type LogRow array{
  *     date: string,
  *     env: string,
@@ -26,7 +27,7 @@ use Illuminate\Support\Collection;
  *     message: string,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: array{trace: string}[],
+ *     stack: StackTrace[],
  *     file: string
  * }
  */
@@ -291,9 +292,10 @@ final class Log
             (str_starts_with($value, '[') && str_ends_with($value, ']'));
     }
 
-    private static function extractStack(string $raw): string
+    /** @return list<StackTrace> */
+    private static function extractStack(string $raw): array
     {
-        $stackTrace = app(Pipeline::class)
+        return app(Pipeline::class)
             ->send($raw)
             ->through([
                 fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
@@ -303,7 +305,5 @@ final class Log
                 fn ($slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
             ->thenReturn();
-
-        return json_encode($stackTrace) ?: '[]';
     }
 }

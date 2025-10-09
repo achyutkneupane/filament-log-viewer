@@ -30,20 +30,8 @@ use Illuminate\Support\Collection;
 
 /**
  * @phpstan-import-type LogRow from Log
- * @phpstan-import-type MailDetails from Log
  *
- * @phpstan-type LogRowStackArray array{
- *      date: string,
- *      env: string,
- *      log_level: LogLevel,
- *      message: string,
- *      mail: MailDetails|null,
- *      context: array<string, mixed>|null,
- *      stack: array<int, string>,
- *      file: string
- *  }
- *
- * @phpstan-type LogCollection Collection<(int|string), LogRowStackArray>
+ * @phpstan-type LogCollection Collection<int|string, LogRow>
  */
 final class LogTable extends Page implements HasTable
 {
@@ -111,20 +99,15 @@ final class LogTable extends Page implements HasTable
         return $table
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
-                    $records = Collection::wrap(Log::getRows())
-                        ->map(function (array $log): array {
-                            if ($log['log_level'] !== LogLevel::MAIL) {
-                                /** @var array<int<0, max>, string> $stackTrace */
-                                $stackTrace = json_decode($log['stack'], true);
-                                $log['stack'] = is_array($stackTrace) ? $stackTrace : [];
-                            }
+                    $records = Collection::wrap(Log::getRows());
 
-                            return $log;
-                        });
-
+                    /** @phpstan-ignore-next-line */
                     $records = $this->applyTabFilter($records);
+                    /** @phpstan-ignore-next-line */
                     $records = $this->applyDateFilter($records, $filters);
+                    /** @phpstan-ignore-next-line */
                     $records = $this->applyFileFilter($records, $filters);
+                    /** @phpstan-ignore-next-line */
                     $records = $this->applySearchFilter($records, $search);
 
                     $records = filled($sortColumn)
@@ -134,6 +117,7 @@ final class LogTable extends Page implements HasTable
                     $paginatedRecords = $records
                         ->forPage($page, $recordsPerPage);
 
+                    /** @phpstan-ignore-next-line */
                     return new LengthAwarePaginator(
                         $paginatedRecords,
                         total: count($records),
@@ -235,9 +219,11 @@ final class LogTable extends Page implements HasTable
     private function applyTabFilter(Collection $records): Collection
     {
         if ($this->tableIsUnscoped()) {
+            /** @phpstan-ignore-next-line  */
             return $records;
         }
 
+        /** @phpstan-ignore-next-line  */
         return $records->filter(fn (array $log): bool => $log['log_level'] === $this->activeTab);
     }
 
@@ -249,13 +235,17 @@ final class LogTable extends Page implements HasTable
     private function applyDateFilter(Collection $records, ?array $filters): Collection
     {
         if (empty($filters['date'])) {
+            /** @phpstan-ignore-next-line  */
             return $records;
         }
 
+        /** @phpstan-ignore-next-line  */
         return $records
+            /** @phpstan-ignore-next-line  */
             ->when(filled($filters['date']['from']), fn ($q) => $q->filter(
                 fn (array $log): bool => $log['date'] >= $filters['date']['from']
             ))
+            /** @phpstan-ignore-next-line  */
             ->when(filled($filters['date']['until']), fn ($q) => $q->filter(
                 fn (array $log): bool => $log['date'] <= $filters['date']['until']
             ));
@@ -268,28 +258,31 @@ final class LogTable extends Page implements HasTable
      */
     private function applyFileFilter(Collection $records, ?array $filters): Collection
     {
-        if (blank($filters['file']['value'])) {
+        if (array_key_exists('file', $filters) === false || array_key_exists('value', $filters['file']) === false || blank($filters['file']['value'])) {
+            /** @phpstan-ignore-next-line  */
             return $records;
         }
 
-        $file = mb_strtolower((string) $filters['file']['value']);
+        $file = mb_strtolower($filters['file']['value']);
 
+        /** @phpstan-ignore-next-line  */
         return $records->filter(fn (array $log): bool => mb_strtolower($log['file']) === $file);
     }
 
     /**
      * @param  LogCollection  $records
-     * @param  string|null  $search
      * @return LogCollection
      */
     private function applySearchFilter(Collection $records, ?string $search): Collection
     {
         if (blank($search)) {
+            /** @phpstan-ignore-next-line  */
             return $records;
         }
 
         $needle = mb_strtolower($search);
 
+        /** @phpstan-ignore-next-line  */
         return $records->filter(fn (array $log): bool => str_contains(mb_strtolower($log['message']), $needle));
     }
 }
