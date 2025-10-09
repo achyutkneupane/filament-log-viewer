@@ -26,7 +26,7 @@ use Illuminate\Support\Collection;
  *     message: string,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: string,
+ *     stack: array{trace: string}[],
  *     file: string
  * }
  */

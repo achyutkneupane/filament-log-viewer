@@ -30,8 +30,20 @@ use Illuminate\Support\Collection;
 
 /**
  * @phpstan-import-type LogRow from Log
+ * @phpstan-import-type MailDetails from Log
  *
- * @phpstan-type LogCollection Collection<covariant int|string, LogRow>
+ * @phpstan-type LogRowStackArray array{
+ *      date: string,
+ *      env: string,
+ *      log_level: LogLevel,
+ *      message: string,
+ *      mail: MailDetails|null,
+ *      context: array<string, mixed>|null,
+ *      stack: array<int, string>,
+ *      file: string
+ *  }
+ *
+ * @phpstan-type LogCollection Collection<(int|string), LogRowStackArray>
  */
 final class LogTable extends Page implements HasTable
 {
@@ -102,7 +114,9 @@ final class LogTable extends Page implements HasTable
                     $records = Collection::wrap(Log::getRows())
                         ->map(function (array $log): array {
                             if ($log['log_level'] !== LogLevel::MAIL) {
-                                $log['stack'] = json_decode($log['stack'], true);
+                                /** @var array<int<0, max>, string> $stackTrace */
+                                $stackTrace = json_decode($log['stack'], true);
+                                $log['stack'] = is_array($stackTrace) ? $stackTrace : [];
                             }
 
                             return $log;
