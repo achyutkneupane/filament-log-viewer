@@ -47,6 +47,10 @@ jobs:
                 run: |
                     ./vendor/bin/pint --config=pint.json --test --verbose --dirty
 
+            -   name: "Run PHPStan Analysis"
+                run: |
+                    ./vendor/bin/phpstan analyse --error-format=github
+
             -   name: "Run Tests"
                 run: |
                     ./vendor/bin/pest --colors=always --stop-on-failure --coverage --coverage-clover=coverage.xml --ci
