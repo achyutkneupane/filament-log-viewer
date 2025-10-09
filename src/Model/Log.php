@@ -42,42 +42,25 @@ final class Log extends Model
     /** @return string[] */
     public function getRows(): array
     {
-        $logFilePath = storage_path('logs');
-        if (! is_dir($logFilePath)) {
+        $logDir = storage_path('logs');
+        if (! is_dir($logDir)) {
             return [];
         }
-        $files = scandir($logFilePath);
+
+        $logFiles = array_filter(
+            scandir($logDir) ?: [],
+            fn ($file) => is_file("$logDir/$file") && pathinfo($file, PATHINFO_EXTENSION) === 'log'
+        );
 
         $logs = [];
 
-        foreach ($files as $file) {
-            $filePath = $logFilePath.'/'.$file;
-            if (! is_file($filePath)) {
-                continue;
-            }
-            if (pathinfo($file, PATHINFO_EXTENSION) !== 'log') {
-                continue;
-            }
-
-            $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
+        foreach ($logFiles as $file) {
+            $lines = file("$logDir/$file", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             if ($lines === false) {
                 continue;
             }
 
-            $entryLines = [];
-
-            foreach ($lines as $line) {
-                if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
-                    $logs[] = $this->parseLogEntry($entryLines, $file);
-                    $entryLines = [];
-                }
-                $entryLines[] = $line;
-            }
-
-            if ($entryLines !== []) {
-                $logs[] = $this->parseLogEntry($entryLines, $file);
-            }
+            $logs = array_merge($logs, $this->parseFileLines($lines, $file));
         }
 
         return array_values(array_filter($logs));
@@ -87,8 +70,30 @@ final class Log extends Model
     {
         return [
             'log_level' => LogLevel::class,
-            'stack' => 'json',
+            'stack' => 'array',
         ];
+    }
+
+    /** @param string[] $lines */
+    private function parseFileLines(array $lines, string $file): array
+    {
+        $logs = [];
+        $entry = [];
+
+        foreach ($lines as $line) {
+            $isNewEntry = preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line);
+            if ($isNewEntry && $entry !== []) {
+                $logs[] = $this->parseLogEntry($entry, $file);
+                $entry = [];
+            }
+            $entry[] = $line;
+        }
+
+        if ($entry !== []) {
+            $logs[] = $this->parseLogEntry($entry, $file);
+        }
+
+        return $logs;
     }
 
     private function parseLogEntry(array $lines, string $file): ?array
