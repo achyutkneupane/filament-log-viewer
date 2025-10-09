@@ -106,57 +106,17 @@ final class LogTable extends Page implements HasTable
                             }
 
                             return $log;
-                        })
-                        ->when(
-                            ! $this->tableIsUnscoped(),
-                            fn (Collection $data): Collection => $data->where(
-                                'log_level',
-                                $this->activeTab
-                            ),
-                        )
-                        ->when(
-                            filled($filters['date']['from']),
-                            fn (Collection $data): Collection => $data->where(
-                                'date',
-                                '>=',
-                                $filters['date']['from']
-                            )
-                        )
-                        ->when(
-                            filled($filters['date']['until']),
-                            fn (Collection $data): Collection => $data->where(
-                                'date',
-                                '<=',
-                                $filters['date']['until']
-                            )
-                        )
-                        ->when(
-                            filled($filters['file']['value']),
-                            fn (Collection $data): Collection => $data->filter(
-                                fn (array $log): bool => mb_strtolower($log['file']) ===
-                                    mb_strtolower((string) $filters['file']['value'])
-                            )
-                        )
-                        ->when(
-                            filled($sortColumn),
-                            fn (Collection $data): Collection => $data->sortBy(
-                                $sortColumn,
-                                SORT_DESC,
-                                $sortDirection === 'desc',
-                            ),
-                            fn (Collection $data): Collection => $data->sortByDesc(
-                                'date'
-                            )
-                        )
-                        ->when(
-                            filled($search),
-                            fn (Collection $data): Collection => $data->filter(
-                                fn (array $log): bool => str_contains(
-                                    mb_strtolower($log['message']),
-                                    mb_strtolower((string) $search)
-                                )
-                            )
-                        );
+                        });
+
+                    $records = $this->applyTabFilter($records);
+                    $records = $this->applyDateFilter($records, $filters);
+                    $records = $this->applyFileFilter($records, $filters);
+                    $records = $this->applySearchFilter($records, $search);
+
+                    $records = filled($sortColumn)
+                        ? $records->sortBy($sortColumn, SORT_DESC, $sortDirection === 'desc')
+                        : $records->sortByDesc('date');
+
                     $paginatedRecords = $records
                         ->forPage($page, $recordsPerPage);
 
@@ -252,5 +212,70 @@ final class LogTable extends Page implements HasTable
     {
         /** @var FilamentLogViewer */
         return filament('filament-log-viewer');
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @return LogCollection
+     */
+    private function applyTabFilter(Collection $records): Collection
+    {
+        if ($this->tableIsUnscoped()) {
+            return $records;
+        }
+
+        return $records->filter(fn (array $log): bool => $log['log_level'] === $this->activeTab);
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @param  array{date?: array{from?: string, until?: string}}|null  $filters
+     * @return LogCollection
+     */
+    private function applyDateFilter(Collection $records, ?array $filters): Collection
+    {
+        if (empty($filters['date'])) {
+            return $records;
+        }
+
+        return $records
+            ->when(filled($filters['date']['from']), fn ($q) => $q->filter(
+                fn (array $log): bool => $log['date'] >= $filters['date']['from']
+            ))
+            ->when(filled($filters['date']['until']), fn ($q) => $q->filter(
+                fn (array $log): bool => $log['date'] <= $filters['date']['until']
+            ));
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @param  array{file?: array{value?: string}}|null  $filters
+     * @return LogCollection
+     */
+    private function applyFileFilter(Collection $records, ?array $filters): Collection
+    {
+        if (blank($filters['file']['value'])) {
+            return $records;
+        }
+
+        $file = mb_strtolower((string) $filters['file']['value']);
+
+        return $records->filter(fn (array $log): bool => mb_strtolower($log['file']) === $file);
+    }
+
+    /**
+     * @param  LogCollection  $records
+     * @param  string|null  $search
+     * @return LogCollection
+     */
+    private function applySearchFilter(Collection $records, ?string $search): Collection
+    {
+        if (blank($search)) {
+            return $records;
+        }
+
+        $needle = mb_strtolower($search);
+
+        return $records->filter(fn (array $log): bool => str_contains(mb_strtolower($log['message']), $needle));
     }
 }
