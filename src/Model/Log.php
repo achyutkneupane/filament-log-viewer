@@ -320,7 +320,7 @@ final class Log
 
                     return $next(isset($tracePart) ? trim($tracePart) : null);
                 },
-                fn (string $emptyOrParts, $next) => $next(explode("\n", $emptyOrParts)),
+                fn (?string $emptyOrParts, $next) => $next($emptyOrParts ? explode("\n", $emptyOrParts) : []),
                 fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
                 fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
