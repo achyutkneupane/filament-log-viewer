@@ -27,7 +27,7 @@ use Illuminate\Support\Collection;
  *     message: string,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: StackTrace[],
+ *     stack: list<StackTrace>,
  *     file: string
  * }
  */
@@ -125,29 +125,39 @@ final class Log
     {
         $logFilePath = self::getAllLogFiles();
 
+        /** @var array<string, string|array<string, string>> */
         return (array) Collection::wrap($logFilePath)
             ->mapWithKeys(function (string $file): array {
                 $filePath = str_replace(storage_path(), '', $file);
 
                 return [$filePath => $filePath];
             })
-            ->reduce(function ($carry, $item) {
-                if (str_contains($item, '/')) {
-                    $parts = explode('/', $item);
-                    $lastPart = array_pop($parts);
-                    $directory = implode('/', $parts);
+            ->reduce(
+                /**
+                 * @param  array<string, string|array<string, string>>  $carry
+                 * @return array<string, string|array<string, string>>
+                 */
+                function (array $carry, string $item) {
+                    if (str_contains($item, '/')) {
+                        $parts = explode('/', $item);
+                        $lastPart = array_pop($parts);
+                        $directory = implode('/', $parts);
 
-                    if (! isset($carry[$directory])) {
-                        $carry[$directory] = [];
+                        if (! array_key_exists($directory, $carry) || ! is_array($carry[$directory])) {
+                            $carry[$directory] = [];
+                        }
+
+                        if (! is_array($carry[$directory])) {
+                            $carry[$directory] = [];
+                        }
+
+                        $carry[$directory][$item] = $lastPart;
+                    } else {
+                        $carry[$item] = $item;
                     }
 
-                    $carry[$directory][$item] = $lastPart;
-                } else {
-                    $carry[$item] = $item;
-                }
-
-                return $carry;
-            }, []);
+                    return $carry;
+                }, []);
     }
 
     private static function getLogFilePath(): string
@@ -272,6 +282,7 @@ final class Log
                 return [trim($matches['message']), null];
             }
 
+            /** @var array<string, mixed> $loopParsed */
             $loopParsed = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value, $decoded);
 
             return [
@@ -300,10 +311,18 @@ final class Log
             ->send($raw)
             ->through([
                 fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
-                fn ($parts, $next) => $next(isset($parts[1]) ? trim($parts[1]) : null),
-                fn ($emptyOrParts, $next) => $next(explode("\n", (string) $emptyOrParts)),
-                fn ($stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
-                fn ($slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
+                function (array $parts, $next) {
+                    if (! array_key_exists(1, $parts)) {
+                        return $next(null);
+                    }
+                    /** @var string $tracePart */
+                    $tracePart = $parts[1];
+
+                    return $next(isset($tracePart) ? trim($tracePart) : null);
+                },
+                fn (string $emptyOrParts, $next) => $next(explode("\n", $emptyOrParts)),
+                fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
+                fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
             ->thenReturn();
     }

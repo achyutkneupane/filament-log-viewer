@@ -3,9 +3,12 @@ includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    level: 9
+    level: max
 
     paths:
         - src
 
     treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+    		- identifier: callable.nonCallable

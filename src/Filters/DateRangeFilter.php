@@ -35,7 +35,10 @@ final class DateRangeFilter
             ])
             ->columns()
             ->indicateUsing(
-                fn (array $data): array => self::indicators($data),
+                function (array $data): array {
+                    /** @var DateRangeFilterData $data */
+                    return self::indicators($data);
+                }
             );
     }
 

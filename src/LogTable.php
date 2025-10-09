@@ -32,6 +32,7 @@ use Illuminate\Support\Collection;
  * @phpstan-import-type LogRow from Log
  *
  * @phpstan-type LogCollection Collection<int|string, LogRow>
+ * @phpstan-type FilterData array{date?: array{from?: string, until?: string}, file?: array{value: string}}
  */
 final class LogTable extends Page implements HasTable
 {
@@ -102,7 +103,9 @@ final class LogTable extends Page implements HasTable
                     $records = Collection::wrap(Log::getRows());
 
                     $records = $this->applyTabFilter($records);
+                    /** @var FilterData $filters */
                     $records = $this->applyDateFilter($records, $filters);
+                    /** @var FilterData $filters */
                     $records = $this->applyFileFilter($records, $filters);
                     $records = $this->applySearchFilter($records, $search);
 
@@ -124,15 +127,22 @@ final class LogTable extends Page implements HasTable
             ->recordActions([
                 Action::make('view')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
-                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
-                    ->hidden(fn (array $record): bool => count($record['stack']) === 0)
+                    ->visible(
+                        fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL
+                    )
+                    ->hidden(
+                        fn (array $record): bool => count((array) $record['stack']) === 0
+                    )
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(fn (array $record): string => $record['message'])
+                    ->modalDescription(function (array $record): string {
+                        /** @var LogRow $record */
+                        return $record['message'];
+                    })
                     ->slideOver(),
                 Action::make('view-json')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -144,7 +154,10 @@ final class LogTable extends Page implements HasTable
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(fn (array $record): string => $record['message'])
+                    ->modalDescription(function (array $record): string {
+                        /** @var LogRow $record */
+                        return $record['message'];
+                    })
                     ->slideOver(),
                 Action::make('read')
                     ->label(__('filament-log-viewer::log.table.actions.read.label'))
@@ -154,8 +167,24 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => MailLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(fn (array $record): string => $record['mail']['subject'] ? __('filament-log-viewer::log.table.actions.read.subject').': '.$record['mail']['subject'] : __('filament-log-viewer::log.table.actions.read.mail_log'))
-                    ->modalDescription(fn (array $record) => $record['mail']['sent_date'] ? __('filament-log-viewer::log.table.actions.read.sent_date').': '.$record['mail']['sent_date'] : null)
+                    ->modalHeading(function (array $record): string {
+                        /** @var LogRow $record */
+                        $mail = $record['mail'];
+                        if ($mail && isset($mail['subject']) && $mail['subject'] !== '') {
+                            return __('filament-log-viewer::log.table.actions.read.subject').': '.(string) $mail['subject'];
+                        }
+
+                        return __('filament-log-viewer::log.table.actions.read.mail_log');
+                    })
+                    ->modalDescription(function (array $record): ?string {
+                        /** @var LogRow $record */
+                        $mail = $record['mail'];
+                        if ($mail && isset($mail['sent_date']) && $mail['sent_date'] !== '') {
+                            return __('filament-log-viewer::log.table.actions.read.sent_date').': '.(string) $mail['sent_date'];
+                        }
+
+                        return null;
+                    })
                     ->slideOver(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
@@ -222,7 +251,7 @@ final class LogTable extends Page implements HasTable
 
     /**
      * @param  LogCollection  $records
-     * @param  array{date?: array{from?: string, until?: string}}|null  $filters
+     * @param  FilterData|null  $filters
      * @return LogCollection
      */
     private function applyDateFilter(Collection $records, ?array $filters): Collection
@@ -242,7 +271,7 @@ final class LogTable extends Page implements HasTable
 
     /**
      * @param  LogCollection  $records
-     * @param  array{file?: array{value: string}}|null  $filters
+     * @param  FilterData|null  $filters
      * @return LogCollection
      */
     private function applyFileFilter(Collection $records, ?array $filters): Collection

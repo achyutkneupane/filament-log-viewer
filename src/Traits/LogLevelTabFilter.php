@@ -32,6 +32,7 @@ trait LogLevelTabFilter
     /** @return array<string, mixed> */
     public function getTabs(): array
     {
+        /** @var array<string, mixed> $all_logs */
         $all_logs = [
             $this->unscopedLogLevel => Tab::make(__('filament-log-viewer::log.levels.all'))
                 ->id($this->unscopedLogLevel)
@@ -40,6 +41,7 @@ trait LogLevelTabFilter
 
         $exceptMail = array_filter(LogLevel::cases(), fn (LogLevel $level): bool => $level !== LogLevel::MAIL);
 
+        /** @var array<string, mixed> $tabs */
         $tabs = collect($exceptMail)
             ->mapWithKeys(fn (LogLevel $level): array => [
                 $level->value => Tab::make($level->getLabel())
