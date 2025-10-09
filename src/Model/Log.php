@@ -235,8 +235,8 @@ final class Log
 
         if (self::isMailStack($matches['message'])) {
             $mailLine = [
-                'date' => $matches['date'] ?? null,
-                'env' => $matches['env'] ?? null,
+                'date' => $matches['date'] ?? '',
+                'env' => $matches['env'] ?? '',
                 'message' => $matches['message'],
             ];
 

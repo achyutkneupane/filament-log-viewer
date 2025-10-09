@@ -97,7 +97,7 @@ trait HasMailLog
             'log_level' => LogLevel::MAIL,
             'message' => $subject,
             'mail' => [
-                'plain' => $markdownPlain,
+                'plain' => $markdownPlain ?? '',
                 'html' => $htmlMail,
                 'sender' => self::extractNameAndEmail($sender),
                 'receiver' => self::extractNameAndEmail($receiver),
@@ -140,7 +140,7 @@ trait HasMailLog
         $plainMail = (string) $plainMail;
         $plainMail = preg_replace('/\r\n|\r|\n/', "\n\n", $plainMail);
 
-        return [$plainMail, $htmlMail];
+        return [$plainMail ?? '', $htmlMail ?? ''];
     }
 
     /** @return array{name: string, email: string} */

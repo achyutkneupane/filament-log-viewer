@@ -54,7 +54,7 @@ trait LogLevelTabFilter
             $tabs['mail'] = Tab::make('Mail')
                 ->label(__('filament-log-viewer::log.levels.mail'))
                 ->id('mail')
-                ->badge(fn (): int => Log::getLogCount('mail'))
+                ->badge(fn (): ?int => Log::getLogCount('mail'))
                 ->badgeColor(LogLevel::MAIL->getColor());
         }
 

@@ -30,9 +30,9 @@ trait PluginVariables
         return $this->evaluate($this->authorized);
     }
 
-    public function getNavigationGroup(): ?string
+    public function getNavigationGroup(): string
     {
-        return $this->evaluate($this->navigationGroup);
+        return $this->evaluate($this->navigationGroup) ?? '';
     }
 
     public function getNavigationIcon(): string
@@ -40,9 +40,9 @@ trait PluginVariables
         return $this->evaluate($this->navigationIcon);
     }
 
-    public function getNavigationLabel(): ?string
+    public function getNavigationLabel(): string
     {
-        return $this->evaluate($this->navigationLabel);
+        return $this->evaluate($this->navigationLabel) ?? '';
     }
 
     public function getNavigationSort(): int
