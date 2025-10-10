@@ -6,7 +6,7 @@ return [
     'placeholder' => '-',
     'navigation' => [
         'title' => 'نمایشگر لاگ',
-        'heading' => 'نمایشگر لاگ',
+        'heading' => 'جدول لاگ‌ها',
         'subheading' => '',
         'group' => 'سیستم',
         'label' => 'نمایشگر لاگ',
@@ -22,21 +22,21 @@ return [
         'filters' => [
             'env' => [
                 'label' => 'محیط',
-                'indicator' => 'فیلتر بر اساس محیط',
+                'indicator' => 'فیلتر براساس محیط',
             ],
             'file' => [
                 'label' => 'فایل',
-                'indicator' => 'فیلتر بر اساس فایل',
-                'from' => 'از',
-                'until' => 'تا',
+                'indicator' => 'فیلتر براساس فایل',
             ],
             'date' => [
                 'label' => 'تاریخ',
-                'indicator' => 'فیلتر بر اساس تاریخ',
+                'indicator' => 'فیلتر براساس تاریخ',
+                'from' => 'از',
+                'until' => 'تا',
             ],
             'date_range' => [
                 'label' => 'بازه زمانی',
-                'indicator' => 'فیلتر بر اساس بازه زمانی',
+                'indicator' => 'فیلتر براساس بازه زمانی',
             ],
             'indicators' => [
                 'logs_from_to' => 'لاگ‌ها از :from تا :until',
@@ -60,7 +60,7 @@ return [
             ],
             'clear' => [
                 'label' => 'پاک کردن لاگ‌ها',
-                'success' => 'تمام لاگ‌ها با موفقیت پاک شدند!',
+                'success' => 'تمام لاگ‌ها پاک شدند.',
             ],
         ],
     ],
@@ -69,7 +69,7 @@ return [
             'stack' => 'ردیابی پشته',
         ],
         'json-log' => [
-            'context' => 'متن',
+            'context' => 'زمینه',
         ],
     ],
     'mail' => [
@@ -88,8 +88,8 @@ return [
         'html' => 'HTML',
     ],
     'levels' => [
-        'all' => 'تمام لاگ‌ها',
-        'alert' => 'هشدار',
+        'all' => 'همه لاگ‌ها',
+        'alert' => 'هشدار مهم',
         'critical' => 'بحرانی',
         'debug' => 'اشکال‌زدایی',
         'emergency' => 'اضطراری',
