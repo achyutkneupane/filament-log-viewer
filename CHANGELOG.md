@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.5.2 - 2025-10-13
+
+### What's Changed
+
+* Improves Persian (Farsi) translations by @FaridAghili in https://github.com/achyutkneupane/filament-log-viewer/pull/73
+
+### New Contributors
+
+* @FaridAghili made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/73
+
 ## v1.5.1 - 2025-10-09
 
 ### What's Changed
