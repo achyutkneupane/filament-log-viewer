@@ -40,8 +40,6 @@
         "larastan/larastan": "^3.8",
         "laravel/pint": "^1.25",
         "orchestra/testbench": "^10.6",
-        "pestphp/pest": "^4.1",
-        "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.2"
     },
