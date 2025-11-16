@@ -27,12 +27,12 @@ return [
             'file' => [
                 'label' => 'Fichier',
                 'indicator' => 'Filtré par fichier',
-                'from' => 'De',
-                'until' => 'Jusqu\'à',
             ],
             'date' => [
                 'label' => 'Date',
                 'indicator' => 'Filtré par date',
+                'from' => 'De',
+                'until' => 'Jusqu\'à',
             ],
             'date_range' => [
                 'label' => 'Plage de dates',

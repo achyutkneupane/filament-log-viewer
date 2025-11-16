@@ -27,12 +27,12 @@ return [
             'file' => [
                 'label' => 'Archivo',
                 'indicator' => 'Filtrado por archivo',
-                'from' => 'Desde',
-                'until' => 'Hasta',
             ],
             'date' => [
                 'label' => 'Fecha',
                 'indicator' => 'Filtrado por fecha',
+                'from' => 'Desde',
+                'until' => 'Hasta',
             ],
             'date_range' => [
                 'label' => 'Rango de Fechas',
