@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.5.3 - 2025-11-16
+
+### What's Changed
+
+* fix: updates misplacement of `from` and `until` keys by @relisiuol in https://github.com/achyutkneupane/filament-log-viewer/pull/74
+
+### New Contributors
+
+* @relisiuol made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/74
+
 ## v1.5.2 - 2025-10-13
 
 ### What's Changed
