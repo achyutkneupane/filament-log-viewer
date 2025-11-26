@@ -8,6 +8,7 @@ use AchyutN\FilamentLogViewer\Traits\PluginVariables;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use UnitEnum;
 
 final class FilamentLogViewer implements Plugin
 {
@@ -66,7 +67,7 @@ final class FilamentLogViewer implements Plugin
         return $this;
     }
 
-    public function navigationGroup(string|Closure $group): self
+    public function navigationGroup(string|UnitEnum|Closure $group): self
     {
         $this->navigationGroup = $group;
 

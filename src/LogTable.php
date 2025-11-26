@@ -27,6 +27,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use UnitEnum;
 
 /**
  * @phpstan-import-type LogRow from Log
@@ -48,7 +49,7 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
         return self::getPlugin()->getNavigationGroup();
     }
