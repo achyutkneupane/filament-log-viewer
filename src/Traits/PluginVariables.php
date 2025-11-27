@@ -33,6 +33,7 @@ trait PluginVariables
 
     public function getNavigationGroup(): string|UnitEnum|null
     {
+        /** @var string|UnitEnum|null */
         return $this->evaluate($this->navigationGroup);
     }
 
