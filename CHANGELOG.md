@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.6 - 2025-11-28
+
+### What's Changed
+
+* feat: adds configuration for maximum log file size by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/82
+* feat: adds log viewer plugin retrieval logic by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/83
+* refactor: removes leading slash from navigation URL by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/84
+* refactor: improves log file reading by using streaming by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/85
+* feat: adds Enum support in navigation group by @clnt in https://github.com/achyutkneupane/filament-log-viewer/pull/76
+
+### New Contributors
+
+* @clnt made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/76
+
 ## v0.7 - 2025-11-28
 
 ### What's Changed
