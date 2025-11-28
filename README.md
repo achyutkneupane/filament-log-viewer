@@ -34,6 +34,42 @@ return $panel
 
 After installation, visit `/logs` in your Filament panel. You will see a table of log entries.
 
+### Configuration
+
+You can configure the maximum file size limit for log files to be loaded and displayed. This helps prevent performance
+issues with very large log files.
+
+The default file size limit is set to `2 MB`:
+
+```php
+// config/filament-log-viewer.php
+
+return [
+    'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
+];
+```
+
+To override this setting, you can set the `LOG_MAX_SIZE_KB` environment variable in your `.env` file:
+
+```
+LOG_MAX_SIZE_KB=20480
+```
+
+Or, you can publish the configuration file and update the `max_log_file_size` value as needed:
+
+```bash
+php artisan vendor:publish --tag=filament-log-viewer-config
+```
+
+Then, in your published `config/filament-log-viewer.php` file:
+
+```php
+return [
+    // Set max file size to 20 MB
+    'max_log_file_size' => env('LOG_MAX_SIZE_KB', 20480),
+];
+```
+
 ### Table Columns
 
 - **Log Level** – Badge with color mapped from log level
