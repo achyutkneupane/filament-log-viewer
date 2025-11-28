@@ -47,9 +47,13 @@ final class Log extends Model
             return [];
         }
 
+        $maxFileSize = config('filament-log-viewer.max_log_file_size', 2048) * 1024;
+
         $logFiles = array_filter(
             scandir($logDir) ?: [],
-            fn ($file) => is_file("$logDir/$file") && pathinfo($file, PATHINFO_EXTENSION) === 'log'
+            fn ($file) => is_file("$logDir/$file")
+                && pathinfo($file, PATHINFO_EXTENSION) === 'log'
+                && filesize("$logDir/$file") <= $maxFileSize
         );
 
         $logs = [];
