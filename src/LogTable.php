@@ -15,6 +15,7 @@ use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -227,13 +228,18 @@ final class LogTable extends Page implements HasTable
         ];
     }
 
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     private static function getPlugin(): FilamentLogViewer
     {
-        /** @var FilamentLogViewer */
-        return filament('filament-log-viewer');
+        $panel = Filament::getCurrentPanel();
+        $logViewer = FilamentLogViewer::make();
+
+        if ($panel?->hasPlugin($logViewer->getId())) {
+            /** @var FilamentLogViewer */
+            return $panel->getPlugin($logViewer->getId());
+        }
+
+        return $logViewer;
     }
 
     /**
