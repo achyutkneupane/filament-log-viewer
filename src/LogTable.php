@@ -196,7 +196,12 @@ final class LogTable extends Page implements HasTable
     private static function getPlugin(): FilamentLogViewer
     {
         $panel = Filament::getCurrentPanel();
+        $logViewer = FilamentLogViewer::make();
 
-        return $panel?->getPlugin('filament-log-viewer');
+        if ($panel->hasPlugin($logViewer->getId())) {
+            return $panel->getPlugin($logViewer->getId());
+        }
+
+        return $logViewer;
     }
 }
