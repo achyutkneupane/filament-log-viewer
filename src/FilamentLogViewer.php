@@ -23,7 +23,7 @@ final class FilamentLogViewer implements Plugin
 
     public int|Closure $navigationSort = 9999;
 
-    public string|Closure $navigationUrl = '/logs';
+    public string|Closure $navigationUrl = 'logs';
 
     public string|null|Closure $pollingTime = null;
 
