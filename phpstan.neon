@@ -12,3 +12,4 @@ parameters:
 
     ignoreErrors:
     		- identifier: callable.nonCallable
+    		- identifier: larastan.noEnvCallsOutsideOfConfig

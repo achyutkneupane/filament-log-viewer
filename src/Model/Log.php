@@ -115,7 +115,9 @@ final class Log
             return [];
         }
 
-        $maxFileSize = config('filament-log-viewer.max_log_file_size', 2048) * 1024;
+        /** @var int $configMaxFileSize */
+        $configMaxFileSize = config('filament-log-viewer.max_log_file_size', 2048);
+        $maxFileSize = $configMaxFileSize * 1024;
 
         $files = array_filter(
             self::getNestedFiles($logFilePath),
