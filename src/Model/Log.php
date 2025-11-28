@@ -51,7 +51,7 @@ final class Log extends Model
 
         $logFiles = array_filter(
             scandir($logDir) ?: [],
-            fn ($file) => is_file("$logDir/$file")
+            fn (string $file): bool => is_file("$logDir/$file")
                 && pathinfo($file, PATHINFO_EXTENSION) === 'log'
                 && filesize("$logDir/$file") <= $maxFileSize
         );

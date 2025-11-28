@@ -26,14 +26,14 @@ return $panel
     ]);
 ```
 
-
 ## Usage
 
 After installation, visit `/logs` in your Filament panel. You will see a table of log entries.
 
 ### Configuration
 
-You can configure the maximum file size limit for log files to be loaded and displayed. This helps prevent performance issues with very large log files.
+You can configure the maximum file size limit for log files to be loaded and displayed. This helps prevent performance
+issues with very large log files.
 
 The default file size limit is set to `2 MB`:
 
@@ -66,7 +66,6 @@ return [
 ];
 ```
 
-
 ### Table Columns
 
 - **Log Level** – Badge with color mapped from log level
@@ -91,7 +90,8 @@ You can filter the logs according to log level. The filters are available as tab
 
 #### Date
 
-You can filter logs by date using the date picker in the top right corner of the table. This allows you to select a specific date range to view logs.
+You can filter logs by date using the date picker in the top right corner of the table. This allows you to select a
+specific date range to view logs.
 
 ![Date Filter](https://hamrocdn.com/q9sILZZYuxlN)
 
@@ -112,12 +112,17 @@ FilamentLogViewer::make()
     ->pollingTime(null); // Set to null to disable polling
 ```
 
+## Laravel Compatibility
+
+The plugin fully supports Laravel 11 and newer. Older versions, such as Laravel 10, may have limitations due to
+differences in JSON/array casting behavior, which can affect how log stack traces are processed and displayed.
+
 ## Filament Compatibility
 
-| Version             | Filament Version |
-|---------------------|------------------|
-| `^0.x`              | Filament v3      |
-| `^1.0`              | Filament v4      |
+| Version | Filament Version |
+|---------|------------------|
+| `^0.x`  | Filament v3      |
+| `^1.0`  | Filament v4      |
 
 ## License
 
