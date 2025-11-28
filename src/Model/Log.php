@@ -59,11 +59,19 @@ final class Log extends Model
         $logs = [];
 
         foreach ($logFiles as $file) {
-            $lines = file("$logDir/$file", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            if ($lines === false) {
+            $handle = fopen("$logDir/$file", 'r');
+            if ($handle === false) {
                 continue;
             }
-
+            $lines = [];
+            while (($line = fgets($handle)) !== false) {
+                $line = rtrim($line, "\r\n");
+                if ($line === '') {
+                    continue;
+                }
+                $lines[] = $line;
+            }
+            fclose($handle);
             $logs = array_merge($logs, $this->parseFileLines($lines, $file));
         }
 
