@@ -212,16 +212,16 @@ final class Log
      */
     private static function processLogFile(string $filePath, string $file): array
     {
-        $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-        if ($lines === false) {
-            return [];
-        }
-
         $logs = [];
         $entryLines = [];
 
-        foreach ($lines as $line) {
+        $handle = fopen($filePath, 'r');
+        if ($handle === false) {
+            return [];
+        }
+
+        while (($line = fgets($handle)) !== false) {
+            $line = rtrim($line, "\r\n");
             if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
                 $logs[] = self::parseLogEntry($entryLines, $file);
                 $entryLines = [];
@@ -232,6 +232,8 @@ final class Log
         if ($entryLines !== []) {
             $logs[] = self::parseLogEntry($entryLines, $file);
         }
+
+        fclose($handle);
 
         return array_filter($logs);
     }
