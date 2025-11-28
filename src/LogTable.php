@@ -63,7 +63,10 @@ final class LogTable extends Page implements HasTable
     /** @throws Exception */
     public static function getSlug(?Panel $panel = null): string
     {
-        return self::getPlugin()->getNavigationUrl();
+        return ltrim(
+            self::getPlugin()->getNavigationUrl(),
+            '/'
+        );
     }
 
     /** @throws Exception */
