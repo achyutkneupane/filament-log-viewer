@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7 - 2025-11-28
+
+### What's Changed
+
+* fix: updates badge callbacks to return nullable integer values by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/65
+* docs: adds bug report template for issue tracking by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/66
+* feat: adds configuration for maximum log file size by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/78
+* feat: adds log viewer plugin retrieval logic by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/79
+* fix: trims leading slash from URL for route generation issue by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/80
+* refactor: improves log file reading by using streaming by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/81
+
 ## v1.5.3 - 2025-11-16
 
 ### What's Changed
