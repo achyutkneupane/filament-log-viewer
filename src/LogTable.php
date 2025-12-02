@@ -233,9 +233,9 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
-    private static function getPlugin(): FilamentLogViewer
+    private static function getPlugin(?Panel $panel = null): FilamentLogViewer
     {
-        $panel = Filament::getCurrentPanel();
+        $panel ??= Filament::getCurrentPanel();
         $logViewer = FilamentLogViewer::make();
 
         if ($panel?->hasPlugin($logViewer->getId())) {
