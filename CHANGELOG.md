@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.1 - 2025-12-02
+
+### What's Changed
+
+* fix: route registration when using custom URL by @clnt in https://github.com/achyutkneupane/filament-log-viewer/pull/86
+
 ## v1.6 - 2025-11-28
 
 ### What's Changed
