@@ -217,7 +217,7 @@ final class LogTable extends Page implements HasTable
                 ->action(function (): void {
                     $this->refresh();
                 }),
-            Action::make('clear')
+            ...(config('filament-log-viewer.enable_delete', true) ? Action::make('clear')
                 ->label(__('filament-log-viewer::log.table.actions.clear.label'))
                 ->icon(Heroicon::Trash)
                 ->color(Color::Red)
@@ -228,7 +228,7 @@ final class LogTable extends Page implements HasTable
                         ->title(__('filament-log-viewer::log.table.actions.clear.success'))
                         ->success()
                         ->send();
-                }),
+                }) : []),
         ];
     }
 
