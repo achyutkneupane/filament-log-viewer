@@ -1,11 +1,5 @@
 # Changelog
 
-## v2.0.0 - 2026-01-16
-
-### What's Changed
-
-* Updates dependencies for filament v5 compatibility by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/91
-
 ## v1.5.1 - 2025-10-09
 
 ### What's Changed
