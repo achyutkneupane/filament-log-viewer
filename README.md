@@ -2,8 +2,6 @@
 
 ![Filament Log Viewer](https://banners.beyondco.de/Filament%20Log%20Viewer.png?theme=light&packageManager=composer+require&packageName=achyutn%2Ffilament-log-viewer&pattern=hideout&style=style_2&description=A+Filament+package+to+view+and+manage+Laravel+logs.&md=1&showWatermark=0&fontSize=175px&images=document-report)
 
-> **⚠️ This version is in beta until filament v5 stable is released. Please report any issues you encounter. ⚠️**
-
 ![Packagist Version](https://img.shields.io/packagist/v/achyutn/filament-log-viewer?label=Latest%20Version)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/achyutn/filament-log-viewer?label=Packagist%20Downloads)
 ![Packagist Stars](https://img.shields.io/packagist/stars/achyutn/filament-log-viewer?label=Stars)
@@ -95,11 +93,11 @@ FilamentLogViewer::make()
 
 ## Filament Compatibility
 
-| Version     | Filament Version |
-|-------------|------------------|
-| `^2.x-beta` | Filament v5      |
-| `^1.x`      | Filament v4      |
-| `^0.x`      | Filament v3      |
+| Version                                                                          | Filament Version |
+|----------------------------------------------------------------------------------|------------------|
+| [`^2.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v5) | Filament v5      |
+| [`^1.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v4) | Filament v4      |
+| [`^0.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v3) | Filament v3      |
 
 Make sure you're using the appropriate version of this package for your Filament installation.
 
