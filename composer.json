@@ -33,15 +33,16 @@
     ],
     "require": {
         "php": ">=8.2",
-        "filament/filament": "^5.0",
+        "filament/filament": "^5",
+        "livewire/livewire": "^4",
         "phiki/phiki": "^2.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.8",
-        "laravel/pint": "^1.25",
-        "orchestra/testbench": "^10.6",
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^10.9",
         "phpstan/phpstan": "^2.1",
-        "rector/rector": "^2.2"
+        "rector/rector": "^2.3"
     },
     "scripts": {
         "lint": [
