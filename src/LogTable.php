@@ -162,11 +162,11 @@ final class LogTable extends Page implements HasTable
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(
-                    /** @phpstan-var LogRow $record */
+                        /** @phpstan-var LogRow $record */
                         fn (array $record): string => $record['message']
                     )
                     ->modalDescription(
-                    /** @phpstan-var LogRow $record */
+                        /** @phpstan-var LogRow $record */
                         fn (array $record): ?string => $record['description']
                     )
                     ->slideOver(),

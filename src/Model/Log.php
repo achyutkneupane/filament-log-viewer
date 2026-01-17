@@ -284,20 +284,13 @@ final class Log
             $json = trim($matches['json']);
             $decoded = json_decode($json, true);
 
-            // We look for the exception details in the raw JSON string regardless of whether decode worked
-            // This regex specifically separates the error text from the "at [path]" part
             $jsonFirstLine = strtok($json, "\n");
-            preg_match('/"exception":"\[object\] \([^)]+\): (.*?) (at .*?)\)/s', $jsonFirstLine, $stackMatches);
 
-            if (isset($stackMatches[1]) && isset($stackMatches[2])) {
-                // $stackMatches[1] is "Undefined variable $blogs12"
-                // $stackMatches[2] is "at /Users/.../web.php:7"
-                $description = trim($stackMatches[2]);
+            $regex = '/"exception":"\[object\] \(.*?\(code: \d+\): (?<real_msg>.*?) (?<loc>at\s\/.*?)\)$/s';
 
-                // If the main message was empty or redundant, we can ensure it's set
-                if ($message === '' || $message === '0') {
-                    $message = trim($stackMatches[1]);
-                }
+            if (preg_match($regex, $jsonFirstLine, $stackMatches)) {
+                $description = trim($stackMatches['loc']);
+                $message = trim($stackMatches['real_msg']);
             } else {
                 $description = null;
             }
