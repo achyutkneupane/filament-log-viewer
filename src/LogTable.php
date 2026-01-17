@@ -217,22 +217,19 @@ final class LogTable extends Page implements HasTable
                 ->action(function (): void {
                     $this->refresh();
                 }),
-            ...(config('filament-log-viewer.enable_delete', true) ?
-                [
-                    Action::make('clear')
-                    ->label(__('filament-log-viewer::log.table.actions.clear.label'))
-                    ->icon(Heroicon::Trash)
-                    ->color(Color::Red)
-                    ->requiresConfirmation()
-                    ->action(function (): void {
-                        Log::destroyAllLogs();
-                        Notification::make()
-                            ->title(__('filament-log-viewer::log.table.actions.clear.success'))
-                            ->success()
-                            ->send();
-                    }),
-                ]
-                : []),
+            Action::make('clear')
+                ->label(__('filament-log-viewer::log.table.actions.clear.label'))
+                ->icon(Heroicon::Trash)
+                ->color(Color::Red)
+                ->visible(fn () => config('filament-log-viewer.enable_delete', true))
+                ->requiresConfirmation()
+                ->action(function (): void {
+                    Log::destroyAllLogs();
+                    Notification::make()
+                        ->title(__('filament-log-viewer::log.table.actions.clear.success'))
+                        ->success()
+                        ->send();
+                }),
         ];
     }
 
