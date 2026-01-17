@@ -98,6 +98,7 @@ trait HasMailLog
             'env' => trim($env),
             'log_level' => LogLevel::MAIL,
             'message' => $subject,
+            'description' => null,
             'mail' => [
                 'plain' => $markdownPlain ?? '',
                 'html' => $htmlMail,
