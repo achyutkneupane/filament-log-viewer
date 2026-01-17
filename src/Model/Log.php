@@ -289,7 +289,7 @@ final class Log
             $regex = '/"exception":"\[object\] \(.*?\(code: \d+\): (?<real_msg>.*?) (?<loc>at\s\/.*?)\)$/s';
 
             if (preg_match($regex, $jsonFirstLine, $stackMatches)) {
-                $description = trim($stackMatches['loc']);
+                $description = self::shortenPath(trim($stackMatches['loc']));
                 $message = trim($stackMatches['real_msg']);
             } else {
                 $description = null;
@@ -343,5 +343,16 @@ final class Log
                 fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
             ->thenReturn();
+    }
+
+    private static function shortenPath(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        $basePath = base_path().DIRECTORY_SEPARATOR;
+
+        return str_replace($basePath, '', $path);
     }
 }
