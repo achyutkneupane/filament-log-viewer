@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.7.0 - 2026-01-17
+
+### What's Changed
+
+* fix: refactors the parsing to include file name and line number by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/93
+* feat: adds config to show or hide clear button by @produktive in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+### New Contributors
+
+* @produktive made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.6.1...v1.7.0
+
 ## v2.1.0 - 2026-01-17
 
 ### What's Changed
