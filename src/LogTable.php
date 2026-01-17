@@ -226,6 +226,7 @@ final class LogTable extends Page implements HasTable
                 ->label(__('filament-log-viewer::log.table.actions.clear.label'))
                 ->icon(Heroicon::Trash)
                 ->color(Color::Red)
+                ->visible(fn () => config('filament-log-viewer.enable_delete', true))
                 ->requiresConfirmation()
                 ->action(function (): void {
                     Log::destroyAllLogs();
