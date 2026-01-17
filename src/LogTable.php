@@ -144,12 +144,11 @@ final class LogTable extends Page implements HasTable
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(
-                        /** @phpstan-var LogRow $record */
-                        fn (array $record): string => $record['message']
+                        fn (array $record) => $record['message']
                     )
                     ->modalDescription(
-                        /** @phpstan-var LogRow $record */
-                        fn (array $record): ?string => $record['description']
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['description']
                     )
                     ->slideOver(),
                 Action::make('view-json')
@@ -162,12 +161,12 @@ final class LogTable extends Page implements HasTable
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
                     ->modalHeading(
-                        /** @phpstan-var LogRow $record */
-                        fn (array $record): string => $record['message']
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['message']
                     )
                     ->modalDescription(
-                        /** @phpstan-var LogRow $record */
-                        fn (array $record): ?string => $record['description']
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['description']
                     )
                     ->slideOver(),
                 Action::make('read')

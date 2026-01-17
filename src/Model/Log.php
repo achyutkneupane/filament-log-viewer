@@ -24,7 +24,7 @@ use Illuminate\Support\Collection;
  *     env: string,
  *     log_level: LogLevel,
  *     message: string,
- *     description: string,
+ *     description: string|null,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
  *     stack: list<StackTrace>,
@@ -284,7 +284,7 @@ final class Log
             $json = trim($matches['json']);
             $decoded = json_decode($json, true);
 
-            $jsonFirstLine = strtok($json, "\n");
+            $jsonFirstLine = (string) strtok($json, "\n");
 
             $regex = '/"exception":"\[object\] \(.*?\(code: \d+\): (?<real_msg>.*?) (?<loc>at\s\/.*?)\)$/s';
 
