@@ -6,7 +6,6 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
-use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 
@@ -25,6 +24,7 @@ use Illuminate\Support\Collection;
  *     env: string,
  *     log_level: LogLevel,
  *     message: string,
+ *     description: string,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
  *     stack: list<StackTrace>,
@@ -69,12 +69,7 @@ final class Log
             $logs = array_merge($logs, self::processLogFile($filePath, $file));
         }
 
-        usort($logs, function (array $a, array $b): int {
-            $dateA = Carbon::parse($a['date']);
-            $dateB = Carbon::parse($b['date']);
-
-            return $dateB->timestamp <=> $dateA->timestamp;
-        });
+        usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
 
         return array_filter($logs);
     }
@@ -264,13 +259,14 @@ final class Log
 
         $messagePart = trim($matches['message']);
 
-        [$message, $context] = self::splitMessageAndContext($messagePart);
+        [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
             'date' => array_key_exists('date', $matches) ? trim($matches['date']) : '',
             'env' => array_key_exists('env', $matches) ? trim($matches['env']) : '',
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
+            'description' => $description,
             'context' => $context,
             'mail' => null,
             'stack' => self::extractStack($matches['message']),
@@ -278,29 +274,49 @@ final class Log
         ];
     }
 
-    /** @return array{0: string, 1: array<string, mixed>|null} */
-    private static function splitMessageAndContext(string $raw): array
+    /** @return array{0: string, 1: string|null, 2: array<string, mixed>|null} */
+    private static function splitMessagesAndContext(string $raw): array
     {
         $pattern = '/^(?<message>.*?)(?<json>\{.*\})$/s';
 
         if (preg_match($pattern, $raw, $matches)) {
+            $message = trim($matches['message']);
             $json = trim($matches['json']);
             $decoded = json_decode($json, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
-                return [trim($matches['message']), null];
+            // We look for the exception details in the raw JSON string regardless of whether decode worked
+            // This regex specifically separates the error text from the "at [path]" part
+            $jsonFirstLine = strtok($json, "\n");
+            preg_match('/"exception":"\[object\] \([^)]+\): (.*?) (at .*?)\)/s', $jsonFirstLine, $stackMatches);
+
+            if (isset($stackMatches[1]) && isset($stackMatches[2])) {
+                // $stackMatches[1] is "Undefined variable $blogs12"
+                // $stackMatches[2] is "at /Users/.../web.php:7"
+                $description = trim($stackMatches[2]);
+
+                // If the main message was empty or redundant, we can ensure it's set
+                if ($message === '' || $message === '0') {
+                    $message = trim($stackMatches[1]);
+                }
+            } else {
+                $description = null;
             }
 
-            /** @var array<string, mixed> $loopParsed */
-            $loopParsed = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value, $decoded);
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+                $context = null;
+            } else {
+                /** @var array<string, mixed> $context */
+                $context = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value)
+                    ? json_decode($value, true) ?? $value
+                    : $value,
+                    $decoded
+                );
+            }
 
-            return [
-                trim($matches['message']),
-                $loopParsed,
-            ];
+            return [$message, $description, $context];
         }
 
-        return [$raw, null];
+        return [trim($raw), null, null];
     }
 
     private static function looksLikeJson(string $value): bool
