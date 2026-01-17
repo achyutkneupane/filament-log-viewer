@@ -143,14 +143,14 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(function (array $record): string {
-                        /** @var LogRow $record */
-                        return $record['message'];
-                    })
-                    ->modalDescription(function (array $record): string {
-                        /** @var LogRow $record */
-                        return $record['description'];
-                    })
+                    ->modalHeading(
+                        /** @phpstan-var LogRow $record */
+                        fn (array $record): string => $record['message']
+                    )
+                    ->modalDescription(
+                        /** @phpstan-var LogRow $record */
+                        fn (array $record): ?string => $record['description']
+                    )
                     ->slideOver(),
                 Action::make('view-json')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -161,11 +161,14 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => JSONLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(function (array $record): string {
-                        /** @var LogRow $record */
-                        return $record['message'];
-                    })
+                    ->modalHeading(
+                    /** @phpstan-var LogRow $record */
+                        fn (array $record): string => $record['message']
+                    )
+                    ->modalDescription(
+                    /** @phpstan-var LogRow $record */
+                        fn (array $record): ?string => $record['description']
+                    )
                     ->slideOver(),
                 Action::make('read')
                     ->label(__('filament-log-viewer::log.table.actions.read.label'))
