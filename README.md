@@ -129,11 +129,10 @@ FilamentLogViewer::make()
 
 ## Filament Compatibility
 
-| Version                                                                          | Filament Version |
-|----------------------------------------------------------------------------------|------------------|
-| [`^2.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v5) | Filament v5      |
-| [`^1.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v4) | Filament v4      |
-| [`^0.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v3) | Filament v3      |
+| Version | Filament Version |
+|---------|------------------|
+| `^1.x`  | Filament v4      |
+| `^0.x`  | Filament v3      |
 
 Make sure you're using the appropriate version of this package for your Filament installation.
 
