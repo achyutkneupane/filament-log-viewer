@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer\Traits;
 
 use Closure;
 use Filament\Support\Concerns\EvaluatesClosures;
+use UnitEnum;
 
 trait PluginVariables
 {
@@ -13,7 +14,7 @@ trait PluginVariables
 
     public bool|Closure $authorized = true;
 
-    public string|Closure|null $navigationGroup = null;
+    public string|UnitEnum|Closure|null $navigationGroup = null;
 
     public string|Closure $navigationIcon = 'heroicon-o-document-text';
 
@@ -30,10 +31,10 @@ trait PluginVariables
         return (bool) $this->evaluate($this->authorized);
     }
 
-    public function getNavigationGroup(): string
+    public function getNavigationGroup(): string|UnitEnum|null
     {
-        /** @phpstan-var string */
-        return $this->evaluate($this->navigationGroup) ?? '';
+        /** @var string|UnitEnum|null */
+        return $this->evaluate($this->navigationGroup);
     }
 
     public function getNavigationIcon(): string

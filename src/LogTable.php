@@ -15,6 +15,7 @@ use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -27,6 +28,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use UnitEnum;
 
 /**
  * @phpstan-import-type LogRow from Log
@@ -48,7 +50,7 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
         return self::getPlugin()->getNavigationGroup();
     }
@@ -62,7 +64,10 @@ final class LogTable extends Page implements HasTable
     /** @throws Exception */
     public static function getSlug(?Panel $panel = null): string
     {
-        return self::getPlugin()->getNavigationUrl();
+        return ltrim(
+            self::getPlugin($panel)->getNavigationUrl(),
+            '/'
+        );
     }
 
     /** @throws Exception */
@@ -138,11 +143,13 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(function (array $record): string {
-                        /** @var LogRow $record */
-                        return $record['message'];
-                    })
+                    ->modalHeading(
+                        fn (array $record) => $record['message']
+                    )
+                    ->modalDescription(
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['description']
+                    )
                     ->slideOver(),
                 Action::make('view-json')
                     ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -153,11 +160,14 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => JSONLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(function (array $record): string {
-                        /** @var LogRow $record */
-                        return $record['message'];
-                    })
+                    ->modalHeading(
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['message']
+                    )
+                    ->modalDescription(
+                        /** @phpstan-param LogRow $record */
+                        fn (array $record) => $record['description']
+                    )
                     ->slideOver(),
                 Action::make('read')
                     ->label(__('filament-log-viewer::log.table.actions.read.label'))
@@ -216,6 +226,7 @@ final class LogTable extends Page implements HasTable
                 ->label(__('filament-log-viewer::log.table.actions.clear.label'))
                 ->icon(Heroicon::Trash)
                 ->color(Color::Red)
+                ->visible(fn () => config('filament-log-viewer.enable_delete', true))
                 ->requiresConfirmation()
                 ->action(function (): void {
                     Log::destroyAllLogs();
@@ -227,13 +238,18 @@ final class LogTable extends Page implements HasTable
         ];
     }
 
-    /**
-     * @throws Exception
-     */
-    private static function getPlugin(): FilamentLogViewer
+    /** @throws Exception */
+    private static function getPlugin(?Panel $panel = null): FilamentLogViewer
     {
-        /** @var FilamentLogViewer */
-        return filament('filament-log-viewer');
+        $panel ??= Filament::getCurrentPanel();
+        $logViewer = FilamentLogViewer::make();
+
+        if ($panel?->hasPlugin($logViewer->getId())) {
+            /** @var FilamentLogViewer */
+            return $panel->getPlugin($logViewer->getId());
+        }
+
+        return $logViewer;
     }
 
     /**

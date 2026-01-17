@@ -22,12 +22,22 @@ final class LogViewerProvider extends BaseServiceProvider
             dirname(__DIR__).'/src/resources/lang',
             'filament-log-viewer'
         );
+
+        $this->publishes([
+            dirname(__DIR__).'/src/resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
+        ], 'filament-log-viewer-lang');
+
+        $this->publishes([
+            dirname(__DIR__).'/src/config/filament-log-viewer.php' => config_path('filament-log-viewer.php'),
+        ], 'filament-log-viewer-config');
     }
 
     public function register(): void
     {
-        $this->publishes([
-            dirname(__DIR__).'/src/resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
-        ], 'filament-log-viewer-lang');
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__).'/src/config/filament-log-viewer.php',
+            'filament-log-viewer'
+        );
     }
 }

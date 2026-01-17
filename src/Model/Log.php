@@ -6,7 +6,6 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
-use Carbon\Carbon;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 
@@ -25,6 +24,7 @@ use Illuminate\Support\Collection;
  *     env: string,
  *     log_level: LogLevel,
  *     message: string,
+ *     description: string|null,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
  *     stack: list<StackTrace>,
@@ -69,12 +69,7 @@ final class Log
             $logs = array_merge($logs, self::processLogFile($filePath, $file));
         }
 
-        usort($logs, function (array $a, array $b): int {
-            $dateA = Carbon::parse($a['date']);
-            $dateB = Carbon::parse($b['date']);
-
-            return $dateB->timestamp <=> $dateA->timestamp;
-        });
+        usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
 
         return array_filter($logs);
     }
@@ -115,7 +110,14 @@ final class Log
             return [];
         }
 
-        $files = self::getNestedFiles($logFilePath);
+        /** @var int $configMaxFileSize */
+        $configMaxFileSize = config('filament-log-viewer.max_log_file_size', 2048);
+        $maxFileSize = $configMaxFileSize * 1024;
+
+        $files = array_filter(
+            self::getNestedFiles($logFilePath),
+            fn (string $file): bool => filesize($logFilePath.'/'.$file) <= $maxFileSize
+        );
 
         return array_map(fn (string $file): string => str_replace(storage_path(), '', $file), $files);
     }
@@ -205,16 +207,16 @@ final class Log
      */
     private static function processLogFile(string $filePath, string $file): array
     {
-        $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-        if ($lines === false) {
-            return [];
-        }
-
         $logs = [];
         $entryLines = [];
 
-        foreach ($lines as $line) {
+        $handle = fopen($filePath, 'r');
+        if ($handle === false) {
+            return [];
+        }
+
+        while (($line = fgets($handle)) !== false) {
+            $line = rtrim($line, "\r\n");
             if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
                 $logs[] = self::parseLogEntry($entryLines, $file);
                 $entryLines = [];
@@ -225,6 +227,8 @@ final class Log
         if ($entryLines !== []) {
             $logs[] = self::parseLogEntry($entryLines, $file);
         }
+
+        fclose($handle);
 
         return array_filter($logs);
     }
@@ -255,13 +259,14 @@ final class Log
 
         $messagePart = trim($matches['message']);
 
-        [$message, $context] = self::splitMessageAndContext($messagePart);
+        [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
             'date' => array_key_exists('date', $matches) ? trim($matches['date']) : '',
             'env' => array_key_exists('env', $matches) ? trim($matches['env']) : '',
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
+            'description' => $description,
             'context' => $context,
             'mail' => null,
             'stack' => self::extractStack($matches['message']),
@@ -269,29 +274,42 @@ final class Log
         ];
     }
 
-    /** @return array{0: string, 1: array<string, mixed>|null} */
-    private static function splitMessageAndContext(string $raw): array
+    /** @return array{0: string, 1: string|null, 2: array<string, mixed>|null} */
+    private static function splitMessagesAndContext(string $raw): array
     {
         $pattern = '/^(?<message>.*?)(?<json>\{.*\})$/s';
 
         if (preg_match($pattern, $raw, $matches)) {
+            $message = trim($matches['message']);
             $json = trim($matches['json']);
             $decoded = json_decode($json, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
-                return [trim($matches['message']), null];
+            $jsonFirstLine = (string) strtok($json, "\n");
+
+            $regex = '/"exception":"\[object\] \(.*?\(code: \d+\): (?<real_msg>.*?) (?<loc>at\s\/.*?)\)$/s';
+
+            if (preg_match($regex, $jsonFirstLine, $stackMatches)) {
+                $description = self::shortenPath(trim($stackMatches['loc']));
+                $message = trim($stackMatches['real_msg']);
+            } else {
+                $description = null;
             }
 
-            /** @var array<string, mixed> $loopParsed */
-            $loopParsed = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value) ? json_decode($value, true) ?? $value : $value, $decoded);
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded)) {
+                $context = null;
+            } else {
+                /** @var array<string, mixed> $context */
+                $context = array_map(fn ($value): mixed => is_string($value) && self::looksLikeJson($value)
+                    ? json_decode($value, true) ?? $value
+                    : $value,
+                    $decoded
+                );
+            }
 
-            return [
-                trim($matches['message']),
-                $loopParsed,
-            ];
+            return [$message, $description, $context];
         }
 
-        return [$raw, null];
+        return [trim($raw), null, null];
     }
 
     private static function looksLikeJson(string $value): bool
@@ -325,5 +343,16 @@ final class Log
                 fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
             ])
             ->thenReturn();
+    }
+
+    private static function shortenPath(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        $basePath = base_path().DIRECTORY_SEPARATOR;
+
+        return str_replace($basePath, '', $path);
     }
 }

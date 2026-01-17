@@ -27,12 +27,12 @@ return [
             'file' => [
                 'label' => 'קובץ',
                 'indicator' => 'מסונן לפי קובץ',
-                'from' => 'מ־',
-                'until' => 'עד',
             ],
             'date' => [
                 'label' => 'תאריך',
                 'indicator' => 'מסונן לפי תאריך',
+                'from' => 'מ־',
+                'until' => 'עד',
             ],
             'date_range' => [
                 'label' => 'טווח תאריכים',

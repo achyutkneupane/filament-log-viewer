@@ -27,12 +27,12 @@ return [
             'file' => [
                 'label' => 'Arquivo',
                 'indicator' => 'Filtrado por arquivo',
-                'from' => 'De',
-                'until' => 'Até',
             ],
             'date' => [
                 'label' => 'Data',
                 'indicator' => 'Filtrado por data',
+                'from' => 'De',
+                'until' => 'Até',
             ],
             'date_range' => [
                 'label' => 'Intervalo de Datas',
