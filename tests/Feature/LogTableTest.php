@@ -7,6 +7,7 @@ namespace AchyutN\FilamentLogViewer\Tests\Feature;
 use AchyutN\FilamentLogViewer\LogTable;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Carbon\Carbon;
+use Config;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
@@ -38,6 +39,13 @@ describe('actions', function () {
                     ! $action->isOutlined() &&
                     $action->getColor() === Color::Red;
             });
+    });
+
+    it('hides clear action when config set to false', function () {
+        Config::set('filament-log-viewer.enable_delete', false);
+
+        livewire(LogTable::class)
+            ->assertActionExists('clear', fn (Action $action) => ! $action->isVisible());
     });
 
     it("refreshes logs on 'refresh' action", function () {
