@@ -11,7 +11,8 @@
 
 A Filament plugin to read and display Laravel log files in a clean, searchable table with stack traces and filtering.
 
-Refer to [version compatibility table](#filament-compatibility) below to ensure you are using the correct version of this package with your Filament installation.
+Refer to [version compatibility table](#filament-compatibility) below to ensure you are using the correct version of
+this package with your Filament installation.
 
 ## Installation
 
@@ -86,7 +87,8 @@ Click the view action to inspect stack traces.
 
 ### Mail Preview
 
-If your logs contain mail messages, you can preview them directly from the table. You can click on `Mail` tab which is visible only if mail are present.
+If your logs contain mail messages, you can preview them directly from the table. You can click on `Mail` tab which is
+visible only if mail are present.
 
 ![Mail Preview](https://hamrocdn.com/hrr5B2GpKSke)
 
@@ -100,13 +102,15 @@ You can filter the logs according to log level. The filters are available as tab
 
 #### Date
 
-You can filter logs by date using the date picker in the top right corner of the table. This allows you to select a specific date range to view logs.
+You can filter logs by date using the date picker in the top right corner of the table. This allows you to select a
+specific date range to view logs.
 
 ![Date Filter](https://hamrocdn.com/am_RAj2VQHiG)
 
 #### Toggle Columns
 
-You can toggle the visibility of the **Environment** and **File** columns by clicking the eye icon in the top right corner of the table.
+You can toggle the visibility of the **Environment** and **File** columns by clicking the eye icon in the top right
+corner of the table.
 
 ![Toggle Columns](https://hamrocdn.com/q4eZM97btUf2)
 
