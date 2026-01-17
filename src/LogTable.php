@@ -143,10 +143,13 @@ final class LogTable extends Page implements HasTable
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
-                    ->modalHeading(__('filament-log-viewer::log.table.actions.view.heading'))
-                    ->modalDescription(function (array $record): string {
+                    ->modalHeading(function (array $record): string {
                         /** @var LogRow $record */
                         return $record['message'];
+                    })
+                    ->modalDescription(function (array $record): string {
+                        /** @var LogRow $record */
+                        return $record['description'];
                     })
                     ->slideOver(),
                 Action::make('view-json')
