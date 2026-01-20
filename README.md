@@ -126,6 +126,17 @@ FilamentLogViewer::make()
     ->navigationUrl('/logs')
     ->pollingTime(null); // Set to null to disable polling
 ```
+## Filament Shield
+
+If you are using [filament-sheild](https://github.com/bezhanSalleh/filament-shield) then do this on for page authorization.
+
+```php
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+ 
+FilamentLogViewer::make()
+    ->authorize(fn () => auth()->check() && auth()->user()->can('View:LogTable'))
+    ... other options
+```
 
 ## Filament Compatibility
 
