@@ -110,6 +110,28 @@ You can toggle the visibility of the **Environment** and **File** columns by cli
 
 ![Toggle Columns](https://hamrocdn.com/q4eZM97btUf2)
 
+## Authorization
+You can customize autthorization to view this page.
+### Normal Authorization
+```php
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+
+FilamentLogViewer::make()
+    ->authorize(true)
+    ... other options
+```
+### Filament Shield
+
+If you are using [filament-sheild](https://github.com/bezhanSalleh/filament-shield) then do this on for page authorization.
+
+```php
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+
+FilamentLogViewer::make()
+    ->authorize(fn () => auth()->check() && auth()->user()->can('View:LogTable'))
+    ... other options
+```
+
 ## Extending
 
 You can customize navigation label, icon, sort, etc. using:
