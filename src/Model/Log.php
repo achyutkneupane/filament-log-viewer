@@ -28,7 +28,7 @@ use Illuminate\Support\Collection;
  *     description: string|null,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: string,
+ *     raw_stack: string,
  *     has_stack: bool,
  *     file: string
  * }
@@ -174,8 +174,17 @@ final class Log
                 }, []);
     }
 
+    /**
+     * @param string $rawMessage
+     * @return list<StackTrace>
+     */
+    public static function getStackFromRaw(string $rawMessage): array
+    {
+        return self::extractStack($rawMessage);
+    }
+
     /** @return list<StackTrace> */
-    public static function extractStack(string $raw): array
+    private static function extractStack(string $raw): array
     {
         /** @var list<StackTrace> */
         return app(Pipeline::class)
@@ -315,7 +324,7 @@ final class Log
             'context' => $context,
             'mail' => null,
             'has_stack' => self::hasStack($matches['message']),
-            'stack' => $matches['message'],
+            'raw_stack' => $matches['message'],
             'file' => $file,
         ];
     }

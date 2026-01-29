@@ -108,7 +108,7 @@ trait HasMailLog
                 'sent_date' => $mailDate,
             ],
             'has_stack' => false,
-            'stack' => [],
+            'raw_stack' => [],
             'context' => null,
             'file' => $file,
         ];
