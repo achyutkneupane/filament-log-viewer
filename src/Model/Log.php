@@ -185,25 +185,35 @@ final class Log
     /** @return list<StackTrace> */
     private static function extractStack(string $raw): array
     {
-        /** @var list<StackTrace> */
-        return app(Pipeline::class)
-            ->send($raw)
-            ->through([
-                fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
-                function (array $parts, $next) {
-                    if (! array_key_exists(1, $parts)) {
-                        return $next(null);
-                    }
-                    /** @var string $tracePart */
-                    $tracePart = $parts[1];
+        $parts = explode("\n", $raw, 2);
 
-                    return $next(isset($tracePart) ? trim($tracePart) : null);
-                },
-                fn (?string $emptyOrParts, $next) => $next($emptyOrParts ? explode("\n", $emptyOrParts) : []),
-                fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
-                fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
-            ])
-            ->thenReturn();
+        if (! isset($parts[1])) {
+            return [];
+        }
+
+        $tracePart = trim($parts[1]);
+        if (empty($tracePart)) {
+            return [];
+        }
+
+        $lines = explode("\n", $tracePart);
+
+        $count = count($lines);
+        if ($count <= 1) {
+            return [];
+        }
+
+        $result = [];
+        $end = $count - 1;
+
+        for ($i = 1; $i < $end; $i++) {
+            $line = trim($lines[$i]);
+            if ($line !== '') {
+                $result[] = ['trace' => $line];
+            }
+        }
+
+        return $result;
     }
 
     private static function hasStack(string $raw): bool
