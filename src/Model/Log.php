@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
+use Generator;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 
@@ -36,6 +37,7 @@ final class Log
     use HasMailLog;
 
     private static string $logFilePath = '';
+
     private static ?array $cachedRows = null;
 
     public static function destroyAllLogs(): void
@@ -71,7 +73,9 @@ final class Log
                 continue;
             }
 
-            $logs = array_merge($logs, self::processLogFile($filePath, $file));
+            foreach (self::processLogFile($filePath, $file) as $row) {
+                $logs[] = $row;
+            }
         }
 
         usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
@@ -210,34 +214,40 @@ final class Log
     }
 
     /**
-     * @return array<int<0, max>, LogRow>
+     * @return Generator<int, LogRow>
      */
-    private static function processLogFile(string $filePath, string $file): array
+    private static function processLogFile(string $filePath, string $file): Generator
     {
-        $logs = [];
-        $entryLines = [];
-
         $handle = fopen($filePath, 'r');
         if ($handle === false) {
-            return [];
+            return;
         }
+
+        $entryLines = [];
 
         while (($line = fgets($handle)) !== false) {
             $line = rtrim($line, "\r\n");
-            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
-                $logs[] = self::parseLogEntry($entryLines, $file);
-                $entryLines = [];
+
+            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line)) {
+                if ($entryLines !== []) {
+                    $parsed = self::parseLogEntry($entryLines, $file);
+                    if ($parsed) {
+                        yield $parsed;
+                    }
+                    $entryLines = [];
+                }
             }
             $entryLines[] = $line;
         }
 
         if ($entryLines !== []) {
-            $logs[] = self::parseLogEntry($entryLines, $file);
+            $parsed = self::parseLogEntry($entryLines, $file);
+            if ($parsed) {
+                yield $parsed;
+            }
         }
 
         fclose($handle);
-
-        return array_filter($logs);
     }
 
     /**
