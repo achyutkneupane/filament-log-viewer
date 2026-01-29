@@ -81,7 +81,7 @@ final class Log
 
         usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
 
-        self::$cachedRows = array_filter($logs);
+        self::$cachedRows = $logs;
 
         return self::$cachedRows;
     }
