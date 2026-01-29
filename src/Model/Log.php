@@ -243,7 +243,7 @@ final class Log
             $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
 
             if (is_dir($path)) {
-                $files = array_merge($files, self::getNestedFiles($path));
+                $files[] = self::getNestedFiles($path);
             } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
                 $files[] = $pathWithoutLogsPrefix.basename($path);
             }
