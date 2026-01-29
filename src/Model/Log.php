@@ -267,7 +267,7 @@ final class Log
         while (($line = fgets($handle)) !== false) {
             $line = rtrim($line, "\r\n");
 
-            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
+            if (($line[0] ?? '') === '[' && ($line[20] ?? '') === ']' && $entryLines !== []) {
                 $parsed = self::parseLogEntry($entryLines, $file);
                 if ($parsed) {
                     yield $parsed;
