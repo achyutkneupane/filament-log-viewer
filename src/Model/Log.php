@@ -36,6 +36,7 @@ final class Log
     use HasMailLog;
 
     private static string $logFilePath = '';
+    private static ?array $cachedRows = null;
 
     public static function destroyAllLogs(): void
     {
@@ -51,14 +52,18 @@ final class Log
     }
 
     /** @return array<int<0, max>, LogRow> */
-    public static function getRows(): array
+    public static function getRows(bool $getCached = true): array
     {
+        if ($getCached && self::$cachedRows !== null) {
+            return self::$cachedRows;
+        }
+
         $logs = [];
         $logDirectoryItems = self::getAllLogFiles();
         $logFilePath = self::getLogFilePath();
 
         foreach ($logDirectoryItems as $file) {
-            $filePath = $logFilePath.'/'.$file;
+            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
             if (! is_file($filePath)) {
                 continue;
             }
@@ -71,7 +76,9 @@ final class Log
 
         usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
 
-        return array_filter($logs);
+        self::$cachedRows = array_filter($logs);
+
+        return self::$cachedRows;
     }
 
     /** @return array<int<0, max>, LogRow> */
