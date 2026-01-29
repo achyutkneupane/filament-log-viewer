@@ -28,7 +28,8 @@ use Illuminate\Support\Collection;
  *     description: string|null,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: list<StackTrace>,
+ *     stack: string,
+ *     has_stack: bool,
  *     file: string
  * }
  */
@@ -173,6 +174,35 @@ final class Log
                 }, []);
     }
 
+    /** @return list<StackTrace> */
+    public static function extractStack(string $raw): array
+    {
+        /** @var list<StackTrace> */
+        return app(Pipeline::class)
+            ->send($raw)
+            ->through([
+                fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
+                function (array $parts, $next) {
+                    if (! array_key_exists(1, $parts)) {
+                        return $next(null);
+                    }
+                    /** @var string $tracePart */
+                    $tracePart = $parts[1];
+
+                    return $next(isset($tracePart) ? trim($tracePart) : null);
+                },
+                fn (?string $emptyOrParts, $next) => $next($emptyOrParts ? explode("\n", $emptyOrParts) : []),
+                fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
+                fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
+            ])
+            ->thenReturn();
+    }
+
+    private static function hasStack(string $raw): bool
+    {
+        return str_contains($raw, '[stacktrace]') || str_contains($raw, '#0');
+    }
+
     private static function getLogFilePath(): string
     {
         if (self::$logFilePath === '') {
@@ -228,14 +258,12 @@ final class Log
         while (($line = fgets($handle)) !== false) {
             $line = rtrim($line, "\r\n");
 
-            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line)) {
-                if ($entryLines !== []) {
-                    $parsed = self::parseLogEntry($entryLines, $file);
-                    if ($parsed) {
-                        yield $parsed;
-                    }
-                    $entryLines = [];
+            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
+                $parsed = self::parseLogEntry($entryLines, $file);
+                if ($parsed) {
+                    yield $parsed;
                 }
+                $entryLines = [];
             }
             $entryLines[] = $line;
         }
@@ -286,7 +314,8 @@ final class Log
             'description' => $description,
             'context' => $context,
             'mail' => null,
-            'stack' => self::extractStack($matches['message']),
+            'has_stack' => self::hasStack($matches['message']),
+            'stack' => $matches['message'],
             'file' => $file,
         ];
     }
@@ -336,30 +365,6 @@ final class Log
         return
             (str_starts_with($value, '{') && str_ends_with($value, '}')) ||
             (str_starts_with($value, '[') && str_ends_with($value, ']'));
-    }
-
-    /** @return list<StackTrace> */
-    private static function extractStack(string $raw): array
-    {
-        /** @var list<StackTrace> */
-        return app(Pipeline::class)
-            ->send($raw)
-            ->through([
-                fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
-                function (array $parts, $next) {
-                    if (! array_key_exists(1, $parts)) {
-                        return $next(null);
-                    }
-                    /** @var string $tracePart */
-                    $tracePart = $parts[1];
-
-                    return $next(isset($tracePart) ? trim($tracePart) : null);
-                },
-                fn (?string $emptyOrParts, $next) => $next($emptyOrParts ? explode("\n", $emptyOrParts) : []),
-                fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
-                fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
-            ])
-            ->thenReturn();
     }
 
     private static function shortenPath(?string $path): ?string
