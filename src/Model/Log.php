@@ -98,7 +98,6 @@ final class Log
             /** @var LogLevel $logLevelEnum */
             $logLevelEnum = $log['log_level'];
 
-            $logHasLogLevel = array_key_exists('log_level', $log);
             if ($logLevelEnum->value === $logLevel) {
                 $logLevelWise[] = $log;
             }
@@ -316,8 +315,8 @@ final class Log
         [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
-            'date' => array_key_exists('date', $matches) ? trim($matches['date']) : '',
-            'env' => array_key_exists('env', $matches) ? trim($matches['env']) : '',
+            'date' => $matches['date'] ? trim($matches['date']) : '',
+            'env' => $matches['env'] ? trim($matches['env']) : '',
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'description' => $description,
