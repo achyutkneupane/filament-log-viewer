@@ -95,13 +95,13 @@ describe('getRows', function () {
 
         system('rm -rf '.escapeshellarg($directory));
 
-        expect(fn () => Log::getRows())->not->toThrow(Exception::class);
+        expect(fn () => Log::getRows(false))->not->toThrow(Exception::class);
     });
 
     it('returns all logs from .log files', function () {
         $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
 
-        $logs = Log::getRows();
+        $logs = Log::getRows(false);
 
         expect($logs)->toBeArray();
         expect($logs)->toHaveCount(5);
@@ -111,7 +111,8 @@ describe('getRows', function () {
             ->toHaveKey('env')
             ->toHaveKey('log_level')
             ->toHaveKey('message')
-            ->toHaveKey('stack')
+            ->toHaveKey('raw_stack')
+            ->toHaveKey('has_stack')
             ->toHaveKey('file');
         expect($logs)
             ->sequence(
@@ -121,7 +122,7 @@ describe('getRows', function () {
                         ->env->toBe('nested')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::NOTICE)
                         ->message->toBe('Another notice log')
-                        ->stack->toBe([])
+                        ->raw_stack->not->toBe(null)
                         ->file->toBe('nested-folder/nested.log');
                 },
                 function ($log) {
@@ -130,7 +131,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
                         ->message->toContain('Another log with stack trace')
-                        ->stack->not->toBeNull()
+                        ->raw_stack->not->toBeNull()
                         ->file->toBe('stack-trace.log');
                 },
                 function ($log) {
@@ -139,7 +140,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
                         ->message->toBe('Sample log with stack trace')
-                        ->stack->not->toBeNull()
+                        ->raw_stack->not->toBeNull()
                         ->file->toBe('stack-trace.log');
                 },
                 function ($log) {
@@ -148,7 +149,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
                         ->message->toBe('Another log')
-                        ->stack->toBe([])
+                        ->raw_stack->not->toBeNull()
                         ->file->toBe('other.log');
                 },
                 function ($log) {
@@ -157,7 +158,7 @@ describe('getRows', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::ERROR)
                         ->message->toBe('Sample log')
-                        ->stack->toBe([])
+                        ->raw_stack->not->toBeNull()
                         ->file->toBe('laravel.log');
                 },
             );
@@ -166,14 +167,14 @@ describe('getRows', function () {
     it('returns an empty array if no log files exist', function () {
         $this->deleteAllLogs();
 
-        $logs = Log::getRows();
+        $logs = Log::getRows(false);
 
         expect($logs)->toBeArray();
         expect($logs)->toBeEmpty();
     });
 
     it('skips non-log files', function () {
-        $logs = Log::getRows();
+        $logs = Log::getRows(false);
 
         expect($logs)->toHaveCount(4);
         expect($logs)->not->toContain(fn ($log) => $log['file'] === 'not-a-log.txt');
@@ -199,7 +200,8 @@ describe('getLogsByLogLevel', function () {
             ->toHaveKey('env')
             ->toHaveKey('log_level')
             ->toHaveKey('message')
-            ->toHaveKey('stack')
+            ->toHaveKey('raw_stack')
+            ->toHaveKey('has_stack')
             ->toHaveKey('file');
         expect($errorLogs)
             ->sequence(
@@ -209,7 +211,7 @@ describe('getLogsByLogLevel', function () {
                         ->env->toBe('local')
                         ->log_level->tobe(AchyutN\FilamentLogViewer\Enums\LogLevel::INFO)
                         ->message->toBe('Another log')
-                        ->stack->toBe([])
+                        ->raw_stack->not->toBeNull()
                         ->file->toBe('other.log');
                 }
             );
