@@ -38,6 +38,7 @@ final class Log
 
     private static string $logFilePath = '';
 
+    /** @var list<LogRow>|null */
     private static ?array $cachedRows = null;
 
     public static function destroyAllLogs(): void
@@ -244,14 +245,15 @@ final class Log
             }
 
             $path = $directory.DIRECTORY_SEPARATOR.$item;
-            $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
-            $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
-            $normalized = str_replace('\\', '/', $pathAfterRemovingFileName);
-            $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
 
             if (is_dir($path)) {
-                $files[] = self::getNestedFiles($path);
+                $files = array_merge($files, self::getNestedFiles($path));
             } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
+                $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
+                $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
+                $normalized = str_replace('\\', '/', $pathAfterRemovingFileName);
+                $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
+
                 $files[] = $pathWithoutLogsPrefix.basename($path);
             }
         }
