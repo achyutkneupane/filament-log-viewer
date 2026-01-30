@@ -7,7 +7,6 @@ namespace AchyutN\FilamentLogViewer\Model;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Generator;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 
 /**
@@ -174,7 +173,6 @@ final class Log
     }
 
     /**
-     * @param string $rawMessage
      * @return list<StackTrace>
      */
     public static function getStackFromRaw(string $rawMessage): array
@@ -192,7 +190,7 @@ final class Log
         }
 
         $tracePart = trim($parts[1]);
-        if (empty($tracePart)) {
+        if ($tracePart === '' || $tracePart === '0') {
             return [];
         }
 
@@ -325,8 +323,8 @@ final class Log
         [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
-            'date' => $matches['date'] ? trim($matches['date']) : '',
-            'env' => $matches['env'] ? trim($matches['env']) : '',
+            'date' => $matches['date'] !== '' && $matches['date'] !== '0' ? trim($matches['date']) : '',
+            'env' => $matches['env'] !== '' && $matches['env'] !== '0' ? trim($matches['env']) : '',
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'description' => $description,
