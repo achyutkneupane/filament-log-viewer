@@ -30,13 +30,13 @@ final class FilamentLogViewer implements Plugin
         if ($navigationGroup) {
             $plugin->navigationGroup($navigationGroup);
         } else {
-            $plugin->navigationGroup(fn () => __('filament-log-viewer::log.navigation.group'));
+            $plugin->navigationGroup(fn (): string|array|null => __('filament-log-viewer::log.navigation.group'));
         }
 
         if ($navigationLabel) {
             $plugin->navigationLabel($navigationLabel);
         } else {
-            $plugin->navigationLabel(fn () => __('filament-log-viewer::log.navigation.label'));
+            $plugin->navigationLabel(fn (): string|array|null => __('filament-log-viewer::log.navigation.label'));
         }
 
         return $plugin;
