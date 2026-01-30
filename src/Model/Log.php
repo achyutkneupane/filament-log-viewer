@@ -8,6 +8,8 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Closure;
 use Generator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -94,8 +96,9 @@ final class Log
             return self::getRows();
         }
 
+        /** @var list<LogRow> */
         return collect(self::getRows())
-            ->filter(fn (array $log) => $log['log_level']->value === $logLevel)
+            ->filter(fn (array $log): bool => $log['log_level']->value === $logLevel)
             ->values()
             ->toArray();
     }
@@ -117,6 +120,7 @@ final class Log
 
         $maxFileSize = config()->integer('filament-log-viewer.max_log_file_size', 2048) * 1024;
 
+        /** @var list<string> */
         return collect(self::getNestedFiles($logFilePath))
             ->filter(
                 fn (string $file) => file_exists($logFilePath.DIRECTORY_SEPARATOR.$file) && filesize($logFilePath.DIRECTORY_SEPARATOR.$file) <= $maxFileSize
@@ -125,12 +129,13 @@ final class Log
             ->toArray();
     }
 
-    /** @return Closure */
-    public static function getFilesForFilter(): Closure
+    /** @return array<string, string|array<string, string>> */
+    public static function getFilesForFilter(): array
     {
+        /** @var array<string, string|array<string, string>> */
         return collect(self::getAllLogFiles())
             ->reduce(function (array $carry, string $file) {
-                if (str_contains($file, '/')) {
+                if (str_contains($file, DIRECTORY_SEPARATOR)) {
                     $directory = dirname($file);
                     $filename = basename($file);
 
@@ -283,8 +288,8 @@ final class Log
         [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
-            'date' => $matches['date'] !== '' && $matches['date'] !== '0' ? trim($matches['date']) : '',
-            'env' => $matches['env'] !== '' && $matches['env'] !== '0' ? trim($matches['env']) : '',
+            'date' => trim($matches['date'] ?? ''),
+            'env' => trim($matches['env'] ?? ''),
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'description' => $description,
@@ -349,6 +354,6 @@ final class Log
             return null;
         }
 
-        return (string) str()->of($path)->after(base_path().DIRECTORY_SEPARATOR);
+        return Str::of($path)->after(base_path().DIRECTORY_SEPARATOR)->toString();
     }
 }
