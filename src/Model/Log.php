@@ -6,10 +6,8 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
-use Closure;
 use Generator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Stringable;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -123,7 +121,7 @@ final class Log
         /** @var list<string> */
         return collect(self::getNestedFiles($logFilePath))
             ->filter(
-                fn (string $file) => file_exists($logFilePath.DIRECTORY_SEPARATOR.$file) && filesize($logFilePath.DIRECTORY_SEPARATOR.$file) <= $maxFileSize
+                fn (string $file): bool => file_exists($logFilePath.DIRECTORY_SEPARATOR.$file) && filesize($logFilePath.DIRECTORY_SEPARATOR.$file) <= $maxFileSize
             )
             ->values()
             ->toArray();
@@ -132,12 +130,18 @@ final class Log
     /** @return array<string, string|array<string, string>> */
     public static function getFilesForFilter(): array
     {
+        $initial = [];
+
         /** @var array<string, string|array<string, string>> */
         return collect(self::getAllLogFiles())
-            ->reduce(function (array $carry, string $file) {
+            ->reduce(function (array $carry, string $file): array {
                 if (str_contains($file, DIRECTORY_SEPARATOR)) {
                     $directory = dirname($file);
                     $filename = basename($file);
+
+                    if (! isset($carry[$directory]) || ! is_array($carry[$directory])) {
+                        $carry[$directory] = [];
+                    }
 
                     $carry[$directory][$file] = $filename;
                 } else {
@@ -145,7 +149,7 @@ final class Log
                 }
 
                 return $carry;
-            }, []);
+            }, $initial);
     }
 
     /**

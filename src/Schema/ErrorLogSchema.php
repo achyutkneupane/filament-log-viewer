@@ -22,7 +22,14 @@ final class ErrorLogSchema
             ->schema([
                 RepeatableEntry::make('stack')
                     ->hiddenLabel()
-                    ->state(fn (array $record): array => Log::getStackFromRaw($record['raw_stack'] ?? '') ?? [])
+                    ->state(
+                        function (array $record): array {
+                            /** @var string $rawStack */
+                            $rawStack = $record['raw_stack'];
+
+                            return Log::getStackFromRaw($rawStack);
+                        }
+                    )
                     ->schema([
                         TextEntry::make('trace')
                             ->hiddenLabel()
