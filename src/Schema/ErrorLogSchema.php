@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Schema;
 
+use AchyutN\FilamentLogViewer\Model\Log;
 use Exception;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -18,9 +19,17 @@ final class ErrorLogSchema
     {
         return $schema
             ->key('error-log')
-            ->components([
+            ->schema([
                 RepeatableEntry::make('stack')
                     ->hiddenLabel()
+                    ->state(
+                        function (array $record): array {
+                            /** @var string $rawStack */
+                            $rawStack = $record['raw_stack'];
+
+                            return Log::getStackFromRaw($rawStack);
+                        }
+                    )
                     ->schema([
                         TextEntry::make('trace')
                             ->hiddenLabel()

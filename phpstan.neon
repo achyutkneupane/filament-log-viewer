@@ -11,5 +11,4 @@ parameters:
     treatPhpDocTypesAsCertain: false
 
     ignoreErrors:
-    		- identifier: callable.nonCallable
     		- identifier: larastan.noEnvCallsOutsideOfConfig

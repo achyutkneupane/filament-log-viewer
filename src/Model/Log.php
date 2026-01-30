@@ -6,8 +6,9 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
-use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Collection;
+use Generator;
+use Illuminate\Support\Str;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @phpstan-type MailDetails array{
@@ -27,7 +28,8 @@ use Illuminate\Support\Collection;
  *     description: string|null,
  *     mail: MailDetails|null,
  *     context: array<string, mixed>|null,
- *     stack: list<StackTrace>,
+ *     raw_stack: string,
+ *     has_stack: bool,
  *     file: string
  * }
  */
@@ -37,8 +39,13 @@ final class Log
 
     private static string $logFilePath = '';
 
+    /** @var list<LogRow>|null */
+    private static ?array $cachedRows = null;
+
     public static function destroyAllLogs(): void
     {
+        self::resetCache();
+
         $logDirectoryItems = self::getAllLogFiles();
         $logFilePath = self::getLogFilePath();
 
@@ -51,14 +58,22 @@ final class Log
     }
 
     /** @return array<int<0, max>, LogRow> */
-    public static function getRows(): array
+    public static function getRows(bool $getCached = true): array
     {
+        if (! $getCached) {
+            self::resetCache();
+        }
+
+        if ($getCached && self::$cachedRows !== null) {
+            return self::$cachedRows;
+        }
+
         $logs = [];
         $logDirectoryItems = self::getAllLogFiles();
         $logFilePath = self::getLogFilePath();
 
         foreach ($logDirectoryItems as $file) {
-            $filePath = $logFilePath.'/'.$file;
+            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
             if (! is_file($filePath)) {
                 continue;
             }
@@ -66,12 +81,16 @@ final class Log
                 continue;
             }
 
-            $logs = array_merge($logs, self::processLogFile($filePath, $file));
+            foreach (self::processLogFile($filePath, $file) as $row) {
+                $logs[] = $row;
+            }
         }
 
         usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
 
-        return array_filter($logs);
+        self::$cachedRows = $logs;
+
+        return self::$cachedRows;
     }
 
     /** @return array<int<0, max>, LogRow> */
@@ -81,18 +100,11 @@ final class Log
             return self::getRows();
         }
 
-        $logLevelWise = [];
-        foreach (self::getRows() as $log) {
-            /** @var LogLevel $logLevelEnum */
-            $logLevelEnum = $log['log_level'];
-
-            $logHasLogLevel = array_key_exists('log_level', $log);
-            if ($logLevelEnum->value === $logLevel) {
-                $logLevelWise[] = $log;
-            }
-        }
-
-        return $logLevelWise;
+        /** @var list<LogRow> */
+        return collect(self::getRows())
+            ->filter(fn (array $log): bool => $log['log_level']->value === $logLevel)
+            ->values()
+            ->toArray();
     }
 
     public static function getLogCount(string $logLevel = 'all-logs'): ?int
@@ -110,56 +122,92 @@ final class Log
             return [];
         }
 
-        /** @var int $configMaxFileSize */
-        $configMaxFileSize = config('filament-log-viewer.max_log_file_size', 2048);
-        $maxFileSize = $configMaxFileSize * 1024;
+        $maxFileSize = config()->integer('filament-log-viewer.max_log_file_size', 2048) * 1024;
 
-        $files = array_filter(
-            self::getNestedFiles($logFilePath),
-            fn (string $file): bool => filesize($logFilePath.'/'.$file) <= $maxFileSize
-        );
-
-        return array_map(fn (string $file): string => str_replace(storage_path(), '', $file), $files);
+        /** @var list<string> */
+        return collect(self::getNestedFiles($logFilePath))
+            ->filter(
+                fn (string $file): bool => file_exists($logFilePath.DIRECTORY_SEPARATOR.$file) && filesize($logFilePath.DIRECTORY_SEPARATOR.$file) <= $maxFileSize
+            )
+            ->values()
+            ->toArray();
     }
 
     /** @return array<string, string|array<string, string>> */
     public static function getFilesForFilter(): array
     {
-        $logFilePath = self::getAllLogFiles();
+        $initial = [];
 
-        /** @phpstan-var array<string, string|array<string, string>> */
-        return (array) Collection::wrap($logFilePath)
-            ->mapWithKeys(function (string $file): array {
-                $filePath = str_replace(storage_path(), '', $file);
+        /** @var array<string, string|array<string, string>> */
+        return collect(self::getAllLogFiles())
+            ->reduce(function (array $carry, string $file): array {
+                if (str_contains($file, DIRECTORY_SEPARATOR)) {
+                    $directory = dirname($file);
+                    $filename = basename($file);
 
-                return [$filePath => $filePath];
-            })
-            ->reduce(
-                /**
-                 * @param  array<string, string|array<string, string>>  $carry
-                 * @return array<string, string|array<string, string>>
-                 */
-                function (array $carry, string $item): array {
-                    if (str_contains($item, '/')) {
-                        $parts = explode('/', $item);
-                        $lastPart = array_pop($parts);
-                        $directory = implode('/', $parts);
-
-                        if (! array_key_exists($directory, $carry) || ! is_array($carry[$directory])) {
-                            $carry[$directory] = [];
-                        }
-
-                        if (! is_array($carry[$directory])) {
-                            $carry[$directory] = [];
-                        }
-
-                        $carry[$directory][$item] = $lastPart;
-                    } else {
-                        $carry[$item] = $item;
+                    if (! isset($carry[$directory]) || ! is_array($carry[$directory])) {
+                        $carry[$directory] = [];
                     }
 
-                    return $carry;
-                }, []);
+                    $carry[$directory][$file] = $filename;
+                } else {
+                    $carry[$file] = $file;
+                }
+
+                return $carry;
+            }, $initial);
+    }
+
+    /**
+     * @return list<StackTrace>
+     */
+    public static function getStackFromRaw(string $rawMessage): array
+    {
+        return self::extractStack($rawMessage);
+    }
+
+    private static function resetCache(): void
+    {
+        self::$cachedRows = null;
+    }
+
+    /** @return list<StackTrace> */
+    private static function extractStack(string $raw): array
+    {
+        $parts = explode("\n", $raw, 2);
+
+        if (! isset($parts[1])) {
+            return [];
+        }
+
+        $tracePart = trim($parts[1]);
+        if ($tracePart === '' || $tracePart === '0') {
+            return [];
+        }
+
+        $lines = explode("\n", $tracePart);
+
+        $count = count($lines);
+        if ($count <= 1) {
+            return [];
+        }
+
+        $result = [];
+        $end = $count - 1;
+
+        for ($i = 1; $i < $end; $i++) {
+            $line = trim($lines[$i]);
+            if ($line !== '') {
+                $result[] = ['trace' => $line];
+            }
+        }
+
+        return $result;
+    }
+
+    private static function hasStack(string $raw): bool
+    {
+        return str_contains($raw, '[stacktrace]') || str_contains($raw, '#0');
     }
 
     private static function getLogFilePath(): string
@@ -174,63 +222,56 @@ final class Log
     /** @return list<string> */
     private static function getNestedFiles(string $directory): array
     {
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        $finder = Finder::create()
+            ->files()
+            ->name('*.log')
+            ->in($directory);
+
         $files = [];
-        $items = scandir($directory);
-
-        foreach ($items as $item) {
-            if ($item === '.') {
-                continue;
-            }
-
-            if ($item === '..') {
-                continue;
-            }
-
-            $path = $directory.DIRECTORY_SEPARATOR.$item;
-            $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
-            $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
-            $normalized = str_replace('\\', '/', $pathAfterRemovingFileName);
-            $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
-
-            if (is_dir($path)) {
-                $files = array_merge($files, self::getNestedFiles($path));
-            } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
-                $files[] = $pathWithoutLogsPrefix.basename($path);
-            }
+        foreach ($finder as $file) {
+            $files[] = $file->getRelativePathname();
         }
 
         return $files;
     }
 
     /**
-     * @return array<int<0, max>, LogRow>
+     * @return Generator<int, LogRow>
      */
-    private static function processLogFile(string $filePath, string $file): array
+    private static function processLogFile(string $filePath, string $file): Generator
     {
-        $logs = [];
-        $entryLines = [];
-
         $handle = fopen($filePath, 'r');
         if ($handle === false) {
-            return [];
+            return;
         }
+
+        $entryLines = [];
 
         while (($line = fgets($handle)) !== false) {
             $line = rtrim($line, "\r\n");
-            if (preg_match('/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]/', $line) && $entryLines !== []) {
-                $logs[] = self::parseLogEntry($entryLines, $file);
+
+            if (($line[0] ?? '') === '[' && ($line[20] ?? '') === ']' && $entryLines !== []) {
+                $parsed = self::parseLogEntry($entryLines, $file);
+                if ($parsed) {
+                    yield $parsed;
+                }
                 $entryLines = [];
             }
             $entryLines[] = $line;
         }
 
         if ($entryLines !== []) {
-            $logs[] = self::parseLogEntry($entryLines, $file);
+            $parsed = self::parseLogEntry($entryLines, $file);
+            if ($parsed) {
+                yield $parsed;
+            }
         }
 
         fclose($handle);
-
-        return array_filter($logs);
     }
 
     /**
@@ -262,14 +303,15 @@ final class Log
         [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
-            'date' => array_key_exists('date', $matches) ? trim($matches['date']) : '',
-            'env' => array_key_exists('env', $matches) ? trim($matches['env']) : '',
+            'date' => trim($matches['date'] ?? ''),
+            'env' => trim($matches['env'] ?? ''),
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'description' => $description,
             'context' => $context,
             'mail' => null,
-            'stack' => self::extractStack($matches['message']),
+            'has_stack' => self::hasStack($matches['message']),
+            'raw_stack' => $matches['message'],
             'file' => $file,
         ];
     }
@@ -321,38 +363,12 @@ final class Log
             (str_starts_with($value, '[') && str_ends_with($value, ']'));
     }
 
-    /** @return list<StackTrace> */
-    private static function extractStack(string $raw): array
-    {
-        /** @var list<StackTrace> */
-        return app(Pipeline::class)
-            ->send($raw)
-            ->through([
-                fn (string $raw, $next) => $next(explode("\n", $raw, 2)),
-                function (array $parts, $next) {
-                    if (! array_key_exists(1, $parts)) {
-                        return $next(null);
-                    }
-                    /** @var string $tracePart */
-                    $tracePart = $parts[1];
-
-                    return $next(isset($tracePart) ? trim($tracePart) : null);
-                },
-                fn (?string $emptyOrParts, $next) => $next($emptyOrParts ? explode("\n", $emptyOrParts) : []),
-                fn (array $stackTraceArray, $next) => $next(array_slice($stackTraceArray, 1, -1)),
-                fn (array $slicedTrace, $next) => $next(array_map(fn ($item): array => ['trace' => $item], $slicedTrace)),
-            ])
-            ->thenReturn();
-    }
-
     private static function shortenPath(?string $path): ?string
     {
         if (! $path) {
             return null;
         }
 
-        $basePath = base_path().DIRECTORY_SEPARATOR;
-
-        return str_replace($basePath, '', $path);
+        return Str::of($path)->after(base_path().DIRECTORY_SEPARATOR)->toString();
     }
 }
