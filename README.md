@@ -110,26 +110,29 @@ You can toggle the visibility of the **Environment** and **File** columns by cli
 
 ![Toggle Columns](https://hamrocdn.com/q4eZM97btUf2)
 
-## Authorization
-You can customize autthorization to view this page.
-### Normal Authorization
+### Authorization
+
+You can make a boolean check to authorize the log viewer. It will be helpful if you want to show/hide the log viewer for certain cases.
+
+#### Example
+
+You simply return a `boolean` or `Closure` which evaluates to a `boolean`.
+
 ```php
-use AchyutN\FilamentLogViewer\FilamentLogViewer;
+FilamentLogViewer::make()
+    ->authorize(true);
+
+// or
 
 FilamentLogViewer::make()
-    ->authorize(true)
-    ... other options
+    ->authorize(fn (): bool => auth()->user()->is_admin);
 ```
-### Filament Shield
 
-If you are using [filament-sheild](https://github.com/bezhanSalleh/filament-shield) then do this on for page authorization.
+If you are using [filament-sheild](https://github.com/bezhanSalleh/filament-shield) or any other external services for authorization, you can use a `Closure` with permission check:
 
 ```php
-use AchyutN\FilamentLogViewer\FilamentLogViewer;
-
 FilamentLogViewer::make()
-    ->authorize(fn () => auth()->check() && auth()->user()->can('View:LogTable'))
-    ... other options
+    ->authorize(fn (): bool => auth()->check() && auth()->user()->can('View:LogTable'));
 ```
 
 ## Extending
