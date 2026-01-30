@@ -135,9 +135,7 @@ final class LogTable extends Page implements HasTable
                     ->visible(
                         fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL
                     )
-                    ->hidden(
-                        fn (array $record): bool => count((array) $record['stack']) === 0
-                    )
+                    ->hidden(fn (array $record): bool => ! $record['has_stack'])
                     ->icon(Heroicon::Eye)
                     ->color(Color::Gray)
                     ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
