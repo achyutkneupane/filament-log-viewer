@@ -44,6 +44,8 @@ final class Log
 
     public static function destroyAllLogs(): void
     {
+        self::resetCache();
+
         $logDirectoryItems = self::getAllLogFiles();
         $logFilePath = self::getLogFilePath();
 
@@ -58,6 +60,10 @@ final class Log
     /** @return array<int<0, max>, LogRow> */
     public static function getRows(bool $getCached = true): array
     {
+        if (! $getCached) {
+            self::resetCache();
+        }
+
         if ($getCached && self::$cachedRows !== null) {
             return self::$cachedRows;
         }
@@ -158,6 +164,11 @@ final class Log
     public static function getStackFromRaw(string $rawMessage): array
     {
         return self::extractStack($rawMessage);
+    }
+
+    private static function resetCache(): void
+    {
+        self::$cachedRows = null;
     }
 
     /** @return list<StackTrace> */
