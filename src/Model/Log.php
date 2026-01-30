@@ -122,16 +122,14 @@ final class Log
             return [];
         }
 
-        /** @var int $configMaxFileSize */
-        $configMaxFileSize = config('filament-log-viewer.max_log_file_size', 2048);
-        $maxFileSize = $configMaxFileSize * 1024;
+        $maxFileSize = config()->integer('filament-log-viewer.max_log_file_size', 2048) * 1024;
 
-        $files = array_filter(
-            self::getNestedFiles($logFilePath),
-            fn (string $file): bool => filesize($logFilePath.'/'.$file) <= $maxFileSize
-        );
-
-        return array_map(fn (string $file): string => str_replace(storage_path(), '', $file), $files);
+        return collect(self::getNestedFiles($logFilePath))
+            ->filter(
+                fn (string $file) => file_exists($logFilePath.DIRECTORY_SEPARATOR.$file) && filesize($logFilePath.DIRECTORY_SEPARATOR.$file) <= $maxFileSize
+            )
+            ->values()
+            ->toArray();
     }
 
     /** @return array<string, string|array<string, string>> */
