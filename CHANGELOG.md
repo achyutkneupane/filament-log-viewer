@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.7.1 - 2026-01-30
+
+### What's Changed
+
+* refactor: updates navigation group and label to use closures by @bilogic in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+* docs: Add authorization details to README by @dipesh79 in https://github.com/achyutkneupane/filament-log-viewer/pull/101
+* perf: optimize log parsing speed and memory usage by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/102
+
+### New Contributors
+
+* @bilogic made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.7.0...v1.7.1
+
 ## v2.1.1 - 2026-01-30
 
 ### What's Changed
