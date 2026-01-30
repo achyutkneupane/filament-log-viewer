@@ -94,17 +94,10 @@ final class Log
             return self::getRows();
         }
 
-        $logLevelWise = [];
-        foreach (self::getRows() as $log) {
-            /** @var LogLevel $logLevelEnum */
-            $logLevelEnum = $log['log_level'];
-
-            if ($logLevelEnum->value === $logLevel) {
-                $logLevelWise[] = $log;
-            }
-        }
-
-        return $logLevelWise;
+        return collect(self::getRows())
+            ->filter(fn (array $log) => $log['log_level']->value === $logLevel)
+            ->values()
+            ->toArray();
     }
 
     public static function getLogCount(string $logLevel = 'all-logs'): ?int
@@ -378,8 +371,6 @@ final class Log
             return null;
         }
 
-        $basePath = base_path().DIRECTORY_SEPARATOR;
-
-        return str_replace($basePath, '', $path);
+        return (string) str()->of($path)->after(base_path().DIRECTORY_SEPARATOR);
     }
 }
