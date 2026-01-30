@@ -7,7 +7,6 @@ namespace AchyutN\FilamentLogViewer\Model;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Generator;
-use Illuminate\Support\Collection;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -128,41 +127,25 @@ final class Log
     /** @return array<string, string|array<string, string>> */
     public static function getFilesForFilter(): array
     {
-        $logFilePath = self::getAllLogFiles();
-
         /** @phpstan-var array<string, string|array<string, string>> */
-        return (array) Collection::wrap($logFilePath)
-            ->mapWithKeys(function (string $file): array {
-                $filePath = str_replace(storage_path(), '', $file);
+        return collect(self::getAllLogFiles())
+            ->mapToGroups(function (string $file) {
+                if (str_contains($file, '/')) {
+                    $dir = dirname($file);
 
-                return [$filePath => $filePath];
+                    return [$dir => $file];
+                }
+
+                return ['root' => $file];
             })
-            ->reduce(
-                /**
-                 * @param  array<string, string|array<string, string>>  $carry
-                 * @return array<string, string|array<string, string>>
-                 */
-                function (array $carry, string $item): array {
-                    if (str_contains($item, '/')) {
-                        $parts = explode('/', $item);
-                        $lastPart = array_pop($parts);
-                        $directory = implode('/', $parts);
+            ->mapWithKeys(function ($files, $key) {
+                if ($key === 'root') {
+                    return $files->mapWithKeys(fn ($f) => [$f => $f])->toArray();
+                }
 
-                        if (! array_key_exists($directory, $carry) || ! is_array($carry[$directory])) {
-                            $carry[$directory] = [];
-                        }
-
-                        if (! is_array($carry[$directory])) {
-                            $carry[$directory] = [];
-                        }
-
-                        $carry[$directory][$item] = $lastPart;
-                    } else {
-                        $carry[$item] = $item;
-                    }
-
-                    return $carry;
-                }, []);
+                return [$key => $files->mapWithKeys(fn ($f) => [$f => basename($f)])->toArray()];
+            })
+            ->toArray();
     }
 
     /**
