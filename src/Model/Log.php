@@ -6,6 +6,7 @@ namespace AchyutN\FilamentLogViewer\Model;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
+use Closure;
 use Generator;
 use Symfony\Component\Finder\Finder;
 
@@ -124,28 +125,22 @@ final class Log
             ->toArray();
     }
 
-    /** @return array<string, string|array<string, string>> */
-    public static function getFilesForFilter(): array
+    /** @return Closure */
+    public static function getFilesForFilter(): Closure
     {
-        /** @phpstan-var array<string, string|array<string, string>> */
         return collect(self::getAllLogFiles())
-            ->mapToGroups(function (string $file) {
+            ->reduce(function (array $carry, string $file) {
                 if (str_contains($file, '/')) {
-                    $dir = dirname($file);
+                    $directory = dirname($file);
+                    $filename = basename($file);
 
-                    return [$dir => $file];
+                    $carry[$directory][$file] = $filename;
+                } else {
+                    $carry[$file] = $file;
                 }
 
-                return ['root' => $file];
-            })
-            ->mapWithKeys(function ($files, $key) {
-                if ($key === 'root') {
-                    return $files->mapWithKeys(fn ($f) => [$f => $f])->toArray();
-                }
-
-                return [$key => $files->mapWithKeys(fn ($f) => [$f => basename($f)])->toArray()];
-            })
-            ->toArray();
+                return $carry;
+            }, []);
     }
 
     /**
