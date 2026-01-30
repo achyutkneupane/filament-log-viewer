@@ -8,6 +8,7 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Traits\HasMailLog;
 use Generator;
 use Illuminate\Support\Collection;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @phpstan-type MailDetails array{
@@ -232,30 +233,18 @@ final class Log
     /** @return list<string> */
     private static function getNestedFiles(string $directory): array
     {
+        if (! is_dir($directory)) {
+            return [];
+        }
+
+        $finder = Finder::create()
+            ->files()
+            ->name('*.log')
+            ->in($directory);
+
         $files = [];
-        $items = scandir($directory);
-
-        foreach ($items as $item) {
-            if ($item === '.') {
-                continue;
-            }
-
-            if ($item === '..') {
-                continue;
-            }
-
-            $path = $directory.DIRECTORY_SEPARATOR.$item;
-
-            if (is_dir($path)) {
-                $files = array_merge($files, self::getNestedFiles($path));
-            } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'log') {
-                $pathAfterRemovingStoragePath = str_replace(storage_path(), '', $path);
-                $pathAfterRemovingFileName = str_replace(basename($path), '', $pathAfterRemovingStoragePath);
-                $normalized = str_replace('\\', '/', $pathAfterRemovingFileName);
-                $pathWithoutLogsPrefix = str_replace('/logs/', '', $normalized);
-
-                $files[] = $pathWithoutLogsPrefix.basename($path);
-            }
+        foreach ($finder as $file) {
+            $files[] = $file->getRelativePathname();
         }
 
         return $files;
