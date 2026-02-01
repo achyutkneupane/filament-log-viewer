@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Traits;
 
+use AchyutN\FilamentLogViewer\LogTable;
 use Closure;
 use Filament\Support\Concerns\EvaluatesClosures;
 use UnitEnum;
@@ -13,6 +14,8 @@ trait PluginVariables
     use EvaluatesClosures;
 
     public bool|Closure $authorized = true;
+
+    publis string $page = LogTable::class;
 
     public string|UnitEnum|Closure|null $navigationGroup = null;
 
@@ -29,6 +32,11 @@ trait PluginVariables
     public function isAuthorized(): bool
     {
         return (bool) $this->evaluate($this->authorized);
+    }
+
+    public function getPage(): string
+    {
+        return $this->page;
     }
 
     public function getNavigationGroup(): string|UnitEnum|null
