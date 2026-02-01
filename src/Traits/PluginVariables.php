@@ -36,7 +36,7 @@ trait PluginVariables
 
     public function getPage(): string
     {
-        /** @var class-string **/
+        /** @phpstan-var class-string **/
         return $this->page;
     }
 
