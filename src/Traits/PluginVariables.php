@@ -15,7 +15,7 @@ trait PluginVariables
 
     public bool|Closure $authorized = true;
 
-    publis string $page = LogTable::class;
+    public string $page = LogTable::class;
 
     public string|UnitEnum|Closure|null $navigationGroup = null;
 
