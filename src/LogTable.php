@@ -36,7 +36,7 @@ use UnitEnum;
  * @phpstan-type LogCollection Collection<int|string, LogRow>
  * @phpstan-type FilterData array{date?: array{from?: string, until?: string}, file?: array{value: string}}
  */
-final class LogTable extends Page implements HasTable
+class LogTable extends Page implements HasTable
 {
     use InteractsWithTable;
     use LogLevelTabFilter;
