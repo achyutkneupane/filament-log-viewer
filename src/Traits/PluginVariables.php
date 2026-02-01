@@ -36,6 +36,7 @@ trait PluginVariables
 
     public function getPage(): string
     {
+        /** @var class-string **/
         return $this->page;
     }
 
