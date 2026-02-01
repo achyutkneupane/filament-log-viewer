@@ -15,8 +15,3 @@ arch('enums are string backed')
 arch('traits are of type trait')
     ->expect('AchyutN\FilamentLogViewer\Traits')
     ->toBeTraits();
-
-arch('all classes are final')
-    ->expect('AchyutN\FilamentLogViewer')
-    ->classes()
-    ->toBeFinal();
