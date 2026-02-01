@@ -34,6 +34,9 @@ trait PluginVariables
         return (bool) $this->evaluate($this->authorized);
     }
 
+    /**
+     * @return class-string
+     */
     public function getPage(): string
     {
         /** @phpstan-var class-string **/
