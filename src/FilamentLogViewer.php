@@ -51,7 +51,7 @@ final class FilamentLogViewer implements Plugin
     {
         $panel
             ->pages([
-                LogTable::class,
+                $this->getPage(),
             ]);
     }
 
@@ -63,6 +63,13 @@ final class FilamentLogViewer implements Plugin
     public function authorize(bool|Closure $callback): self
     {
         $this->authorized = $callback;
+
+        return $this;
+    }
+
+    public function page(string $page): self
+    {
+        $this->page = $page;
 
         return $this;
     }
