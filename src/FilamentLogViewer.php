@@ -23,6 +23,7 @@ final class FilamentLogViewer implements Plugin
         $plugin->navigationSort($plugin->getNavigationSort());
         $plugin->navigationUrl($plugin->getNavigationUrl());
         $plugin->pollingTime($plugin->getPollingTime());
+        $plugin->registerNavigation($plugin->shouldRegisterNavigation());
 
         $navigationGroup = $plugin->getNavigationGroup();
         $navigationLabel = $plugin->getNavigationLabel();
@@ -105,6 +106,13 @@ final class FilamentLogViewer implements Plugin
     public function pollingTime(string|null|Closure $time): self
     {
         $this->pollingTime = $time;
+
+        return $this;
+    }
+
+    public function registerNavigation(bool $registerNavigation = true): self
+    {
+        $this->registerNavigation = $registerNavigation;
 
         return $this;
     }
