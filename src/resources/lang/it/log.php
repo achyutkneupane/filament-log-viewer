@@ -13,6 +13,8 @@ return [
     ],
 
     'table' => [
+        'model_label' => 'registro',
+        'plural_model_label' => 'registri',
         'columns' => [
             'log_level' => 'Livello Log',
             'env' => 'Ambiente',
