@@ -12,6 +12,8 @@ return [
         'label' => 'Log-Anzeige',
     ],
     'table' => [
+        'model_label' => 'Protokoll',
+        'plural_model_label' => 'Protokolle',
         'columns' => [
             'log_level' => 'Log-Level',
             'env' => 'Umgebung',
