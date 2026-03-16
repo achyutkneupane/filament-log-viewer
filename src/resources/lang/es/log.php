@@ -12,6 +12,8 @@ return [
         'label' => 'Visor de Logs',
     ],
     'table' => [
+        'model_label' => 'registro',
+        'plural_model_label' => 'registros',
         'columns' => [
             'log_level' => 'Nivel de Log',
             'env' => 'Entorno',
