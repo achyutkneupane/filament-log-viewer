@@ -12,6 +12,8 @@ return [
         'label' => 'عارض السجلات',
     ],
     'table' => [
+        'model_label' => 'سجل',
+        'plural_model_label' => 'سجلات',
         'columns' => [
             'log_level' => 'مستوى السجل',
             'env' => 'البيئة',
