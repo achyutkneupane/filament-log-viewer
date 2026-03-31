@@ -284,14 +284,15 @@ final class Log
 
         preg_match('/\[(?<date>[\d\-:\s]+)\]\s(?<env>\w+)\.(?<level>\w+):\s(?<message>.*)/s', $entry, $matches);
 
-        if (! isset($matches['level']) || ! isset($matches['message'])) {
+        // @phpstan-ignore-next-line
+        if (! isset($matches['level']) || ! isset($matches['message']) || ! isset($matches['date']) || ! isset($matches['env'])) {
             return null;
         }
 
         if (self::isMailStack($matches['message'])) {
             $mailLine = [
-                'date' => $matches['date'] ?? '',
-                'env' => $matches['env'] ?? '',
+                'date' => $matches['date'],
+                'env' => $matches['env'],
                 'message' => $matches['message'],
             ];
 
@@ -303,8 +304,8 @@ final class Log
         [$message, $description, $context] = self::splitMessagesAndContext($messagePart);
 
         return [
-            'date' => trim($matches['date'] ?? ''),
-            'env' => trim($matches['env'] ?? ''),
+            'date' => trim($matches['date']),
+            'env' => trim($matches['env']),
             'log_level' => LogLevel::from(mb_strtolower(trim($matches['level']))),
             'message' => $message,
             'description' => $description,

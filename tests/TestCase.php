@@ -25,7 +25,6 @@ use Illuminate\Log\LogServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 #[AllowDynamicProperties]
 abstract class TestCase extends BaseTestCase
@@ -78,7 +77,6 @@ abstract class TestCase extends BaseTestCase
         $providers = [
             ActionsServiceProvider::class,
             LogServiceProvider::class,
-            BladeCaptureDirectiveServiceProvider::class,
             BladeHeroiconsServiceProvider::class,
             BladeIconsServiceProvider::class,
             FilamentServiceProvider::class,

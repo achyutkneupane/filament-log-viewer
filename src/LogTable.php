@@ -77,6 +77,12 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::getPlugin()->shouldRegisterNavigation();
+    }
+
+    /** @throws Exception */
     public static function canAccess(): bool
     {
         return self::getPlugin()->isAuthorized();
@@ -276,13 +282,22 @@ final class LogTable extends Page implements HasTable
             return $records;
         }
 
-        return $records
-            ->when(filled($filters['date']['from']), fn ($q) => $q->filter(
-                fn (array $log): bool => $log['date'] >= $filters['date']['from']
-            ))
-            ->when(filled($filters['date']['until']), fn ($q) => $q->filter(
-                fn (array $log): bool => $log['date'] <= $filters['date']['until']
-            ));
+        $from = $filters['date']['from'] ?? null;
+        $until = $filters['date']['until'] ?? null;
+
+        if (filled($from)) {
+            $records = $records->filter(
+                fn (array $log): bool => $log['date'] >= $from
+            );
+        }
+
+        if (filled($until)) {
+            return $records->filter(
+                fn (array $log): bool => $log['date'] <= $until
+            );
+        }
+
+        return $records;
     }
 
     /**

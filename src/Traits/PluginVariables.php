@@ -26,6 +26,8 @@ trait PluginVariables
 
     public string|null|Closure $pollingTime = null;
 
+    public bool|null|Closure $registerNavigation = true;
+
     public function isAuthorized(): bool
     {
         return (bool) $this->evaluate($this->authorized);
@@ -65,5 +67,10 @@ trait PluginVariables
     {
         /** @var string|null */
         return $this->evaluate($this->pollingTime);
+    }
+
+    public function shouldRegisterNavigation(): bool
+    {
+        return (bool) $this->evaluate($this->registerNavigation);
     }
 }
