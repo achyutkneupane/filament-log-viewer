@@ -77,6 +77,12 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::getPlugin()->shouldRegisterNavigation();
+    }
+
+    /** @throws Exception */
     public static function canAccess(): bool
     {
         return self::getPlugin()->isAuthorized();
