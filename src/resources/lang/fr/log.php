@@ -12,8 +12,8 @@ return [
         'label' => 'Visionneur de Logs',
     ],
     'table' => [
-        'model_label' => 'journal',
-        'plural_model_label' => 'journaux',
+        'model_label' => 'Log',
+        'plural_model_label' => 'Logs',
         'columns' => [
             'log_level' => 'Niveau de Log',
             'env' => 'Environnement',
