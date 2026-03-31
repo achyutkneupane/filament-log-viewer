@@ -12,6 +12,8 @@ return [
         'label' => 'מציג לוגים',
     ],
     'table' => [
+        'model_label' => 'לוג',
+        'plural_model_label' => 'לוגים',
         'columns' => [
             'log_level' => 'רמת הלוג',
             'env' => 'סביבה',

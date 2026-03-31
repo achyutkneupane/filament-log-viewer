@@ -109,6 +109,8 @@ final class LogTable extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->modelLabel(__('filament-log-viewer::log.table.model_label'))
+            ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     $records = Collection::wrap(Log::getRows());
