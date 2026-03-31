@@ -71,7 +71,6 @@ trait PluginVariables
 
     public function shouldRegisterNavigation(): bool
     {
-        /** @var bool */
         return (bool) $this->evaluate($this->registerNavigation);
     }
 }
