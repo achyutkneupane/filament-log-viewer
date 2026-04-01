@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.8.0 - 2026-04-01
+
+### What's Changed
+
+* refactor: fixes phpstan issues by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/110
+* feat: adds support for disabling plugin navigation registration by @JensDeNijs in https://github.com/achyutkneupane/filament-log-viewer/pull/107
+* fix: max size must be an integer by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/111
+* feat: adds model labels for plural and singular cases by @ahmed-rashad-alnaggar in https://github.com/achyutkneupane/filament-log-viewer/pull/109
+
+### New Contributors
+
+* @JensDeNijs made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/107
+* @ahmed-rashad-alnaggar made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/109
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.7.1...v1.8.0
+
 ## v2.2.0 - 2026-03-31
 
 ### What's Changed
