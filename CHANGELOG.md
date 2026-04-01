@@ -1,5 +1,81 @@
 # Changelog
 
+## v2.2.0 - 2026-03-31
+
+### What's Changed
+
+* refactor: fixes phpstan issues by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/110
+* feat: adds support for disabling plugin navigation registration by @JensDeNijs in https://github.com/achyutkneupane/filament-log-viewer/pull/107
+* fix: max size must be an integer by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/111
+* feat: adds model labels for plural and singular cases by @ahmed-rashad-alnaggar in https://github.com/achyutkneupane/filament-log-viewer/pull/109
+
+### New Contributors
+
+* @JensDeNijs made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/107
+* @ahmed-rashad-alnaggar made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/109
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v2.1.1...v2.2.0
+
+## v1.7.1 - 2026-01-30
+
+### What's Changed
+
+* refactor: updates navigation group and label to use closures by @bilogic in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+* docs: Add authorization details to README by @dipesh79 in https://github.com/achyutkneupane/filament-log-viewer/pull/101
+* perf: optimize log parsing speed and memory usage by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/102
+
+### New Contributors
+
+* @bilogic made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.7.0...v1.7.1
+
+## v2.1.1 - 2026-01-30
+
+### What's Changed
+
+* refactor: updates navigation group and label to use closures by @bilogic in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+* docs: Add authorization details to README by @dipesh79 in https://github.com/achyutkneupane/filament-log-viewer/pull/101
+* perf: optimize log parsing speed and memory usage by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/102
+
+### New Contributors
+
+* @bilogic made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/99
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v2.1.0...v2.1.1
+
+## v1.7.0 - 2026-01-17
+
+### What's Changed
+
+* fix: refactors the parsing to include file name and line number by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/93
+* feat: adds config to show or hide clear button by @produktive in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+### New Contributors
+
+* @produktive made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.6.1...v1.7.0
+
+## v2.1.0 - 2026-01-17
+
+### What's Changed
+
+* fix: refactors the parsing to include file name and line number by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/93
+* feat: adds config to show or hide clear button by @produktive in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+### New Contributors
+
+* @produktive made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/88
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v2.0.0...v2.1.0
+
+## v2.0.0 - 2026-01-16
+
+### What's Changed
+
+* Updates dependencies for filament v5 compatibility by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/91
+
 ## v1.6.1 - 2025-12-02
 
 ### What's Changed
@@ -15,41 +91,6 @@
 * refactor: removes leading slash from navigation URL by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/84
 * refactor: improves log file reading by using streaming by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/85
 * feat: adds Enum support in navigation group by @clnt in https://github.com/achyutkneupane/filament-log-viewer/pull/76
-
-### New Contributors
-
-* @clnt made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/76
-
-## v0.7 - 2025-11-28
-
-### What's Changed
-
-* fix: updates badge callbacks to return nullable integer values by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/65
-* docs: adds bug report template for issue tracking by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/66
-* feat: adds configuration for maximum log file size by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/78
-* feat: adds log viewer plugin retrieval logic by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/79
-* fix: trims leading slash from URL for route generation issue by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/80
-* refactor: improves log file reading by using streaming by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/81
-
-## v1.5.3 - 2025-11-16
-
-### What's Changed
-
-* fix: updates misplacement of `from` and `until` keys by @relisiuol in https://github.com/achyutkneupane/filament-log-viewer/pull/74
-
-### New Contributors
-
-* @relisiuol made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/74
-
-## v1.5.2 - 2025-10-13
-
-### What's Changed
-
-* Improves Persian (Farsi) translations by @FaridAghili in https://github.com/achyutkneupane/filament-log-viewer/pull/73
-
-### New Contributors
-
-* @FaridAghili made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/73
 
 ## v1.5.1 - 2025-10-09
 

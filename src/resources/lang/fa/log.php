@@ -12,6 +12,8 @@ return [
         'label' => 'نمایشگر لاگ',
     ],
     'table' => [
+        'model_label' => 'گزارش',
+        'plural_model_label' => 'گزارش‌ها',
         'columns' => [
             'log_level' => 'سطح لاگ',
             'env' => 'محیط',

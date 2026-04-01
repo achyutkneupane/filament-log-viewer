@@ -77,6 +77,12 @@ final class LogTable extends Page implements HasTable
     }
 
     /** @throws Exception */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::getPlugin()->shouldRegisterNavigation();
+    }
+
+    /** @throws Exception */
     public static function canAccess(): bool
     {
         return self::getPlugin()->isAuthorized();
@@ -103,6 +109,8 @@ final class LogTable extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->modelLabel(__('filament-log-viewer::log.table.model_label'))
+            ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
             ->records(
                 function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     $records = Collection::wrap(Log::getRows());
@@ -274,13 +282,22 @@ final class LogTable extends Page implements HasTable
             return $records;
         }
 
-        return $records
-            ->when(filled($filters['date']['from']), fn ($q) => $q->filter(
-                fn (array $log): bool => $log['date'] >= $filters['date']['from']
-            ))
-            ->when(filled($filters['date']['until']), fn ($q) => $q->filter(
-                fn (array $log): bool => $log['date'] <= $filters['date']['until']
-            ));
+        $from = $filters['date']['from'] ?? null;
+        $until = $filters['date']['until'] ?? null;
+
+        if (filled($from)) {
+            $records = $records->filter(
+                fn (array $log): bool => $log['date'] >= $from
+            );
+        }
+
+        if (filled($until)) {
+            return $records->filter(
+                fn (array $log): bool => $log['date'] <= $until
+            );
+        }
+
+        return $records;
     }
 
     /**
