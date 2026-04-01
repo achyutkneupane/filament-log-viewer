@@ -39,21 +39,14 @@ After installation, visit `/logs` in your Filament panel. You will see a table o
 You can configure the maximum file size limit for log files to be loaded and displayed. This helps prevent performance
 issues with very large log files.
 
-The default file size limit is set to `2 MB`:
-
-```php
-// config/filament-log-viewer.php
-
-return [
-    'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
-];
-```
-
-To override this setting, you can set the `LOG_MAX_SIZE_KB` environment variable in your `.env` file:
+The default file size limit is set to `2 MB`. To override these settings, you can set environment variables in your `.env` file:
 
 ```
 LOG_MAX_SIZE_KB=20480
+LOG_ENABLE_DELETE=false
 ```
+
+Set `LOG_ENABLE_DELETE=false` in production to disable the **Clear Logs** button and protect log files from accidental deletion.
 
 Or, you can publish the configuration file and update the `max_log_file_size` value as needed:
 
@@ -67,6 +60,9 @@ Then, in your published `config/filament-log-viewer.php` file:
 return [
     // Set max file size to 20 MB
     'max_log_file_size' => env('LOG_MAX_SIZE_KB', 20480),
+
+    // Disable deleting logs from the UI
+    'enable_delete' => env('LOG_ENABLE_DELETE', false),
 ];
 ```
 
@@ -144,6 +140,7 @@ use AchyutN\FilamentLogViewer\FilamentLogViewer;
 
 FilamentLogViewer::make()
     ->authorize(fn () => auth()->check())
+    ->registerNavigation(true)
     ->navigationGroup('System')
     ->navigationIcon('heroicon-o-document-text')
     ->navigationLabel('Log Viewer')
@@ -152,10 +149,31 @@ FilamentLogViewer::make()
     ->pollingTime(null); // Set to null to disable polling
 ```
 
+Set `->registerNavigation(false)` if you want to hide Log Viewer from the sidebar while still linking to it directly (for example, from a custom dashboard action).
+
+## Localization
+
+Filament Log Viewer includes built-in translations for:
+
+- [English](src/resources/lang/en/log.php)
+- [Arabic](src/resources/lang/ar/log.php)
+- [German](src/resources/lang/de/log.php)
+- [Spanish](src/resources/lang/es/log.php)
+- [Persian](src/resources/lang/fa/log.php)
+- [French](src/resources/lang/fr/log.php)
+- [Hebrew](src/resources/lang/he/log.php)
+- [Italian](src/resources/lang/it/log.php)
+- [Portuguese (Portugal)](src/resources/lang/pt/log.php)
+- [Portuguese (Brazil)](src/resources/lang/pt_BR/log.php)
+
+Translations are applied automatically based on your application's current locale.
+
+> Missing your language? Feel free to [submit a PR](https://github.com/achyutkneupane/filament-log-viewer/pulls) to add it!
+
 ## Filament Compatibility
 
-| Version                                                                          | Filament Version |
-|----------------------------------------------------------------------------------|------------------|
+|                                     Version                                      | Filament Version |
+|:--------------------------------------------------------------------------------:|------------------|
 | [`^2.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v5) | Filament v5      |
 | [`^1.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v4) | Filament v4      |
 | [`^0.x`](https://github.com/achyutkneupane/filament-log-viewer/tree/filament-v3) | Filament v3      |
