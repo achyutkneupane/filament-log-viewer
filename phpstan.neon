@@ -9,6 +9,3 @@ parameters:
         - src
 
     treatPhpDocTypesAsCertain: false
-
-    ignoreErrors:
-    		- identifier: larastan.noEnvCallsOutsideOfConfig
