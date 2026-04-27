@@ -30,6 +30,13 @@ return $panel
     ]);
 ```
 
+### Laravel Boost Integration
+
+This package provides a Laravel Boost skill for AI-assisted development. When you install Laravel Boost in your project, the skill will be automatically discovered and made available to AI agents.
+
+See [Laravel Boost documentation](https://laravel.com/docs/boost) for more details.
+
+
 ## Usage
 
 After installation, visit `/logs` in your Filament panel. You will see a table of log entries.
