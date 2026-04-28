@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Actions;
 
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
@@ -21,13 +22,15 @@ class CopyMarkdownAction extends Action
     {
         parent::setUp();
 
+        $isEnabled = config()->boolean('filament-log-viewer.enable_copy_markdown', true);
+
         $this->label(__('filament-log-viewer::log.table.actions.copy_markdown.label'));
 
         $this->icon(Heroicon::DocumentDuplicate);
 
         $this->color(Color::Gray);
 
-        $this->visible(fn (): bool => config('filament-log-viewer.enable_copy_markdown', true));
+        $this->visible(fn (array $record): bool => $isEnabled && $record['log_level'] !== LogLevel::MAIL);
 
         $this->action(function (array $record, Component $livewire): void {
             $markdown = $this->generateMarkdown($record);
@@ -59,10 +62,6 @@ class CopyMarkdownAction extends Action
 
         if ($record['has_stack'] && ! empty($record['raw_stack'])) {
             $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace')."\n```text\n{$record['raw_stack']}\n```\n\n";
-        }
-
-        if (! empty($record['mail'])) {
-            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.mail_details')."\n```json\n".json_encode($record['mail'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
         }
 
         return trim($markdown);

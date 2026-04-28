@@ -27,6 +27,15 @@ it('can render copy as markdown action', function () {
         });
 });
 
+it('hides copy as markdown action for mail logs', function () {
+    $record = Log::getRows()[0];
+    $record['log_level'] = \AchyutN\FilamentLogViewer\Enums\LogLevel::MAIL;
+
+    livewire(LogTable::class)
+        ->assertTableActionExists('copy_markdown', fn (CopyMarkdownAction $action) => $action->isVisible()) // Hidden by record, but action exists
+        ->assertTableActionHidden('copy_markdown', $record);
+});
+
 it('hides copy as markdown action when config set to false', function () {
     Config::set('filament-log-viewer.enable_copy_markdown', false);
 
@@ -91,22 +100,4 @@ it('generates correct markdown for various log entries', function () {
     expect($markdown)->not->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.description'));
     expect($markdown)->not->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.context'));
     expect($markdown)->not->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace'));
-
-    // Case 3: Mail log
-    $record = [
-        'date' => '2024-08-06 20:15:00',
-        'env' => 'local',
-        'log_level' => \AchyutN\FilamentLogViewer\Enums\LogLevel::MAIL,
-        'file' => 'laravel.log',
-        'message' => 'Mail log',
-        'description' => null,
-        'context' => null,
-        'has_stack' => false,
-        'raw_stack' => null,
-        'mail' => ['subject' => 'Test'],
-    ];
-
-    $markdown = $method->invoke($action, $record);
-
-    expect($markdown)->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.mail_details')."\n".'```json'."\n".'{'."\n".'    "subject": "Test"'."\n".'}');
 });

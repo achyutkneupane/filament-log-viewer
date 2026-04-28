@@ -73,7 +73,6 @@ return [
                     'description' => 'Description',
                     'context' => 'Context',
                     'stack_trace' => 'Stack Trace',
-                    'mail_details' => 'Mail Details',
                 ],
             ],
         ],
