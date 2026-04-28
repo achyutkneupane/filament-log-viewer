@@ -22,4 +22,14 @@ return [
     | to disable this feature and prevent accidental log file removal.
     */
     'enable_delete' => env('LOG_ENABLE_DELETE', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Copy as Markdown
+    |--------------------------------------------------------------------------
+    |
+    | Whether to allow copying log entries as Markdown. Set to false to disable
+    | this feature.
+    */
+    'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
 ];

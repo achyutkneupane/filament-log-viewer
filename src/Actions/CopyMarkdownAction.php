@@ -21,20 +21,25 @@ class CopyMarkdownAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('filament-log-viewer::log.table.actions.copy_markdown.label'))
-            ->icon(Heroicon::DocumentDuplicate)
-            ->color(Color::Gray)
-            ->action(function (array $record, Component $livewire): void {
-                $markdown = $this->generateMarkdown($record);
+        $this->label(__('filament-log-viewer::log.table.actions.copy_markdown.label'));
 
-                // Safely encode the markdown string for JS execution to prevent syntax errors on massive stack traces
-                $livewire->js('window.navigator.clipboard.writeText('.json_encode($markdown).');');
+        $this->icon(Heroicon::DocumentDuplicate);
 
-                Notification::make()
-                    ->title(__('filament-log-viewer::log.table.actions.copy_markdown.success'))
-                    ->success()
-                    ->send();
-            });
+        $this->color(Color::Gray);
+
+        $this->visible(fn (): bool => config('filament-log-viewer.enable_copy_markdown', true));
+
+        $this->action(function (array $record, Component $livewire): void {
+            $markdown = $this->generateMarkdown($record);
+
+            // Safely encode the markdown string for JS execution to prevent syntax errors on massive stack traces
+            $livewire->js('window.navigator.clipboard.writeText('.json_encode($markdown).');');
+
+            Notification::make()
+                ->title(__('filament-log-viewer::log.table.actions.copy_markdown.success'))
+                ->success()
+                ->send();
+        });
     }
 
     protected function generateMarkdown(array $record): string
