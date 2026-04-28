@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Actions;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
-use AchyutN\FilamentLogViewer\Model\Log;
 use Filament\Actions\Action;
-use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
-use Livewire\Component;
+use Illuminate\Support\Js;
 
-/** @phpstan-import-type LogRow from Log */
 final class CopyMarkdownAction extends Action
 {
     protected function setUp(): void
@@ -28,29 +25,29 @@ final class CopyMarkdownAction extends Action
         $this->color(Color::Gray);
 
         $this->visible(
-            function ($record) use ($isEnabled): bool {
-                if (! $record || ! is_array($record)) {
+            function (array $record) use ($isEnabled): bool {
+                if ($record === null) {
                     return $isEnabled;
                 }
 
-                return $isEnabled && $record['log_level'] !== LogLevel::MAIL;
+                return $isEnabled && $record['log_level'] === LogLevel::ERROR;
             }
         );
 
-        $this->action(
-            function (array $record, Component $livewire): void {
-                /** @var LogRow $record */
-                $markdown = $this->generateMarkdown($record);
+        $this->alpineClickHandler(function (mixed $record): string {
+            $copyState = Js::from($this->generateMarkdown($record));
 
-                // Safely encode the markdown string for JS execution to prevent syntax errors on massive stack traces
-                $livewire->js('window.navigator.clipboard.writeText('.json_encode($markdown).');');
-
-                Notification::make()
-                    ->title(__('filament-log-viewer::log.table.actions.copy_markdown.success'))
-                    ->success()
-                    ->send();
-            }
-        );
+            return <<<JS
+            const textarea = document.createElement('textarea');
+            textarea.value = {$copyState};
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            JS;
+        });
     }
 
     public static function getDefaultName(): string
@@ -58,23 +55,22 @@ final class CopyMarkdownAction extends Action
         return 'copy_markdown';
     }
 
-    /** @param LogRow $record */
     private function generateMarkdown(array $record): string
     {
-        $markdown = "# [{$record['date']}] {$record['env']}.{$record['log_level']->name}\n\n";
-        $markdown .= '**'.__('filament-log-viewer::log.table.actions.copy_markdown.headers.file').":** `{$record['file']}`\n\n";
+        $markdown = '# ['.$record['date'].'] '.$record['env'].'.'.$record['log_level']->value."\n\n";
+        $markdown .= '**'.__('filament-log-viewer::log.table.actions.copy_markdown.headers.file').':** `'.$record['file']."`\n\n";
 
-        $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.message')."\n{$record['message']}\n\n";
+        $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.message')."\n".$record['message']."\n\n";
 
-        if (! empty($record['description'])) {
-            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.description')."\n`{$record['description']}`\n\n";
+        if (($record['description'] ?? '') !== '') {
+            $markdown .= '## '.__('filament-log-viewer::log.t  able.actions.copy_markdown.headers.description')."\n`{$record['description']}`\n\n";
         }
 
-        if (! empty($record['context'])) {
+        if (($record['context'] ?? null) !== null) {
             $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.context')."\n```json\n".json_encode($record['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
         }
 
-        if ($record['has_stack'] && ! empty($record['raw_stack'])) {
+        if ($record['has_stack'] && ($record['raw_stack'] ?? '') !== '') {
             $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace')."\n```text\n{$record['raw_stack']}\n```\n\n";
         }
 
