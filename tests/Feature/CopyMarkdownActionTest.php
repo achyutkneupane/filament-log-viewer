@@ -6,7 +6,6 @@ namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
 use AchyutN\FilamentLogViewer\LogTable;
-use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
