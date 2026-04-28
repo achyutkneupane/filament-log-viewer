@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Actions;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use AchyutN\FilamentLogViewer\Model\Log;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Js;
 
+/** @phpstan-import-type LogRow from Log */
 final class CopyMarkdownAction extends Action
 {
     protected function setUp(): void
@@ -24,18 +26,16 @@ final class CopyMarkdownAction extends Action
 
         $this->color(Color::Gray);
 
-        $this->visible(
-            function (array $record) use ($isEnabled): bool {
-                if ($record === null) {
-                    return $isEnabled;
-                }
+        $this->hidden(fn (): bool => ! $isEnabled);
 
-                return $isEnabled && $record['log_level'] === LogLevel::ERROR;
-            }
+        $this->visible(
+            fn (?array $record): bool => $record && $record['log_level'] === LogLevel::ERROR
         );
 
-        $this->alpineClickHandler(function (mixed $record): string {
+        $this->alpineClickHandler(function (array $record): string {
+            /** @phpstan-var LogRow $record */
             $copyState = Js::from($this->generateMarkdown($record));
+            $successMessage = Js::from(__('filament-log-viewer::log.table.actions.copy_markdown.success'));
 
             return <<<JS
             const textarea = document.createElement('textarea');
@@ -46,6 +46,11 @@ final class CopyMarkdownAction extends Action
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
+
+            new FilamentNotification()
+                .success()
+                .title({$successMessage})
+                .send()
             JS;
         });
     }
@@ -55,6 +60,7 @@ final class CopyMarkdownAction extends Action
         return 'copy_markdown';
     }
 
+    /** @param LogRow $record */
     private function generateMarkdown(array $record): string
     {
         $markdown = '# ['.$record['date'].'] '.$record['env'].'.'.$record['log_level']->value."\n\n";
