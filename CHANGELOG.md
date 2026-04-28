@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.9.0 - 2026-04-28
+
+### What's Changed
+
+* feat: adds laravel-boost skill file by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/115
+* feat: adds "Copy as Markdown" button by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/116
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.8.0...v1.9.0
+
 ## v2.3.0 - 2026-04-28
 
 ### What's Changed
