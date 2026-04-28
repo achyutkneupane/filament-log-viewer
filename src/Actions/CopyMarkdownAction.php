@@ -27,7 +27,15 @@ final class CopyMarkdownAction extends Action
 
         $this->color(Color::Gray);
 
-        $this->visible(fn (array $record): bool => $isEnabled && $record['log_level'] !== LogLevel::MAIL);
+        $this->visible(
+            function ($record) use ($isEnabled): bool {
+                if (! $record || ! is_array($record)) {
+                    return $isEnabled;
+                }
+
+                return $isEnabled && $record['log_level'] !== LogLevel::MAIL;
+            }
+        );
 
         $this->action(
             function (array $record, Component $livewire): void {

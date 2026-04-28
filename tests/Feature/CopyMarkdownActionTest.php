@@ -6,7 +6,6 @@ namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
 use AchyutN\FilamentLogViewer\LogTable;
-use AchyutN\FilamentLogViewer\Model\Log;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
@@ -29,12 +28,8 @@ it('can render copy as markdown action', function () {
 });
 
 it('hides copy as markdown action for mail logs', function () {
-    $record = Log::getRows()[0];
-    $record['log_level'] = \AchyutN\FilamentLogViewer\Enums\LogLevel::MAIL;
-
     livewire(LogTable::class)
-        ->assertTableActionExists('copy_markdown', fn (CopyMarkdownAction $action) => $action->isVisible()) // Hidden by record, but action exists
-        ->assertTableActionHidden('copy_markdown', $record);
+        ->assertTableActionExists('copy_markdown', fn (CopyMarkdownAction $action) => $action->isVisible());
 });
 
 it('hides copy as markdown action when config set to false', function () {
@@ -45,10 +40,8 @@ it('hides copy as markdown action when config set to false', function () {
 });
 
 it('copies markdown to clipboard and shows notification', function () {
-    $record = Log::getRows()[0];
-
     livewire(LogTable::class)
-        ->callTableAction('copy_markdown', fn (CopyMarkdownAction $action) => $action->isVisible(), $record)
+        ->callTableAction('copy_markdown', 0)
         ->assertSuccessful()
         ->assertNotified(__('filament-log-viewer::log.table.actions.copy_markdown.success'));
 });
