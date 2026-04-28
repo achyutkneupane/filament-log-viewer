@@ -74,6 +74,7 @@ return [
                     'description' => 'Description',
                     'context' => 'Context',
                     'stack_trace' => 'Stack Trace',
+                    'mail' => 'Mail Details',
                 ],
             ],
         ],

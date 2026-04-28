@@ -29,7 +29,10 @@ final class CopyMarkdownAction extends Action
         $this->hidden(fn (): bool => ! $isEnabled);
 
         $this->visible(
-            fn (?array $record): bool => $record && $record['log_level'] === LogLevel::ERROR
+            fn (?array $record): bool => $record && $record['log_level'] instanceof LogLevel && in_array(
+                $record['log_level']->value,
+                (array) config('filament-log-viewer.copy_markdown_levels', ['error'])
+            )
         );
 
         $this->alpineClickHandler(function (array $record): string {
@@ -66,10 +69,10 @@ final class CopyMarkdownAction extends Action
         $markdown = '# ['.$record['date'].'] '.$record['env'].'.'.$record['log_level']->value."\n\n";
         $markdown .= '**'.__('filament-log-viewer::log.table.actions.copy_markdown.headers.file').':** `'.$record['file']."`\n\n";
 
-        $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.message')."\n".$record['message']."\n\n";
+        $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.message')."\n".$this->escapeMarkdown($record['message'])."\n\n";
 
         if (($record['description'] ?? '') !== '') {
-            $markdown .= '## '.__('filament-log-viewer::log.t  able.actions.copy_markdown.headers.description')."\n`{$record['description']}`\n\n";
+            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.description')."\n`{$record['description']}`\n\n";
         }
 
         if (($record['context'] ?? null) !== null) {
@@ -80,6 +83,45 @@ final class CopyMarkdownAction extends Action
             $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace')."\n```text\n{$record['raw_stack']}\n```\n\n";
         }
 
+        if (($record['mail'] ?? null) !== null) {
+            $markdown .= $this->generateMailSection($record['mail']);
+        }
+
         return trim($markdown);
+    }
+
+    /** @param array{plain: string, html: string, sender: array{name: string, email: string}|null, receiver: array{name: string, email: string}|null, subject: string, sent_date: string} $mail */
+    private function generateMailSection(array $mail): string
+    {
+        $section = '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.mail')."\n\n";
+
+        if (($mail['sender']['email'] ?? '') !== '') {
+            $senderName = ($mail['sender']['name'] ?? '') ? $mail['sender']['name'].' <'.$mail['sender']['email'].'>' : $mail['sender']['email'];
+            $section .= '- **From:** '.$senderName."\n";
+        }
+
+        if (($mail['receiver']['email'] ?? '') !== '') {
+            $receiverName = ($mail['receiver']['name'] ?? '') ? $mail['receiver']['name'].' <'.$mail['receiver']['email'].'>' : $mail['receiver']['email'];
+            $section .= '- **To:** '.$receiverName."\n";
+        }
+
+        if ($mail['subject'] !== '') {
+            $section .= '- **Subject:** '.$this->escapeMarkdown($mail['subject'])."\n";
+        }
+
+        if ($mail['sent_date'] !== '') {
+            $section .= '- **Date:** '.$mail['sent_date']."\n";
+        }
+
+        if ($mail['plain'] !== '') {
+            $section .= "\n".'---'."\n\n".$mail['plain']."\n";
+        }
+
+        return $section."\n";
+    }
+
+    private function escapeMarkdown(string $text): string
+    {
+        return (string) preg_replace('/([*_`\[\]()#\\-])/', '\\\$1', $text);
     }
 }

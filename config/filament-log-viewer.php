@@ -32,4 +32,14 @@ return [
     | this feature.
     */
     'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Copy as Markdown Log Levels
+    |--------------------------------------------------------------------------
+    |
+    | The log levels that will allow copying as Markdown. Only logs of these levels
+    | will show the "Copy as Markdown" action. Defaults to 'error'.
+    */
+    'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error,alert,mail')),
 ];
