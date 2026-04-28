@@ -14,7 +14,7 @@ Use this skill when working with the Filament Log Viewer package - a Filament pl
 
 ## Context
 
-A developer-focused Laravel log viewer with stack trace inspection, built for Filament v5. Provides:
+A developer-focused Laravel log viewer with stack trace inspection, built for Filament v3 to v5. Provides:
 
 - Log table with searchable entries from `storage/logs`
 - Stack trace inspection in slide-over modals
@@ -35,6 +35,24 @@ Always use the correct package version for your Filament version:
 | `^2.x`          | v5               | ≥8.2 |
 | `^1.x`          | v4               | ≥8.1 |
 | `^0.x`          | v3               | ≥8.0 |
+
+### Customizations
+
+#### Authorization
+
+Use the `->authorize()` method to control access to the Log Viewer page. You can pass a `Closure` that returns a boolean based on your authorization logic.
+
+#### Navigation Registration
+
+By default, the Log Viewer will be registered in the Filament sidebar navigation. You can disable this with `->registerNavigation(false)` if you want to link to it directly without showing it in the sidebar.
+
+#### Navigation Customization
+
+You can customize the navigation group, icon, label, sort order, and URL using the respective methods: `->navigationGroup()`, `->navigationIcon()`, `->navigationLabel()`, `->navigationSort()`, and `->navigationUrl()` respectively.
+
+#### Polling Time
+
+The `->pollingTime()` method allows you to set how often the log table should refresh to show new log entries. You can specify this in seconds (e.g., `'60s'`) or set it to `null` to disable polling.
 
 ### Production Security
 
