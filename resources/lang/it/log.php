@@ -65,6 +65,18 @@ return [
                 'label' => 'Pulisci Log',
                 'success' => 'Tutti i log sono stati cancellati con successo!',
             ],
+            'copy_markdown' => [
+                'label' => 'Copy as Markdown',
+                'success' => 'Markdown copied to clipboard',
+                'headers' => [
+                    'file' => 'File',
+                    'message' => 'Message',
+                    'description' => 'Description',
+                    'context' => 'Context',
+                    'stack_trace' => 'Stack Trace',
+                    'mail' => 'Mail Details',
+                ],
+            ],
         ],
     ],
     'schema' => [

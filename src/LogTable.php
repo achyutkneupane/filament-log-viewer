@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Filters\FileFilter;
@@ -202,6 +203,7 @@ final class LogTable extends Page implements HasTable
                         return null;
                     })
                     ->slideOver(),
+                CopyMarkdownAction::make(),
             ])
             ->poll(self::getPlugin()->getPollingTime())
             ->filters(

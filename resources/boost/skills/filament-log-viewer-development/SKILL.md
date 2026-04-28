@@ -22,6 +22,7 @@ A developer-focused Laravel log viewer with stack trace inspection, built for Fi
 - Multiple filter types (log level tabs, date range, file)
 - Dark mode ready
 - Multilingual support (English, Arabic, German, Spanish, Persian, French, Hebrew, Italian, Portuguese)
+- Copy log entries as formatted Markdown strings
 - Visit `/logs` in your Filament panel after installation
 
 ## Rules
@@ -139,8 +140,27 @@ Then edit `config/filament-log-viewer.php`:
 return [
     'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
     'enable_delete' => env('LOG_ENABLE_DELETE', true),
+    'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
+    'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error')),
 ];
 ```
+
+### Copy as Markdown Configuration
+
+Control which log levels show the "Copy as Markdown" button:
+
+```php
+// Only error logs (default)
+LOG_COPY_MARKDOWN_LEVELS=error
+
+// Multiple levels
+LOG_COPY_MARKDOWN_LEVELS=error,mail,warning
+
+// Or in config
+'copy_markdown_levels' => ['error', 'mail'],
+```
+
+Available log levels: `error`, `warning`, `critical`, `alert`, `emergency`, `info`, `notice`, `debug`, `mail`
 
 ## Anti-patterns
 
@@ -149,6 +169,7 @@ return [
 - Missing `authorize()` check - exposes logs to all users including customers
 - Setting very large `max_log_file_size` without considering memory constraints
 - Leaving polling enabled in production without considering server load
+- Not configuring `copy_markdown_levels` for your use case - defaults to error only
 
 ## References
 
