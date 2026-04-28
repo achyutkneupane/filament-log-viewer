@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.3.0 - 2026-04-28
+
+### What's Changed
+
+* docs: adds register navigation and translations by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/113
+* feat: adds laravel-boost skill file by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/115
+* feat: adds "Copy as Markdown" button by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/116
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v2.2.0...v2.3.0
+
 ## v1.8.0 - 2026-04-01
 
 ### What's Changed
