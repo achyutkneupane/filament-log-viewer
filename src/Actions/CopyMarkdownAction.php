@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Js;
+use Throwable;
 
 /** @phpstan-import-type LogRow from Log */
 final class CopyMarkdownAction extends Action
@@ -66,21 +67,31 @@ final class CopyMarkdownAction extends Action
     /** @param LogRow $record */
     private function generateMarkdown(array $record): string
     {
-        $markdown = '# ['.$record['date'].'] '.$record['env'].'.'.$record['log_level']->value."\n\n";
-        $markdown .= '**'.__('filament-log-viewer::log.table.actions.copy_markdown.headers.file').':** `'.$record['file']."`\n\n";
+        $markdown = '# '.ucwords($record['log_level']->value)."\n\n";
 
-        $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.message')."\n".$this->escapeMarkdown($record['message'])."\n\n";
+        $markdown .= '**Date:** '.$this->formatDate($record['date'])."\n";
+        $markdown .= '**Environment:** '.$record['env']."\n";
+        $markdown .= '**File:** '.$record['file']."\n\n";
+
+        if ($record['log_level'] !== LogLevel::MAIL) {
+            $markdown .= '## Message'."\n".$this->escapeMarkdown($record['message'])."\n\n";
+        }
 
         if (($record['description'] ?? '') !== '') {
-            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.description')."\n`{$record['description']}`\n\n";
+            $markdown .= '## Description'."\n".$record['description']."\n\n";
         }
 
         if (($record['context'] ?? null) !== null) {
-            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.context')."\n```json\n".json_encode($record['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
+            $markdown .= '## Context'."\n".'```json'."\n".json_encode($record['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
         }
 
         if ($record['has_stack'] && ($record['raw_stack'] ?? '') !== '') {
-            $markdown .= '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace')."\n```text\n{$record['raw_stack']}\n```\n\n";
+            $markdown .= '## Stack Trace'."\n";
+            $frames = $this->parseStackTrace($record['raw_stack']);
+            foreach ($frames as $index => $frame) {
+                $markdown .= $index.' - '.$frame['file'].':'.$frame['line']."\n";
+            }
+            $markdown .= "\n";
         }
 
         if (($record['mail'] ?? null) !== null) {
@@ -90,38 +101,98 @@ final class CopyMarkdownAction extends Action
         return trim($markdown);
     }
 
+    /** @return list<array{file: string, line: string}> */
+    private function parseStackTrace(string $rawStack): array
+    {
+        $frames = [];
+        $lines = explode("\n", $rawStack);
+
+        $inStackTrace = false;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if ($line === '[stacktrace]') {
+                $inStackTrace = true;
+
+                continue;
+            }
+
+            if ($inStackTrace && $line !== '' && $line !== '""') {
+                if (preg_match('/^#(\d+)\s+(.+?)<?:\s*(\d+)>?$/', $line, $matches)) {
+                    $filePath = $matches[2];
+                    $lineNum = $matches[3];
+                } elseif (preg_match('/^(.+?)\((\d+)\)/', $line, $matches)) {
+                    $filePath = $matches[1];
+                    $lineNum = $matches[2];
+                } else {
+                    continue;
+                }
+
+                $frames[] = [
+                    'file' => $filePath,
+                    'line' => $lineNum,
+                ];
+            }
+        }
+
+        return $frames;
+    }
+
     /** @param array{plain: string, html: string, sender: array{name: string, email: string}|null, receiver: array{name: string, email: string}|null, subject: string, sent_date: string} $mail */
     private function generateMailSection(array $mail): string
     {
-        $section = '## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.mail')."\n\n";
+        $fromEmail = $mail['sender']['email'] ?? '';
+        $fromName = $mail['sender']['name'] ?? '';
+        $toEmail = $mail['receiver']['email'] ?? '';
+        $toName = $mail['receiver']['name'] ?? '';
 
-        if (($mail['sender']['email'] ?? '') !== '') {
-            $senderName = ($mail['sender']['name'] ?? '') ? $mail['sender']['name'].' <'.$mail['sender']['email'].'>' : $mail['sender']['email'];
-            $section .= '- **From:** '.$senderName."\n";
+        $markdown = '**Sent Date:** '.$this->formatDate($mail['sent_date'] ?? '')."\n";
+
+        if ($fromName !== '' || $fromEmail !== '') {
+            $markdown .= '**From:** '.($fromName !== '' ? $fromName.' <'.$fromEmail.'>' : $fromEmail)."\n";
         }
 
-        if (($mail['receiver']['email'] ?? '') !== '') {
-            $receiverName = ($mail['receiver']['name'] ?? '') ? $mail['receiver']['name'].' <'.$mail['receiver']['email'].'>' : $mail['receiver']['email'];
-            $section .= '- **To:** '.$receiverName."\n";
+        if ($toName !== '' || $toEmail !== '') {
+            $markdown .= '**To:** '.($toName !== '' ? $toName.' <'.$toEmail.'>' : $toEmail)."\n";
         }
 
         if ($mail['subject'] !== '') {
-            $section .= '- **Subject:** '.$this->escapeMarkdown($mail['subject'])."\n";
+            $markdown .= '**Subject:** '.$mail['subject']."\n";
         }
 
-        if ($mail['sent_date'] !== '') {
-            $section .= '- **Date:** '.$mail['sent_date']."\n";
-        }
+        $markdown .= "\n";
+
+        $markdown .= '## Message'."\n\n";
 
         if ($mail['plain'] !== '') {
-            $section .= "\n".'---'."\n\n".$mail['plain']."\n";
+            $markdown .= "```\n";
+            $markdown .= $this->escapeMarkdown($mail['plain'])."\n\n";
+            $markdown .= "```\n";
         }
 
-        return $section."\n";
+        return $markdown;
+    }
+
+    private function formatDate(string $date): string
+    {
+        if ($date === '') {
+            return '';
+        }
+
+        try {
+            /** @var string $timezone */
+            $timezone = config()->string('app.timezone', 'UTC');
+            $carbon = \Carbon\Carbon::parse($date)->timezone($timezone);
+
+            return $carbon->toIso8601String();
+        } catch (Throwable) {
+            return $date;
+        }
     }
 
     private function escapeMarkdown(string $text): string
     {
-        return (string) preg_replace('/([*_`\[\]()#\\-])/', '\\\$1', $text);
+        return (string) preg_replace("/\n{3,}/", "\n\n", $text);
     }
 }
