@@ -11,13 +11,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Actions\Action;
 use Livewire\Component;
 
-class CopyMarkdownAction extends Action
+final class CopyMarkdownAction extends Action
 {
-    public static function getDefaultName(): ?string
-    {
-        return 'copy_markdown';
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,6 +38,11 @@ class CopyMarkdownAction extends Action
                 ->success()
                 ->send();
         });
+    }
+
+    public static function getDefaultName(): string
+    {
+        return 'copy_markdown';
     }
 
     protected function generateMarkdown(array $record): string

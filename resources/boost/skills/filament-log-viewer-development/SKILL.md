@@ -22,6 +22,7 @@ A developer-focused Laravel log viewer with stack trace inspection, built for Fi
 - Multiple filter types (log level tabs, date range, file)
 - Dark mode ready
 - Multilingual support (English, Arabic, German, Spanish, Persian, French, Hebrew, Italian, Portuguese)
+- Copy log entries as formatted Markdown strings
 - Visit `/logs` in your Filament panel after installation
 
 ## Rules
@@ -139,6 +140,7 @@ Then edit `config/filament-log-viewer.php`:
 return [
     'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
     'enable_delete' => env('LOG_ENABLE_DELETE', true),
+    'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
 ];
 ```
 

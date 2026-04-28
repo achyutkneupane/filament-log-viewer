@@ -11,6 +11,7 @@ use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
+use ReflectionClass;
 
 use function Pest\Livewire\livewire;
 
@@ -45,7 +46,7 @@ it('hides copy as markdown action when config set to false', function () {
 
 it('copies markdown to clipboard and shows notification', function () {
     $record = Log::getRows()[0];
-    
+
     livewire(LogTable::class)
         ->callTableAction('copy_markdown', $record)
         ->assertSuccessful()
@@ -54,7 +55,7 @@ it('copies markdown to clipboard and shows notification', function () {
 
 it('generates correct markdown for various log entries', function () {
     $action = new CopyMarkdownAction('copy_markdown');
-    $reflection = new \ReflectionClass($action);
+    $reflection = new ReflectionClass($action);
     $method = $reflection->getMethod('generateMarkdown');
     $method->setAccessible(true);
 
