@@ -64,6 +64,18 @@ return [
                 'label' => 'پاک کردن لاگ‌ها',
                 'success' => 'تمام لاگ‌ها پاک شدند.',
             ],
+            'copy_markdown' => [
+                'label' => 'Copy as Markdown',
+                'success' => 'Markdown copied to clipboard',
+                'headers' => [
+                    'file' => 'File',
+                    'message' => 'Message',
+                    'description' => 'Description',
+                    'context' => 'Context',
+                    'stack_trace' => 'Stack Trace',
+                    'mail_details' => 'Mail Details',
+                ],
+            ],
         ],
     ],
     'schema' => [

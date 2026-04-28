@@ -64,6 +64,18 @@ return [
                 'label' => 'Limpar Logs',
                 'success' => 'Todos os logs foram limpos com sucesso!',
             ],
+            'copy_markdown' => [
+                'label' => 'Copy as Markdown',
+                'success' => 'Markdown copied to clipboard',
+                'headers' => [
+                    'file' => 'File',
+                    'message' => 'Message',
+                    'description' => 'Description',
+                    'context' => 'Context',
+                    'stack_trace' => 'Stack Trace',
+                    'mail_details' => 'Mail Details',
+                ],
+            ],
         ],
     ],
     'schema' => [
