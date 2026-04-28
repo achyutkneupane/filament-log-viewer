@@ -48,7 +48,7 @@ it('copies markdown to clipboard and shows notification', function () {
     $record = Log::getRows()[0];
 
     livewire(LogTable::class)
-        ->callTableAction('copy_markdown', $record)
+        ->callTableAction('copy_markdown', fn (CopyMarkdownAction $action) => $action->isVisible(), $record)
         ->assertSuccessful()
         ->assertNotified(__('filament-log-viewer::log.table.actions.copy_markdown.success'));
 });
@@ -57,9 +57,7 @@ it('generates correct markdown for various log entries', function () {
     $action = new CopyMarkdownAction('copy_markdown');
     $reflection = new ReflectionClass($action);
     $method = $reflection->getMethod('generateMarkdown');
-    $method->setAccessible(true);
 
-    // Case 1: Standard error log
     $record = [
         'date' => '2024-08-06 20:15:00',
         'env' => 'local',
@@ -82,7 +80,6 @@ it('generates correct markdown for various log entries', function () {
     expect($markdown)->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.context')."\n".'```json'."\n".'{'."\n".'    "user_id": 1'."\n".'}');
     expect($markdown)->toContain('## '.__('filament-log-viewer::log.table.actions.copy_markdown.headers.stack_trace')."\n".'```text'."\n".'stack trace content');
 
-    // Case 2: Minimal log
     $record = [
         'date' => '2024-08-06 20:15:00',
         'env' => 'local',

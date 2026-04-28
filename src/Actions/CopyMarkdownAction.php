@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Actions;
 
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use AchyutN\FilamentLogViewer\Model\Log;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Actions\Action;
 use Livewire\Component;
 
+/** @phpstan-import-type LogRow from Log */
 final class CopyMarkdownAction extends Action
 {
     protected function setUp(): void
@@ -27,17 +29,20 @@ final class CopyMarkdownAction extends Action
 
         $this->visible(fn (array $record): bool => $isEnabled && $record['log_level'] !== LogLevel::MAIL);
 
-        $this->action(function (array $record, Component $livewire): void {
-            $markdown = $this->generateMarkdown($record);
+        $this->action(
+            function (array $record, Component $livewire): void {
+                /** @var LogRow $record */
+                $markdown = $this->generateMarkdown($record);
 
-            // Safely encode the markdown string for JS execution to prevent syntax errors on massive stack traces
-            $livewire->js('window.navigator.clipboard.writeText('.json_encode($markdown).');');
+                // Safely encode the markdown string for JS execution to prevent syntax errors on massive stack traces
+                $livewire->js('window.navigator.clipboard.writeText('.json_encode($markdown).');');
 
-            Notification::make()
-                ->title(__('filament-log-viewer::log.table.actions.copy_markdown.success'))
-                ->success()
-                ->send();
-        });
+                Notification::make()
+                    ->title(__('filament-log-viewer::log.table.actions.copy_markdown.success'))
+                    ->success()
+                    ->send();
+            }
+        );
     }
 
     public static function getDefaultName(): string
@@ -45,7 +50,8 @@ final class CopyMarkdownAction extends Action
         return 'copy_markdown';
     }
 
-    protected function generateMarkdown(array $record): string
+    /** @param LogRow $record */
+    private function generateMarkdown(array $record): string
     {
         $markdown = "# [{$record['date']}] {$record['env']}.{$record['log_level']->name}\n\n";
         $markdown .= '**'.__('filament-log-viewer::log.table.actions.copy_markdown.headers.file').":** `{$record['file']}`\n\n";
