@@ -14,21 +14,21 @@ final class LogViewerProvider extends BaseServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(
-            dirname(__DIR__).'/src/resources/views',
+            dirname(__DIR__).'/resources/views',
             'filament-log-viewer'
         );
 
         $this->loadTranslationsFrom(
-            dirname(__DIR__).'/src/resources/lang',
+            dirname(__DIR__).'/resources/lang',
             'filament-log-viewer'
         );
 
         $this->publishes([
-            dirname(__DIR__).'/src/resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
+            dirname(__DIR__).'/resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
         ], 'filament-log-viewer-lang');
 
         $this->publishes([
-            dirname(__DIR__).'/src/config/filament-log-viewer.php' => config_path('filament-log-viewer.php'),
+            dirname(__DIR__).'/config/filament-log-viewer.php' => config_path('filament-log-viewer.php'),
         ], 'filament-log-viewer-config');
     }
 
@@ -36,7 +36,7 @@ final class LogViewerProvider extends BaseServiceProvider
     {
 
         $this->mergeConfigFrom(
-            dirname(__DIR__).'/src/config/filament-log-viewer.php',
+            dirname(__DIR__).'/config/filament-log-viewer.php',
             'filament-log-viewer'
         );
     }

@@ -30,6 +30,13 @@ return $panel
     ]);
 ```
 
+### Laravel Boost Integration
+
+This package provides a Laravel Boost skill for AI-assisted development. When you install Laravel Boost in your project, the skill will be automatically discovered and made available to AI agents.
+
+See [Laravel Boost documentation](https://laravel.com/docs/boost) for more details.
+
+
 ## Usage
 
 After installation, visit `/logs` in your Filament panel. You will see a table of log entries.
@@ -44,9 +51,14 @@ The default file size limit is set to `2 MB`. To override these settings, you ca
 ```
 LOG_MAX_SIZE_KB=20480
 LOG_ENABLE_DELETE=false
+LOG_ENABLE_COPY_MARKDOWN=false
+LOG_COPY_MARKDOWN_LEVELS=error,warning
 ```
 
-Set `LOG_ENABLE_DELETE=false` in production to disable the **Clear Logs** button and protect log files from accidental deletion.
+- Set `LOG_MAX_SIZE_KB` to the maximum log file size in kilobytes (e.g., `20480` for 20 MB).
+- Set `LOG_ENABLE_DELETE=false` in production to disable the **Clear Logs** button and protect log files from accidental deletion.
+- Set `LOG_ENABLE_COPY_MARKDOWN=false` to disable the **Copy as Markdown** button.
+- Set `LOG_COPY_MARKDOWN_LEVELS` to comma-separated list of log levels that show the copy button (e.g., `error,warning` or just `error`).
 
 Or, you can publish the configuration file and update the `max_log_file_size` value as needed:
 
@@ -63,6 +75,12 @@ return [
 
     // Disable deleting logs from the UI
     'enable_delete' => env('LOG_ENABLE_DELETE', false),
+
+    // Disable copying logs as markdown
+    'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
+
+    // Show copy button for these log levels (comma-separated)
+    'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error')),
 ];
 ```
 
@@ -73,6 +91,7 @@ return [
 - **File** *(Toggleable)* – Log file name (e.g., `laravel.log`)
 - **Message** – Short summary of the log
 - **Occurred** – Human-readable date/time
+- **Copy as Markdown** – Action to copy log details in a clean Markdown format.
 
 ![Table Preview](https://hamrocdn.com/75qlRGETrri6)
 
