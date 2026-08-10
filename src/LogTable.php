@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
+use AchyutN\FilamentLogViewer\Contracts\LogProvider;
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogTableSchemaInterface;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\Filters\DateRangeFilter;
 use AchyutN\FilamentLogViewer\Filters\FileFilter;
-use AchyutN\FilamentLogViewer\Model\Log;
-use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
-use AchyutN\FilamentLogViewer\Schema\JSONLogSchema;
-use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
-use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
+use AchyutN\FilamentLogViewer\Traits\HasLogViewerNavigation;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Panel;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
@@ -29,92 +26,55 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use UnitEnum;
 
 /**
- * @phpstan-import-type LogRow from Log
+ * @phpstan-import-type LogRow from LogProvider
  *
  * @phpstan-type LogCollection Collection<int|string, LogRow>
  * @phpstan-type FilterData array{date?: array{from?: string, until?: string}, file?: array{value: string}}
  */
-final class LogTable extends Page implements HasTable
+class LogTable extends Page implements HasTable
 {
+    use HasLogViewerNavigation;
     use InteractsWithTable;
     use LogLevelTabFilter;
 
     protected string $view = 'filament-log-viewer::log-table';
-
-    /** @throws Exception */
-    public static function getNavigationLabel(): string
-    {
-        return self::getPlugin()->getNavigationLabel();
-    }
-
-    /** @throws Exception */
-    public static function getNavigationGroup(): string|UnitEnum|null
-    {
-        return self::getPlugin()->getNavigationGroup();
-    }
-
-    /** @throws Exception */
-    public static function getNavigationSort(): int
-    {
-        return self::getPlugin()->getNavigationSort();
-    }
-
-    /** @throws Exception */
-    public static function getSlug(?Panel $panel = null): string
-    {
-        return ltrim(
-            self::getPlugin($panel)->getNavigationUrl(),
-            '/'
-        );
-    }
-
-    /** @throws Exception */
-    public static function getNavigationIcon(): string
-    {
-        return self::getPlugin()->getNavigationIcon();
-    }
-
-    /** @throws Exception */
-    public static function shouldRegisterNavigation(): bool
-    {
-        return self::getPlugin()->shouldRegisterNavigation();
-    }
-
-    /** @throws Exception */
-    public static function canAccess(): bool
-    {
-        return self::getPlugin()->isAuthorized();
-    }
-
-    public function getHeading(): string
-    {
-        return __('filament-log-viewer::log.navigation.heading');
-    }
-
-    public function getSubheading(): string
-    {
-        return __('filament-log-viewer::log.navigation.subheading');
-    }
-
-    public function getTitle(): string
-    {
-        return __('filament-log-viewer::log.navigation.title');
-    }
 
     /**
      * @throws Exception
      */
     public function table(Table $table): Table
     {
+        $plugin = self::getPlugin();
+
+        /** @var LogProvider $provider */
+        $provider = app($plugin->getProviderClass());
+
+        /** @var LogTableSchemaInterface $tableSchema */
+        $tableSchema = app($plugin->getTableSchemaClass());
+
+        /** @var LogEntrySchemaInterface $errorSchema */
+        $errorSchema = app($plugin->getErrorSchemaClass());
+
+        /** @var LogEntrySchemaInterface $jsonSchema */
+        $jsonSchema = app($plugin->getJsonSchemaClass());
+
+        /** @var LogEntrySchemaInterface $mailSchema */
+        $mailSchema = app($plugin->getMailSchemaClass());
+
+        /** @var class-string<CopyMarkdownAction> $copyMarkdownClass */
+        $copyMarkdownClass = $plugin->getCopyMarkdownActionClass();
+
         return $table
             ->modelLabel(__('filament-log-viewer::log.table.model_label'))
             ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
             ->records(
-                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
-                    $records = Collection::wrap(Log::getRows());
+                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage) use ($plugin): LengthAwarePaginator {
+                    /** @var LogProvider $provider */
+                    $provider = app($plugin->getProviderClass());
+
+                    $records = Collection::wrap($provider->getRows());
 
                     $records = $this->applyTabFilter($records);
                     /** @var FilterData $filters */
@@ -137,87 +97,120 @@ final class LogTable extends Page implements HasTable
                         currentPage: $page,
                     );
                 })
-            ->columns(LogTableSchema::columns())
+            ->columns($tableSchema->getColumns())
             ->recordActions([
-                Action::make('view')
-                    ->label(__('filament-log-viewer::log.table.actions.view.label'))
-                    ->visible(
-                        fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL
-                    )
-                    ->hidden(fn (array $record): bool => ! $record['has_stack'])
-                    ->icon(Heroicon::Eye)
-                    ->color(Color::Gray)
-                    ->schema(fn (Schema $schema): Schema => ErrorLogSchema::configure($schema))
-                    ->modalSubmitAction(false)
-                    ->modalCancelAction(false)
-                    ->modalHeading(
-                        fn (array $record) => $record['message']
-                    )
-                    ->modalDescription(
-                        /** @phpstan-param LogRow $record */
-                        fn (array $record) => $record['description']
-                    )
-                    ->slideOver(),
-                Action::make('view-json')
-                    ->label(__('filament-log-viewer::log.table.actions.view.label'))
-                    ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
-                    ->hidden(fn (array $record): bool => $record['context'] === null)
-                    ->icon(Heroicon::Eye)
-                    ->color(Color::Gray)
-                    ->schema(fn (Schema $schema): Schema => JSONLogSchema::configure($schema))
-                    ->modalSubmitAction(false)
-                    ->modalCancelAction(false)
-                    ->modalHeading(
-                        /** @phpstan-param LogRow $record */
-                        fn (array $record) => $record['message']
-                    )
-                    ->modalDescription(
-                        /** @phpstan-param LogRow $record */
-                        fn (array $record) => $record['description']
-                    )
-                    ->slideOver(),
-                Action::make('read')
-                    ->label(__('filament-log-viewer::log.table.actions.read.label'))
-                    ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
-                    ->icon(Heroicon::Envelope)
-                    ->color(Color::hex('#9C27B0'))
-                    ->schema(fn (Schema $schema): Schema => MailLogSchema::configure($schema))
-                    ->modalSubmitAction(false)
-                    ->modalCancelAction(false)
-                    ->modalHeading(function (array $record): string {
-                        /** @var LogRow $record */
-                        $mail = $record['mail'];
-                        if ($mail && isset($mail['subject']) && $mail['subject'] !== '') {
-                            return __('filament-log-viewer::log.table.actions.read.subject').': '.$mail['subject'];
-                        }
-
-                        return __('filament-log-viewer::log.table.actions.read.mail_log');
-                    })
-                    ->modalDescription(function (array $record): ?string {
-                        /** @var LogRow $record */
-                        $mail = $record['mail'];
-                        if ($mail && isset($mail['sent_date']) && $mail['sent_date'] !== '') {
-                            return __('filament-log-viewer::log.table.actions.read.sent_date').': '.$mail['sent_date'];
-                        }
-
-                        return null;
-                    })
-                    ->slideOver(),
-                CopyMarkdownAction::make(),
+                $this->getViewAction($errorSchema),
+                $this->getViewJsonAction($jsonSchema),
+                $this->getReadMailAction($mailSchema),
+                $copyMarkdownClass::make(),
             ])
-            ->poll(self::getPlugin()->getPollingTime())
+            ->poll($plugin->getPollingTime())
             ->filters(
                 [
-                    DateRangeFilter::make('date')
-                        ->columnSpan(2),
-                    FileFilter::make()
-                        ->columnSpan(1),
+                    $this->getDateRangeFilter(),
+                    $this->getFileFilter(),
                 ]
             )
             ->filtersFormWidth(Width::Large)
             ->filtersFormColumns(3)
             ->deferFilters(false)
             ->deferColumnManager(false);
+    }
+
+    protected function getViewAction(LogEntrySchemaInterface $schema): Action
+    {
+        return Action::make('view')
+            ->label(__('filament-log-viewer::log.table.actions.view.label'))
+            ->visible(
+                fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL
+            )
+            ->hidden(fn (array $record): bool => ! $record['has_stack'])
+            ->icon(Heroicon::Eye)
+            ->color(Color::Gray)
+            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->modalSubmitAction(false)
+            ->modalCancelAction(false)
+            ->modalHeading(
+                fn (array $record) => $record['message']
+            )
+            ->modalDescription(
+                /** @phpstan-param LogRow $record */
+                fn (array $record) => $record['description']
+            )
+            ->slideOver();
+    }
+
+    protected function getViewJsonAction(LogEntrySchemaInterface $schema): Action
+    {
+        return Action::make('view-json')
+            ->label(__('filament-log-viewer::log.table.actions.view.label'))
+            ->visible(fn (array $record): bool => $record['log_level'] !== LogLevel::MAIL)
+            ->hidden(fn (array $record): bool => $record['context'] === null)
+            ->icon(Heroicon::Eye)
+            ->color(Color::Gray)
+            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->modalSubmitAction(false)
+            ->modalCancelAction(false)
+            ->modalHeading(
+                /** @phpstan-param LogRow $record */
+                fn (array $record) => $record['message']
+            )
+            ->modalDescription(
+                /** @phpstan-param LogRow $record */
+                fn (array $record) => $record['description']
+            )
+            ->slideOver();
+    }
+
+    protected function getReadMailAction(LogEntrySchemaInterface $schema): Action
+    {
+        return Action::make('read')
+            ->label(__('filament-log-viewer::log.table.actions.read.label'))
+            ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
+            ->icon(Heroicon::Envelope)
+            ->color(Color::hex('#9C27B0'))
+            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->modalSubmitAction(false)
+            ->modalCancelAction(false)
+            ->modalHeading(function (array $record): string {
+                /** @var LogRow $record */
+                $mail = $record['mail'];
+                if ($mail && isset($mail['subject']) && $mail['subject'] !== '') {
+                    return __('filament-log-viewer::log.table.actions.read.subject').': '.$mail['subject'];
+                }
+
+                return __('filament-log-viewer::log.table.actions.read.mail_log');
+            })
+            ->modalDescription(function (array $record): ?string {
+                /** @var LogRow $record */
+                $mail = $record['mail'];
+                if ($mail && isset($mail['sent_date']) && $mail['sent_date'] !== '') {
+                    return __('filament-log-viewer::log.table.actions.read.sent_date').': '.$mail['sent_date'];
+                }
+
+                return null;
+            })
+            ->slideOver();
+    }
+
+    protected function getDateRangeFilter(): \Filament\Tables\Filters\Filter
+    {
+        $plugin = self::getPlugin();
+
+        /** @var class-string<DateRangeFilter> $class */
+        $class = $plugin->getDateRangeFilterClass();
+
+        return $class::make('date')->columnSpan(2);
+    }
+
+    protected function getFileFilter(): \Filament\Tables\Filters\SelectFilter
+    {
+        $plugin = self::getPlugin();
+
+        /** @var class-string<FileFilter> $class */
+        $class = $plugin->getFileFilterClass();
+
+        return $class::make()->columnSpan(1);
     }
 
     protected function getHeaderActions(): array
@@ -237,7 +230,9 @@ final class LogTable extends Page implements HasTable
                 ->visible(fn () => config('filament-log-viewer.enable_delete', true))
                 ->requiresConfirmation()
                 ->action(function (): void {
-                    Log::destroyAllLogs();
+                    /** @var LogProvider $provider */
+                    $provider = app(LogProvider::class);
+                    $provider->deleteAll();
                     Notification::make()
                         ->title(__('filament-log-viewer::log.table.actions.clear.success'))
                         ->success()
@@ -246,25 +241,11 @@ final class LogTable extends Page implements HasTable
         ];
     }
 
-    /** @throws Exception */
-    private static function getPlugin(?Panel $panel = null): FilamentLogViewer
-    {
-        $panel ??= Filament::getCurrentPanel();
-        $logViewer = FilamentLogViewer::make();
-
-        if ($panel?->hasPlugin($logViewer->getId())) {
-            /** @var FilamentLogViewer */
-            return $panel->getPlugin($logViewer->getId());
-        }
-
-        return $logViewer;
-    }
-
     /**
      * @param  LogCollection  $records
      * @return LogCollection
      */
-    private function applyTabFilter(Collection $records): Collection
+    protected function applyTabFilter(Collection $records): Collection
     {
         if ($this->tableIsUnscoped()) {
             return $records;
@@ -278,7 +259,7 @@ final class LogTable extends Page implements HasTable
      * @param  FilterData|null  $filters
      * @return LogCollection
      */
-    private function applyDateFilter(Collection $records, ?array $filters): Collection
+    protected function applyDateFilter(Collection $records, ?array $filters): Collection
     {
         if (empty($filters['date'])) {
             return $records;
@@ -307,7 +288,7 @@ final class LogTable extends Page implements HasTable
      * @param  FilterData|null  $filters
      * @return LogCollection
      */
-    private function applyFileFilter(Collection $records, ?array $filters): Collection
+    protected function applyFileFilter(Collection $records, ?array $filters): Collection
     {
         if (! $filters || (array_key_exists('file', $filters) === false || blank($filters['file']['value']))) {
             return $records;
@@ -322,7 +303,7 @@ final class LogTable extends Page implements HasTable
      * @param  LogCollection  $records
      * @return LogCollection
      */
-    private function applySearchFilter(Collection $records, ?string $search): Collection
+    protected function applySearchFilter(Collection $records, ?string $search): Collection
     {
         if (blank($search)) {
             return $records;
