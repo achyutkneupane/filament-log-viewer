@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Filters;
 
-use AchyutN\FilamentLogViewer\Model\Log;
+use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use Exception;
 use Filament\Tables\Filters\SelectFilter;
 
-final class FileFilter
+class FileFilter
 {
     /** @throws Exception */
     public static function make(string $name = 'file'): SelectFilter
     {
+        /** @var LogProvider $provider */
+        $provider = app(LogProvider::class);
+
         return SelectFilter::make($name)
             ->label($name === 'test_file' ? 'File' : __('filament-log-viewer::log.table.filters.'.$name.'.label'))
-            ->options(Log::getFilesForFilter())
+            ->options($provider->getFilesForFilter())
             ->indicator('File');
     }
 }
