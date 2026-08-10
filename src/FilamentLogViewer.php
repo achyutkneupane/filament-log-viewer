@@ -52,7 +52,7 @@ final class FilamentLogViewer implements Plugin
     {
         $panel
             ->pages([
-                LogTable::class,
+                $this->getPageClass(),
             ]);
     }
 
@@ -99,6 +99,90 @@ final class FilamentLogViewer implements Plugin
     public function navigationUrl(string|Closure $url): self
     {
         $this->navigationUrl = $url;
+
+        return $this;
+    }
+
+    public function pageClass(string|Closure|null $class): self
+    {
+        $this->pageClass = $class;
+
+        return $this;
+    }
+
+    public function providerClass(string|Closure|null $class): self
+    {
+        $this->providerClass = $class;
+
+        return $this;
+    }
+
+    public function parserClass(string|Closure|null $class): self
+    {
+        $this->parserClass = $class;
+
+        return $this;
+    }
+
+    public function mailParserClass(string|Closure|null $class): self
+    {
+        $this->mailParserClass = $class;
+
+        return $this;
+    }
+
+    public function stackTraceParserClass(string|Closure|null $class): self
+    {
+        $this->stackTraceParserClass = $class;
+
+        return $this;
+    }
+
+    public function tableSchemaClass(string|Closure|null $class): self
+    {
+        $this->tableSchemaClass = $class;
+
+        return $this;
+    }
+
+    public function errorSchemaClass(string|Closure|null $class): self
+    {
+        $this->errorSchemaClass = $class;
+
+        return $this;
+    }
+
+    public function jsonSchemaClass(string|Closure|null $class): self
+    {
+        $this->jsonSchemaClass = $class;
+
+        return $this;
+    }
+
+    public function mailSchemaClass(string|Closure|null $class): self
+    {
+        $this->mailSchemaClass = $class;
+
+        return $this;
+    }
+
+    public function copyMarkdownActionClass(string|Closure|null $class): self
+    {
+        $this->copyMarkdownActionClass = $class;
+
+        return $this;
+    }
+
+    public function dateRangeFilterClass(string|Closure|null $class): self
+    {
+        $this->dateRangeFilterClass = $class;
+
+        return $this;
+    }
+
+    public function fileFilterClass(string|Closure|null $class): self
+    {
+        $this->fileFilterClass = $class;
 
         return $this;
     }
