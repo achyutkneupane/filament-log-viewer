@@ -49,7 +49,7 @@ class LogTable extends Page implements HasTable
         $plugin = self::getPlugin();
 
         /** @var LogProvider $provider */
-        $provider = app($plugin->getProviderClass());
+        $provider = app(LogProvider::class);
 
         /** @var LogTableSchemaInterface $tableSchema */
         $tableSchema = app($plugin->getTableSchemaClass());
@@ -70,23 +70,19 @@ class LogTable extends Page implements HasTable
             ->modelLabel(__('filament-log-viewer::log.table.model_label'))
             ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
             ->records(
-                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage) use ($plugin): LengthAwarePaginator {
+                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
                     /** @var LogProvider $provider */
-                    $provider = app($plugin->getProviderClass());
-
+                    $provider = app(LogProvider::class);
                     $records = Collection::wrap($provider->getRows());
-
                     $records = $this->applyTabFilter($records);
                     /** @var FilterData $filters */
                     $records = $this->applyDateFilter($records, $filters);
                     /** @var FilterData $filters */
                     $records = $this->applyFileFilter($records, $filters);
                     $records = $this->applySearchFilter($records, $search);
-
                     $records = filled($sortColumn)
                         ? $records->sortBy($sortColumn, SORT_DESC, $sortDirection === 'desc')
                         : $records->sortByDesc('date');
-
                     $paginatedRecords = $records
                         ->forPage($page, $recordsPerPage);
 

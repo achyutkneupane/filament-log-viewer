@@ -8,6 +8,7 @@ use AchyutN\FilamentLogViewer\Contracts\LogParser;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\StackTraceParser;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -29,7 +30,7 @@ class LocalLogProvider implements LogProvider
 {
     private string $logFilePath = '';
 
-    /** @var list<LogRow>|null */
+    /** @var array<int<0, max>, LogRow>|null */
     private ?array $cachedRows = null;
 
     public function __construct(
@@ -39,15 +40,21 @@ class LocalLogProvider implements LogProvider
 
     public function deleteAll(): void
     {
-        $this->resetCache();
-
         $logFilePath = $this->getLogFilePath();
+
+        $key = $this->getCacheKey();
 
         foreach ($this->getAllLogFiles() as $file) {
             $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
             if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
             }
+        }
+
+        $this->resetCache();
+
+        if ($key !== '') {
+            Cache::forget($key);
         }
     }
 
@@ -64,28 +71,11 @@ class LocalLogProvider implements LogProvider
             return $this->cachedRows;
         }
 
-        $logs = [];
-        $logFilePath = $this->getLogFilePath();
+        $rows = $this->getCachedRows();
 
-        foreach ($this->getAllLogFiles() as $file) {
-            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
-            if (! is_file($filePath)) {
-                continue;
-            }
-            if (pathinfo((string) $file, PATHINFO_EXTENSION) !== 'log') {
-                continue;
-            }
+        $this->cachedRows = $rows;
 
-            foreach ($this->logParser->parse($filePath, $file) as $row) {
-                $logs[] = $row;
-            }
-        }
-
-        usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
-
-        $this->cachedRows = $logs;
-
-        return $this->cachedRows;
+        return $rows;
     }
 
     /**
@@ -152,6 +142,77 @@ class LocalLogProvider implements LogProvider
     public function getStackFromRaw(string $rawStack): array
     {
         return $this->stackTraceParser->extract($rawStack);
+    }
+
+    /**
+     * @return array<int<0, max>, LogRow>
+     */
+    protected function getCachedRows(): array
+    {
+        $key = $this->getCacheKey();
+
+        if ($key !== '' && Cache::has($key)) {
+            /** @var array<int<0, max>, LogRow> $rows */
+            $rows = Cache::get($key, []);
+
+            if ($rows !== []) {
+                return $rows;
+            }
+        }
+
+        $rows = $this->parseAll();
+
+        if ($key !== '') {
+            Cache::forever($key, $rows);
+        }
+
+        return $rows;
+    }
+
+    protected function getCacheKey(): string
+    {
+        $logFilePath = $this->getLogFilePath();
+
+        if (! is_dir($logFilePath) || config()->boolean('filament-log-viewer.disable_cache', false)) {
+            return '';
+        }
+
+        $files = $this->getAllLogFiles();
+
+        $fingerprint = collect($files)
+            ->map(
+                fn (string $file): string => $file.':'.filemtime($logFilePath.DIRECTORY_SEPARATOR.$file).':'.filesize($logFilePath.DIRECTORY_SEPARATOR.$file)
+            )
+            ->implode('|');
+
+        return 'filament-log-viewer::rows::'.md5($fingerprint);
+    }
+
+    /**
+     * @return array<int<0, max>, LogRow>
+     */
+    protected function parseAll(): array
+    {
+        $logs = [];
+        $logFilePath = $this->getLogFilePath();
+
+        foreach ($this->getAllLogFiles() as $file) {
+            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
+            if (! is_file($filePath)) {
+                continue;
+            }
+            if (pathinfo((string) $file, PATHINFO_EXTENSION) !== 'log') {
+                continue;
+            }
+
+            foreach ($this->logParser->parse($filePath, $file) as $row) {
+                $logs[] = $row;
+            }
+        }
+
+        usort($logs, fn (array $a, array $b): int => $b['date'] <=> $a['date']);
+
+        return $logs;
     }
 
     protected function getLogFilePath(): string

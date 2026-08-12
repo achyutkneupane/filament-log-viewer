@@ -11,7 +11,6 @@ use AchyutN\FilamentLogViewer\Contracts\StackTraceParser;
 use AchyutN\FilamentLogViewer\Parsers\DefaultMailParser;
 use AchyutN\FilamentLogViewer\Parsers\DefaultStackTraceParser;
 use AchyutN\FilamentLogViewer\Parsers\FileLogParser;
-use AchyutN\FilamentLogViewer\Providers\LocalLogProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -48,25 +47,25 @@ final class LogViewerProvider extends BaseServiceProvider
             'filament-log-viewer'
         );
 
-        $this->app->bind(LogProvider::class, function (Application $app): LogProvider {
-            /** @var LogParser $logParser */
-            $logParser = $app->make(LogParser::class);
+        $this->app->singleton(
+            FilamentLogViewer::class,
+            fn (): FilamentLogViewer => new FilamentLogViewer()
+        );
 
-            /** @var StackTraceParser $stackTraceParser */
-            $stackTraceParser = $app->make(StackTraceParser::class);
+        $this->app->singleton(LogProvider::class, function (Application $app): LogProvider {
+            /** @var FilamentLogViewer $plugin */
+            $plugin = $app->make(FilamentLogViewer::class);
 
-            return new LocalLogProvider($logParser, $stackTraceParser);
+            /** @var class-string<LogProvider> $class */
+            $class = $plugin->getProviderClass();
+
+            /** @var LogProvider $provider */
+            $provider = $app->make($class);
+
+            return $provider;
         });
 
-        $this->app->bind(LogParser::class, function (Application $app): LogParser {
-            /** @var MailParser $mailParser */
-            $mailParser = $app->make(MailParser::class);
-
-            /** @var StackTraceParser $stackTraceParser */
-            $stackTraceParser = $app->make(StackTraceParser::class);
-
-            return new FileLogParser($mailParser, $stackTraceParser);
-        });
+        $this->app->singleton(LogParser::class, fn (Application $app): LogParser => new FileLogParser($app->make(MailParser::class), $app->make(StackTraceParser::class)));
 
         $this->app->bind(MailParser::class, DefaultMailParser::class);
         $this->app->bind(StackTraceParser::class, DefaultStackTraceParser::class);
