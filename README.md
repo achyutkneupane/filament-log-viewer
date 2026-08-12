@@ -53,12 +53,14 @@ LOG_MAX_SIZE_KB=20480
 LOG_ENABLE_DELETE=false
 LOG_ENABLE_COPY_MARKDOWN=false
 LOG_COPY_MARKDOWN_LEVELS=error,warning
+LOG_DISABLE_CACHE=false
 ```
 
 - Set `LOG_MAX_SIZE_KB` to the maximum log file size in kilobytes (e.g., `20480` for 20 MB).
 - Set `LOG_ENABLE_DELETE=false` in production to disable the **Clear Logs** button and protect log files from accidental deletion.
 - Set `LOG_ENABLE_COPY_MARKDOWN=false` to disable the **Copy as Markdown** button.
 - Set `LOG_COPY_MARKDOWN_LEVELS` to comma-separated list of log levels that show the copy button (e.g., `error,warning` or just `error`).
+- Set `LOG_DISABLE_CACHE=true` to skip caching parsed log rows between requests.
 
 Or, you can publish the configuration file and update the `max_log_file_size` value as needed:
 
@@ -81,8 +83,15 @@ return [
 
     // Show copy button for these log levels (comma-separated)
     'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error')),
+
+    // Skip caching parsed log rows between requests
+    'disable_cache' => env('LOG_DISABLE_CACHE', false),
 ];
 ```
+
+#### Caching
+
+Parsed log rows are cached between requests using Laravel's cache. The cache is keyed by a fingerprint of the log files (name, size, and modification time), so it invalidates automatically whenever a log file changes — no TTL or manual flush is needed. The rows are stored under a single cache key to avoid accumulating stale entries. Set `disable_cache` to `true` to disable the cache entirely.
 
 ### Table Columns
 
@@ -169,6 +178,48 @@ FilamentLogViewer::make()
 ```
 
 Set `->registerNavigation(false)` if you want to hide Log Viewer from the sidebar while still linking to it directly (for example, from a custom dashboard action).
+
+### Swapping Components
+
+Every component is replaceable through the plugin — either by implementing its contract interface or by extending the default implementation:
+
+| Plugin method | Contract | Default |
+|---|---|---|
+| `pageClass()` | `LogViewerPage` (extends `HasTable`) | `LogTable` |
+| `providerClass()` | `LogProvider` | `LocalLogProvider` |
+| `parserClass()` | `LogParser` | `FileLogParser` |
+| `mailParserClass()` | `MailParser` | `DefaultMailParser` |
+| `stackTraceParserClass()` | `StackTraceParser` | `DefaultStackTraceParser` |
+| `tableSchemaClass()` | `LogTableSchemaInterface` | `LogTableSchema` |
+| `errorSchemaClass()` | `LogEntrySchemaInterface` | `ErrorLogSchema` |
+| `jsonSchemaClass()` | `LogEntrySchemaInterface` | `JSONLogSchema` |
+| `mailSchemaClass()` | `LogEntrySchemaInterface` | `MailLogSchema` |
+| `copyMarkdownActionClass()` | `Filament\Actions\Action` | `CopyMarkdownAction` |
+| `dateRangeFilterClass()` | — | `DateRangeFilter` |
+| `fileFilterClass()` | — | `FileFilter` |
+
+Defaults are non-final with `protected` extension points, so you can swap in a fully custom implementation or extend a default and override a single behavior:
+
+```php
+use AchyutN\FilamentLogViewer\Contracts\LogProvider;
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
+use AchyutN\FilamentLogViewer\Providers\LocalLogProvider;
+
+class CloudLogProvider extends LocalLogProvider implements LogProvider
+{
+    protected function getAllLogFiles(): array
+    {
+        return ['cloud.log', 'scheduler.log'];
+    }
+}
+
+FilamentLogViewer::make()
+    ->providerClass(CloudLogProvider::class)
+    ->parserClass(MyParser::class)          // implements LogParser or extends FileLogParser
+    ->errorSchemaClass(MyErrorSchema::class);
+```
+
+> Overrides are resolved through Laravel's service container, so constructor dependencies are auto-wired. Because the plugin is registered as a container singleton, the provider and parser classes apply app-wide rather than per-panel.
 
 ## Localization
 
