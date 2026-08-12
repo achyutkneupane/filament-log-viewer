@@ -28,6 +28,8 @@ use Symfony\Component\Finder\Finder;
  */
 class LocalLogProvider implements LogProvider
 {
+    private const CACHE_KEY = 'filament-log-viewer::rows';
+
     private string $logFilePath = '';
 
     /** @var array<int<0, max>, LogRow>|null */
@@ -42,8 +44,6 @@ class LocalLogProvider implements LogProvider
     {
         $logFilePath = $this->getLogFilePath();
 
-        $key = $this->getCacheKey();
-
         foreach ($this->getAllLogFiles() as $file) {
             $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
             if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
@@ -53,9 +53,7 @@ class LocalLogProvider implements LogProvider
 
         $this->resetCache();
 
-        if ($key !== '') {
-            Cache::forget($key);
-        }
+        Cache::forget(self::CACHE_KEY);
     }
 
     /**
@@ -149,27 +147,30 @@ class LocalLogProvider implements LogProvider
      */
     protected function getCachedRows(): array
     {
-        $key = $this->getCacheKey();
+        $fingerprint = $this->getFingerprint();
 
-        if ($key !== '' && Cache::has($key)) {
-            /** @var array<int<0, max>, LogRow> $rows */
-            $rows = Cache::get($key, []);
+        if ($fingerprint !== '') {
+            /** @var array{fingerprint: string, rows: array<int<0, max>, LogRow>}|null $stored */
+            $stored = Cache::get(self::CACHE_KEY);
 
-            if ($rows !== []) {
-                return $rows;
+            if (is_array($stored) && ($stored['fingerprint'] ?? null) === $fingerprint && $stored['rows'] !== []) {
+                return $stored['rows'];
             }
         }
 
         $rows = $this->parseAll();
 
-        if ($key !== '') {
-            Cache::forever($key, $rows);
+        if ($fingerprint !== '') {
+            Cache::forever(self::CACHE_KEY, [
+                'fingerprint' => $fingerprint,
+                'rows' => $rows,
+            ]);
         }
 
         return $rows;
     }
 
-    protected function getCacheKey(): string
+    protected function getFingerprint(): string
     {
         $logFilePath = $this->getLogFilePath();
 
@@ -181,11 +182,11 @@ class LocalLogProvider implements LogProvider
 
         $fingerprint = collect($files)
             ->map(
-                fn (string $file): string => $file.':'.filemtime($logFilePath.DIRECTORY_SEPARATOR.$file).':'.filesize($logFilePath.DIRECTORY_SEPARATOR.$file)
+                fn (string $file): string => $file.':'.(filemtime($logFilePath.DIRECTORY_SEPARATOR.$file) ?: 0).':'.(filesize($logFilePath.DIRECTORY_SEPARATOR.$file) ?: 0)
             )
             ->implode('|');
 
-        return 'filament-log-viewer::rows::'.md5($fingerprint);
+        return md5($fingerprint);
     }
 
     /**

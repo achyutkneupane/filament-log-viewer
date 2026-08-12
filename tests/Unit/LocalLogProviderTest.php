@@ -6,6 +6,8 @@ use AchyutN\FilamentLogViewer\Parsers\DefaultMailParser;
 use AchyutN\FilamentLogViewer\Parsers\DefaultStackTraceParser;
 use AchyutN\FilamentLogViewer\Parsers\FileLogParser;
 use AchyutN\FilamentLogViewer\Providers\LocalLogProvider;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 beforeEach(function () {
     $this->initializeLogs();
@@ -141,5 +143,37 @@ describe('LocalLogProvider - getStackFromRaw', function () {
 
         expect($stack)->toBeArray();
         expect($stack)->not->toBeEmpty();
+    });
+});
+
+describe('LocalLogProvider - cache', function () {
+    it('stores parsed rows in a single fingerprint slot', function () {
+        makeProvider()->getRows(true);
+
+        $stored = Cache::get('filament-log-viewer::rows');
+
+        expect($stored)->toBeArray();
+        expect($stored)->toHaveKeys(['fingerprint', 'rows']);
+        expect($stored['rows'])->toHaveCount(4);
+    });
+
+    it('invalidates the cache when a log file changes', function () {
+        expect(makeProvider()->getRows(true))->toHaveCount(4);
+
+        $this->writeLog('laravel.log', '[2024-08-07 09:00:00] local.WARNING: New entry after cache');
+
+        $rows = makeProvider()->getRows(true);
+
+        expect($rows)->toHaveCount(4);
+        expect(collect($rows)->pluck('message'))->toContain('New entry after cache');
+        expect(collect($rows)->pluck('message'))->not->toContain('Sample log');
+    });
+
+    it('skips the cache store when disabled via config', function () {
+        Config::set('filament-log-viewer.disable_cache', true);
+
+        makeProvider()->getRows(true);
+
+        expect(Cache::get('filament-log-viewer::rows'))->toBeNull();
     });
 });
