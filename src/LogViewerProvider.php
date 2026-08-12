@@ -8,9 +8,6 @@ use AchyutN\FilamentLogViewer\Contracts\LogParser;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\MailParser;
 use AchyutN\FilamentLogViewer\Contracts\StackTraceParser;
-use AchyutN\FilamentLogViewer\Parsers\DefaultMailParser;
-use AchyutN\FilamentLogViewer\Parsers\DefaultStackTraceParser;
-use AchyutN\FilamentLogViewer\Parsers\FileLogParser;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -65,9 +62,43 @@ final class LogViewerProvider extends BaseServiceProvider
             return $provider;
         });
 
-        $this->app->singleton(LogParser::class, fn (Application $app): LogParser => new FileLogParser($app->make(MailParser::class), $app->make(StackTraceParser::class)));
+        $this->app->singleton(LogParser::class, function (Application $app): LogParser {
+            /** @var FilamentLogViewer $plugin */
+            $plugin = $app->make(FilamentLogViewer::class);
 
-        $this->app->bind(MailParser::class, DefaultMailParser::class);
-        $this->app->bind(StackTraceParser::class, DefaultStackTraceParser::class);
+            /** @var class-string<LogParser> $class */
+            $class = $plugin->getParserClass();
+
+            /** @var LogParser $parser */
+            $parser = $app->make($class);
+
+            return $parser;
+        });
+
+        $this->app->bind(MailParser::class, function (Application $app): MailParser {
+            /** @var FilamentLogViewer $plugin */
+            $plugin = $app->make(FilamentLogViewer::class);
+
+            /** @var class-string<MailParser> $class */
+            $class = $plugin->getMailParserClass();
+
+            /** @var MailParser $mailParser */
+            $mailParser = $app->make($class);
+
+            return $mailParser;
+        });
+
+        $this->app->bind(StackTraceParser::class, function (Application $app): StackTraceParser {
+            /** @var FilamentLogViewer $plugin */
+            $plugin = $app->make(FilamentLogViewer::class);
+
+            /** @var class-string<StackTraceParser> $class */
+            $class = $plugin->getStackTraceParserClass();
+
+            /** @var StackTraceParser $stackTraceParser */
+            $stackTraceParser = $app->make($class);
+
+            return $stackTraceParser;
+        });
     }
 }
