@@ -26,9 +26,8 @@ function firstIndexWhere(callable $predicate): ?int
 {
     /** @var LogProvider $provider */
     $provider = app(LogProvider::class);
-    $provider->getRows(true);
 
-    foreach ($provider->getRows() as $index => $row) {
+    foreach ($provider->getRows(true) as $index => $row) {
         if ($predicate($row)) {
             return $index;
         }

@@ -48,9 +48,6 @@ class LogTable extends Page implements HasTable
     {
         $plugin = self::getPlugin();
 
-        /** @var LogProvider $provider */
-        $provider = app(LogProvider::class);
-
         /** @var LogTableSchemaInterface $tableSchema */
         $tableSchema = app($plugin->getTableSchemaClass());
 
