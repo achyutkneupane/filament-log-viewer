@@ -117,7 +117,7 @@ class LogTable extends Page implements HasTable
             ->deferColumnManager(false);
     }
 
-    protected function getViewAction(LogEntrySchemaInterface $schema): Action
+    protected function getViewAction(LogEntrySchemaInterface $entrySchema): Action
     {
         return Action::make('view')
             ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -127,7 +127,7 @@ class LogTable extends Page implements HasTable
             ->hidden(fn (array $record): bool => ! $record['has_stack'])
             ->icon(Heroicon::Eye)
             ->color(Color::Gray)
-            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->schema(fn (Schema $schema): Schema => $entrySchema->configure($schema))
             ->modalSubmitAction(false)
             ->modalCancelAction(false)
             ->modalHeading(
@@ -140,7 +140,7 @@ class LogTable extends Page implements HasTable
             ->slideOver();
     }
 
-    protected function getViewJsonAction(LogEntrySchemaInterface $schema): Action
+    protected function getViewJsonAction(LogEntrySchemaInterface $entrySchema): Action
     {
         return Action::make('view-json')
             ->label(__('filament-log-viewer::log.table.actions.view.label'))
@@ -148,7 +148,7 @@ class LogTable extends Page implements HasTable
             ->hidden(fn (array $record): bool => $record['context'] === null)
             ->icon(Heroicon::Eye)
             ->color(Color::Gray)
-            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->schema(fn (Schema $schema): Schema => $entrySchema->configure($schema))
             ->modalSubmitAction(false)
             ->modalCancelAction(false)
             ->modalHeading(
@@ -162,14 +162,14 @@ class LogTable extends Page implements HasTable
             ->slideOver();
     }
 
-    protected function getReadMailAction(LogEntrySchemaInterface $schema): Action
+    protected function getReadMailAction(LogEntrySchemaInterface $entrySchema): Action
     {
         return Action::make('read')
             ->label(__('filament-log-viewer::log.table.actions.read.label'))
             ->visible(fn (array $record): bool => $record['log_level'] === LogLevel::MAIL)
             ->icon(Heroicon::Envelope)
             ->color(Color::hex('#9C27B0'))
-            ->schema(fn (Schema $schema): Schema => $schema->configure())
+            ->schema(fn (Schema $schema): Schema => $entrySchema->configure($schema))
             ->modalSubmitAction(false)
             ->modalCancelAction(false)
             ->modalHeading(function (array $record): string {

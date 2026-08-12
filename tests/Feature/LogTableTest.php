@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
+use AchyutN\FilamentLogViewer\Contracts\LogProvider;
+use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\LogTable;
 use AchyutN\FilamentLogViewer\Model\Log;
 use Carbon\Carbon;
@@ -17,8 +19,30 @@ use Filament\Tables\Filters\SelectFilter;
 
 use function Pest\Livewire\livewire;
 
+/**
+ * @return array<int, int|string>
+ */
+function firstIndexWhere(callable $predicate): ?int
+{
+    /** @var LogProvider $provider */
+    $provider = app(LogProvider::class);
+    $provider->getRows(true);
+
+    foreach ($provider->getRows() as $index => $row) {
+        if ($predicate($row)) {
+            return $index;
+        }
+    }
+
+    return null;
+}
+
 beforeEach(function () {
     $this->initializeLogs();
+});
+
+afterEach(function () {
+    $this->deleteAllLogs();
 });
 
 it('renders successfully', function () {
@@ -202,5 +226,53 @@ describe('filters', function () {
 
         expect(livewire(LogTable::class)->get('activeTab'))
             ->toBeIn([$unscopedLogLevel, null]);
+    });
+});
+
+describe('record actions (slide-over regression)', function () {
+    it('renders the stack-trace slide-over without throwing', function () {
+        $index = firstIndexWhere(fn (array $row): bool => $row['has_stack']);
+
+        expect($index)->not()->toBeNull();
+
+        livewire(LogTable::class)
+            ->mountTableAction('view', (string) $index)
+            ->assertSuccessful();
+    });
+
+    it('renders the json slide-over without throwing', function () {
+        $this->writeLog('context.log', '[2024-08-06 20:19:00] local.INFO: User logged in {"user_id": 5, "ip": "127.0.0.1"}');
+
+        $index = firstIndexWhere(fn (array $row): bool => $row['context'] !== null);
+
+        expect($index)->not()->toBeNull();
+
+        livewire(LogTable::class)
+            ->mountTableAction('view-json', (string) $index)
+            ->assertSuccessful();
+    });
+
+    it('renders the mail slide-over without throwing', function () {
+        $this->writeMailLog();
+
+        $index = firstIndexWhere(fn (array $row): bool => $row['log_level'] === LogLevel::MAIL);
+
+        expect($index)->not()->toBeNull();
+
+        livewire(LogTable::class)
+            ->mountTableAction('read', (string) $index)
+            ->assertSuccessful();
+    });
+
+    it('calls the slide-over schema only after a full re-parse budget', function () {
+        /** @var LogProvider $provider */
+        $provider = app(LogProvider::class);
+        $provider->getRows(true);
+        $rows = $provider->getRows();
+        expect($rows)->not()->toBeEmpty();
+
+        livewire(LogTable::class)
+            ->mountTableAction('view', '0')
+            ->assertSuccessful();
     });
 });
