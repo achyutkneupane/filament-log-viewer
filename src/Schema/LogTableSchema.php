@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Schema;
 
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogTableSchemaInterface;
 use Exception;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 
-final class LogTableSchema
+class LogTableSchema implements LogTableSchemaInterface
 {
     /**
      * @return array<Column>
      *
      * @throws Exception
      */
-    public static function columns(): array
+    public function getColumns(): array
     {
         return [
             TextColumn::make('log_level')

@@ -13,7 +13,7 @@ use Illuminate\Support\Js;
 use Throwable;
 
 /** @phpstan-import-type LogRow from Log */
-final class CopyMarkdownAction extends Action
+class CopyMarkdownAction extends Action
 {
     protected function setUp(): void
     {
@@ -65,7 +65,7 @@ final class CopyMarkdownAction extends Action
     }
 
     /** @param LogRow $record */
-    private function generateMarkdown(array $record): string
+    protected function generateMarkdown(array $record): string
     {
         $markdown = '# '.ucwords($record['log_level']->value)."\n\n";
 
@@ -81,7 +81,7 @@ final class CopyMarkdownAction extends Action
             $markdown .= '## Description'."\n".$record['description']."\n\n";
         }
 
-        if (($record['context'] ?? null) !== null) {
+        if ($record['context'] !== null) {
             $markdown .= '## Context'."\n".'```json'."\n".json_encode($record['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
         }
 
@@ -94,15 +94,15 @@ final class CopyMarkdownAction extends Action
             $markdown .= "\n";
         }
 
-        if (($record['mail'] ?? null) !== null) {
+        if ($record['mail'] !== null) {
             $markdown .= $this->generateMailSection($record['mail']);
         }
 
-        return trim($markdown);
+        return mb_trim($markdown);
     }
 
     /** @return list<array{file: string, line: string}> */
-    private function parseStackTrace(string $rawStack): array
+    protected function parseStackTrace(string $rawStack): array
     {
         $frames = [];
         $lines = explode("\n", $rawStack);
@@ -110,7 +110,7 @@ final class CopyMarkdownAction extends Action
         $inStackTrace = false;
 
         foreach ($lines as $line) {
-            $line = trim($line);
+            $line = mb_trim($line);
 
             if ($line === '[stacktrace]') {
                 $inStackTrace = true;
@@ -140,7 +140,7 @@ final class CopyMarkdownAction extends Action
     }
 
     /** @param array{plain: string, html: string, sender: array{name: string, email: string}|null, receiver: array{name: string, email: string}|null, subject: string, sent_date: string} $mail */
-    private function generateMailSection(array $mail): string
+    protected function generateMailSection(array $mail): string
     {
         $fromEmail = $mail['sender']['email'] ?? '';
         $fromName = $mail['sender']['name'] ?? '';
@@ -174,7 +174,7 @@ final class CopyMarkdownAction extends Action
         return $markdown;
     }
 
-    private function formatDate(string $date): string
+    protected function formatDate(string $date): string
     {
         if ($date === '') {
             return '';
@@ -191,7 +191,7 @@ final class CopyMarkdownAction extends Action
         }
     }
 
-    private function escapeMarkdown(string $text): string
+    protected function escapeMarkdown(string $text): string
     {
         return (string) preg_replace("/\n{3,}/", "\n\n", $text);
     }

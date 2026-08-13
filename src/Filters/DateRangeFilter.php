@@ -13,7 +13,7 @@ use Filament\Tables\Filters\Indicator;
 /**
  * @phpstan-type DateRangeFilterData array{from?: string, until?: string}
  */
-final class DateRangeFilter
+class DateRangeFilter
 {
     /** @throws Exception */
     public static function make(string $name = 'date_range'): Filter
