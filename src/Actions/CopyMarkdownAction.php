@@ -81,7 +81,7 @@ class CopyMarkdownAction extends Action
             $markdown .= '## Description'."\n".$record['description']."\n\n";
         }
 
-        if (($record['context'] ?? null) !== null) {
+        if ($record['context'] !== null) {
             $markdown .= '## Context'."\n".'```json'."\n".json_encode($record['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n```\n\n";
         }
 
@@ -94,7 +94,7 @@ class CopyMarkdownAction extends Action
             $markdown .= "\n";
         }
 
-        if (($record['mail'] ?? null) !== null) {
+        if ($record['mail'] !== null) {
             $markdown .= $this->generateMailSection($record['mail']);
         }
 

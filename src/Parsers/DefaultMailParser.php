@@ -67,13 +67,7 @@ class DefaultMailParser implements MailParser
             'Message-ID:',
         ];
 
-        foreach ($keywords as $keyword) {
-            if (! str_contains($logStack, $keyword)) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($keywords, fn ($keyword): bool => str_contains($logStack, $keyword));
     }
 
     /**
@@ -105,7 +99,7 @@ class DefaultMailParser implements MailParser
 
         [$plainMail, $htmlMail] = $this->extractMail($raw);
 
-        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", (string) $plainMail);
+        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", $plainMail);
 
         return [
             'plain' => $markdownPlain ?? '',
@@ -146,7 +140,7 @@ class DefaultMailParser implements MailParser
 
         [$plainMail, $htmlMail] = $this->extractMail($raw);
 
-        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", (string) $plainMail);
+        $markdownPlain = preg_replace('/\r\n|\r|\n/', "\n", $plainMail);
 
         return [
             'date' => mb_trim($date),

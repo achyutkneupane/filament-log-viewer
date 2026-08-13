@@ -153,7 +153,7 @@ class LocalLogProvider implements LogProvider
             /** @var array{fingerprint: string, rows: array<int<0, max>, LogRow>}|null $stored */
             $stored = Cache::get(self::CACHE_KEY);
 
-            if (is_array($stored) && ($stored['fingerprint'] ?? null) === $fingerprint && $stored['rows'] !== []) {
+            if (is_array($stored) && $stored['fingerprint'] === $fingerprint && $stored['rows'] !== []) {
                 return $stored['rows'];
             }
         }
