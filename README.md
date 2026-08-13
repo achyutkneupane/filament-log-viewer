@@ -5,7 +5,6 @@
 ![Packagist Version](https://img.shields.io/packagist/v/achyutn/filament-log-viewer?label=Latest%20Version)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/achyutn/filament-log-viewer?label=Packagist%20Downloads)
 ![Packagist Stars](https://img.shields.io/packagist/stars/achyutn/filament-log-viewer?label=Stars)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=achyutkneupane_filament-log-viewer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=achyutkneupane_filament-log-viewer)
 [![Lint & Test PR](https://github.com/achyutkneupane/filament-log-viewer/actions/workflows/prlint.yml/badge.svg)](https://github.com/achyutkneupane/filament-log-viewer/actions/workflows/prlint.yml)
 [![Bump version](https://github.com/achyutkneupane/filament-log-viewer/actions/workflows/tagrelease.yml/badge.svg)](https://github.com/achyutkneupane/filament-log-viewer/actions/workflows/tagrelease.yml)
 
