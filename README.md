@@ -221,6 +221,8 @@ FilamentLogViewer::make()
 
 > Overrides are resolved through Laravel's service container, so constructor dependencies are auto-wired. Because the plugin is registered as a container singleton, the provider and parser classes apply app-wide rather than per-panel.
 
+> **Backward compatibility:** The `AchyutN\FilamentLogViewer\Model\Log` class remains as a static facade that delegates to the container-resolved `LogProvider`. Existing calls such as `Log::getRows()`, `Log::getLogCount()`, or `Log::getAllLogFiles()` keep working unchanged. New code should use the `LogProvider` contract (or a `providerClass()` override) directly instead of the facade.
+
 ## Localization
 
 Filament Log Viewer includes built-in translations for:
