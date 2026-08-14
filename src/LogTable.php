@@ -218,13 +218,18 @@ class LogTable extends Page implements HasTable
         $refresh = Action::make('refresh')
             ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
             ->icon(Heroicon::ArrowPath)
-            ->outlined()
+            ->iconButton()
+            ->tooltip(__('filament-log-viewer::log.table.actions.refresh.label'))
             ->action(function (): void {
                 $this->refresh();
             });
 
+        $deleteEnabled = (bool) config('filament-log-viewer.enable_delete', true);
+
+        $clearAll = ClearAllLogsAction::make();
+
         if (count($files) <= 1) {
-            return [$refresh, ClearAllLogsAction::make()];
+            return [$refresh, $clearAll];
         }
 
         $clearFileGroup = ActionGroup::make(
@@ -232,18 +237,14 @@ class LogTable extends Page implements HasTable
                 ->map(fn (string $file): Action => ClearFileAction::make()->file($file))
                 ->all()
         )
-            ->label(__('filament-log-viewer::log.table.actions.clear_file.label'))
             ->icon(Heroicon::ChevronDown)
+            ->iconButton()
+            ->tooltip(__('filament-log-viewer::log.table.actions.clear_file.label'))
             ->color(Color::Gray)
-            ->button();
+            ->visible(fn (): bool => $deleteEnabled)
+            ->dropdownMaxHeight('400px');
 
-        return [
-            $refresh,
-            ActionGroup::make([
-                ClearAllLogsAction::make(),
-                $clearFileGroup,
-            ])->buttonGroup(),
-        ];
+        return [$refresh, $clearAll, $clearFileGroup];
     }
 
     /**

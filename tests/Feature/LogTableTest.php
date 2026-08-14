@@ -55,7 +55,8 @@ describe('actions', function () {
         livewire(LogTable::class)
             ->assertActionExists('refresh', function (Action $action) {
                 return $action->getLabel() === 'Refresh' &&
-                    $action->isOutlined();
+                    $action->isIconButton() &&
+                    $action->getTooltip() === 'Refresh';
             })
             ->assertActionExists('clear', function (Action $action) {
                 return $action->getLabel() === 'Clear Logs' &&

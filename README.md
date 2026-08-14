@@ -113,9 +113,9 @@ If your logs contain mail messages, you can preview them directly from the table
 
 ![Mail Preview](https://hamrocdn.com/hrr5B2GpKSke)
 
-### Clear a Single File
+### Clear Logs
 
-When multiple log files exist, the **Clear Logs** button expands into a dropdown (chevron button) listing each file. Select a file to truncate just that log file, leaving the others intact. With a single log file, the button clears it directly. The **Clear Logs** and per-file actions are hidden when `enable_delete` is `false`.
+The **Clear Logs** button clears every log file. When multiple log files exist, a chevron icon button next to it opens a dropdown listing each file — select one to truncate just that file, leaving the others intact. The per-file dropdown is hidden when only one log file exists, and both controls are hidden when `enable_delete` is `false`.
 
 ### Filters
 
