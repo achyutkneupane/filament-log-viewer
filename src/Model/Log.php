@@ -37,6 +37,11 @@ final class Log
         self::provider()->deleteAll();
     }
 
+    public static function destroyLogFile(string $file): void
+    {
+        self::provider()->deleteFile($file);
+    }
+
     /** @return array<int<0, max>, LogRow> */
     public static function getRows(bool $getCached = true): array
     {

@@ -47,6 +47,8 @@ interface LogProvider
 
     public function deleteAll(): void;
 
+    public function deleteFile(string $file): void;
+
     /**
      * @return list<StackTrace>
      */

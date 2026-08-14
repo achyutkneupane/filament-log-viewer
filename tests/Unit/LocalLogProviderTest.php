@@ -135,6 +135,44 @@ describe('LocalLogProvider - deleteAll', function () {
     });
 });
 
+describe('LocalLogProvider - deleteFile', function () {
+    it('clears only the given log file', function () {
+        makeProvider()->deleteFile('laravel.log');
+
+        expect(file_get_contents(storage_path('logs/laravel.log')))->toBe('');
+        expect(file_get_contents(storage_path('logs/other.log')))->not->toBe('');
+        expect(file_get_contents(storage_path('logs/stack-trace.log')))->not->toBe('');
+    });
+
+    it('clears nested log files', function () {
+        $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');
+
+        makeProvider()->deleteFile('nested-folder/nested.log');
+
+        expect(file_get_contents(storage_path('logs/nested-folder/nested.log')))->toBe('');
+    });
+
+    it('ignores unknown, non-log, or unsafe paths', function () {
+        $provider = makeProvider();
+
+        $provider->deleteFile('missing.log');
+        $provider->deleteFile('not-a-log.txt');
+        $provider->deleteFile('../../.env');
+
+        expect(file_get_contents(storage_path('logs/laravel.log')))->not->toBe('');
+    });
+
+    it('invalidates cached rows after clearing a file', function () {
+        expect(makeProvider()->getRows(true))->toHaveCount(4);
+
+        makeProvider()->deleteFile('other.log');
+
+        $rows = makeProvider()->getRows(true);
+
+        expect(collect($rows)->pluck('file'))->not->toContain('other.log');
+    });
+});
+
 describe('LocalLogProvider - getStackFromRaw', function () {
     it('extracts stack traces from raw', function () {
         $raw = "[stacktrace]\n#0 /path/to/file.php(123): something()\n#1 /path/other.php(45): other()\n#2 {main}";

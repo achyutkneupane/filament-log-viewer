@@ -56,6 +56,25 @@ class LocalLogProvider implements LogProvider
         Cache::forget(self::CACHE_KEY);
     }
 
+    public function deleteFile(string $file): void
+    {
+        $logFilePath = $this->getLogFilePath();
+
+        if (! in_array($file, $this->getFiles(), true)) {
+            return;
+        }
+
+        $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
+
+        if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+            file_put_contents($filePath, '');
+        }
+
+        $this->resetCache();
+
+        Cache::forget(self::CACHE_KEY);
+    }
+
     /**
      * @return array<int<0, max>, LogRow>
      */

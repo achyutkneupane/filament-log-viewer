@@ -66,6 +66,8 @@ final class StubLogProvider implements LogProvider
 
     public function deleteAll(): void {}
 
+    public function deleteFile(string $file): void {}
+
     public function getStackFromRaw(string $rawStack): array
     {
         return [];
