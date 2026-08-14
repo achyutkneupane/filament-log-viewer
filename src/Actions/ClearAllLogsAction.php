@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Actions;
 
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -22,12 +23,12 @@ class ClearAllLogsAction extends Action
 
         $this->color(Color::Red);
 
-        $this->visible(fn (): bool => (bool) config('filament-log-viewer.enable_delete', true));
+        $this->visible(fn (): bool => (bool) config('filament-log-viewer.enable_delete', true) && app(LogProvider::class) instanceof CanDeleteLogs);
 
         $this->requiresConfirmation();
 
         $this->action(function (): void {
-            /** @var LogProvider $provider */
+            /** @var CanDeleteLogs $provider */
             $provider = app(LogProvider::class);
             $provider->deleteAll();
             Notification::make()

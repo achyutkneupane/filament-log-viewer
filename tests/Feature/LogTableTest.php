@@ -8,6 +8,8 @@ use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 use AchyutN\FilamentLogViewer\LogTable;
 use AchyutN\FilamentLogViewer\Model\Log;
+use AchyutN\FilamentLogViewer\Providers\LocalLogProvider;
+use AchyutN\FilamentLogViewer\Tests\Feature\Stubs\ReadOnlyLogProvider;
 use Carbon\Carbon;
 use Config;
 use Filament\Actions\Action;
@@ -133,6 +135,17 @@ describe('clear individual file', function () {
         livewire(LogTable::class)
             ->assertActionExists('clear-file-laravel-log', fn (Action $action) => ! $action->isVisible())
             ->assertActionExists('clear-file-other-log', fn (Action $action) => ! $action->isVisible());
+    });
+
+    it('hides the clear actions for read-only providers', function () {
+        filament('filament-log-viewer')->providerClass(ReadOnlyLogProvider::class);
+
+        livewire(LogTable::class)
+            ->assertSuccessful()
+            ->assertActionDoesNotExist('clear')
+            ->assertActionDoesNotExist('clear-file');
+
+        filament('filament-log-viewer')->providerClass(LocalLogProvider::class);
     });
 });
 

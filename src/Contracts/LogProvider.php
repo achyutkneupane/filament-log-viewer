@@ -45,10 +45,6 @@ interface LogProvider
      */
     public function getFilesForFilter(): array;
 
-    public function deleteAll(): void;
-
-    public function deleteFile(string $file): void;
-
     /**
      * @return list<StackTrace>
      */

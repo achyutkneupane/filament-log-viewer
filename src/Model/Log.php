@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Model;
 
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use Illuminate\Support\Facades\App;
 
@@ -34,12 +35,20 @@ final class Log
 {
     public static function destroyAllLogs(): void
     {
-        self::provider()->deleteAll();
+        $provider = self::provider();
+
+        if ($provider instanceof CanDeleteLogs) {
+            $provider->deleteAll();
+        }
     }
 
     public static function destroyLogFile(string $file): void
     {
-        self::provider()->deleteFile($file);
+        $provider = self::provider();
+
+        if ($provider instanceof CanDeleteLogs) {
+            $provider->deleteFile($file);
+        }
     }
 
     /** @return array<int<0, max>, LogRow> */

@@ -7,6 +7,7 @@ namespace AchyutN\FilamentLogViewer;
 use AchyutN\FilamentLogViewer\Actions\ClearAllLogsAction;
 use AchyutN\FilamentLogViewer\Actions\ClearFileAction;
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
 use AchyutN\FilamentLogViewer\Contracts\Schema\LogTableSchemaInterface;
@@ -213,8 +214,6 @@ class LogTable extends Page implements HasTable
         /** @var LogProvider $provider */
         $provider = app(LogProvider::class);
 
-        $files = $provider->getFiles();
-
         $refresh = Action::make('refresh')
             ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
             ->icon(Heroicon::ArrowPath)
@@ -223,6 +222,12 @@ class LogTable extends Page implements HasTable
             ->action(function (): void {
                 $this->refresh();
             });
+
+        if (! $provider instanceof CanDeleteLogs) {
+            return [$refresh];
+        }
+
+        $files = $provider->getFiles();
 
         $deleteEnabled = (bool) config('filament-log-viewer.enable_delete', true);
 

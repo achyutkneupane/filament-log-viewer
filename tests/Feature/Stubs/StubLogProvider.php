@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Tests\Feature\Stubs;
 
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Enums\LogLevel;
 
@@ -21,7 +22,7 @@ use AchyutN\FilamentLogViewer\Enums\LogLevel;
  *     file: string
  * }
  */
-final class StubLogProvider implements LogProvider
+final class StubLogProvider implements CanDeleteLogs, LogProvider
 {
     public function getRows(bool $refresh = false): array
     {

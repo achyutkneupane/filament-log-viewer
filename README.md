@@ -197,6 +197,8 @@ Every component is replaceable through the plugin — either by implementing its
 | `errorSchemaClass()` | `LogEntrySchemaInterface` | `ErrorLogSchema` |
 | `jsonSchemaClass()` | `LogEntrySchemaInterface` | `JSONLogSchema` |
 | `mailSchemaClass()` | `LogEntrySchemaInterface` | `MailLogSchema` |
+
+> Providers may additionally implement `CanDeleteLogs` (`deleteAll()`, `deleteFile()`). The **Clear Logs** and per-file clear controls only render when the bound provider implements it — so read-only providers (e.g. a Pail tail or a cloud reader) automatically hide the delete buttons, while providers like the local or a database-backed one can offer them.
 | `copyMarkdownActionClass()` | `Filament\Actions\Action` | `CopyMarkdownAction` |
 | `dateRangeFilterClass()` | — | `DateRangeFilter` |
 | `fileFilterClass()` | — | `FileFilter` |
