@@ -21,6 +21,8 @@ arch('all classes are final')
     ->classes()
     ->toBeFinal()
     ->ignoring([
+        AchyutN\FilamentLogViewer\Actions\ClearAllLogsAction::class,
+        AchyutN\FilamentLogViewer\Actions\ClearFileAction::class,
         AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction::class,
         AchyutN\FilamentLogViewer\Filters\DateRangeFilter::class,
         AchyutN\FilamentLogViewer\Filters\FileFilter::class,

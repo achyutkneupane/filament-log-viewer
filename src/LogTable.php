@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Actions\ClearAllLogsAction;
+use AchyutN\FilamentLogViewer\Actions\ClearFileAction;
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
@@ -16,7 +18,6 @@ use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
@@ -212,6 +213,8 @@ class LogTable extends Page implements HasTable
         /** @var LogProvider $provider */
         $provider = app(LogProvider::class);
 
+        $files = $provider->getFiles();
+
         $refresh = Action::make('refresh')
             ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
             ->icon(Heroicon::ArrowPath)
@@ -220,46 +223,15 @@ class LogTable extends Page implements HasTable
                 $this->refresh();
             });
 
-        $clearAll = Action::make('clear')
-            ->label(__('filament-log-viewer::log.table.actions.clear.label'))
-            ->icon(Heroicon::Trash)
-            ->color(Color::Red)
-            ->visible(fn () => config('filament-log-viewer.enable_delete', true))
-            ->requiresConfirmation()
-            ->action(function () use ($provider): void {
-                $provider->deleteAll();
-                Notification::make()
-                    ->title(__('filament-log-viewer::log.table.actions.clear.success'))
-                    ->success()
-                    ->send();
-            });
-
-        $files = $provider->getFiles();
-
         if (count($files) <= 1) {
-            return [$refresh, $clearAll];
+            return [$refresh, ClearAllLogsAction::make()];
         }
 
-        $clearFileActions = collect($files)
-            ->map(fn (string $file): Action => Action::make('clear-file-'.str_replace(['.', '/', '\\'], '-', $file))
-                ->label($file)
-                ->icon(Heroicon::Trash)
-                ->color(Color::Red)
-                ->visible(fn () => config('filament-log-viewer.enable_delete', true))
-                ->requiresConfirmation()
-                ->modalHeading(__('filament-log-viewer::log.table.actions.clear_file.modal_heading', ['file' => $file]))
-                ->modalDescription(__('filament-log-viewer::log.table.actions.clear_file.modal_description', ['file' => $file]))
-                ->action(function () use ($provider, $file): void {
-                    $provider->deleteFile($file);
-                    Notification::make()
-                        ->title(__('filament-log-viewer::log.table.actions.clear_file.success', ['file' => $file]))
-                        ->success()
-                        ->send();
-                })
-                ->after(fn () => $this->refresh()))
-            ->all();
-
-        $clearFileGroup = ActionGroup::make($clearFileActions)
+        $clearFileGroup = ActionGroup::make(
+            collect($files)
+                ->map(fn (string $file): Action => ClearFileAction::make()->file($file))
+                ->all()
+        )
             ->label(__('filament-log-viewer::log.table.actions.clear_file.label'))
             ->icon(Heroicon::ChevronDown)
             ->color(Color::Gray)
@@ -268,7 +240,7 @@ class LogTable extends Page implements HasTable
         return [
             $refresh,
             ActionGroup::make([
-                $clearAll,
+                ClearAllLogsAction::make(),
                 $clearFileGroup,
             ])->buttonGroup(),
         ];
