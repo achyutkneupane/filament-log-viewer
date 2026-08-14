@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer;
 
+use AchyutN\FilamentLogViewer\Actions\ClearAllLogsAction;
+use AchyutN\FilamentLogViewer\Actions\ClearFileAction;
 use AchyutN\FilamentLogViewer\Actions\CopyMarkdownAction;
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
 use AchyutN\FilamentLogViewer\Contracts\Schema\LogTableSchemaInterface;
@@ -15,7 +18,7 @@ use AchyutN\FilamentLogViewer\Traits\HasLogViewerNavigation;
 use AchyutN\FilamentLogViewer\Traits\LogLevelTabFilter;
 use Exception;
 use Filament\Actions\Action;
-use Filament\Notifications\Notification;
+use Filament\Actions\ActionGroup;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
@@ -208,30 +211,45 @@ class LogTable extends Page implements HasTable
 
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('refresh')
-                ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
-                ->icon(Heroicon::ArrowPath)
-                ->outlined()
-                ->action(function (): void {
-                    $this->refresh();
-                }),
-            Action::make('clear')
-                ->label(__('filament-log-viewer::log.table.actions.clear.label'))
-                ->icon(Heroicon::Trash)
-                ->color(Color::Red)
-                ->visible(fn () => config('filament-log-viewer.enable_delete', true))
-                ->requiresConfirmation()
-                ->action(function (): void {
-                    /** @var LogProvider $provider */
-                    $provider = app(LogProvider::class);
-                    $provider->deleteAll();
-                    Notification::make()
-                        ->title(__('filament-log-viewer::log.table.actions.clear.success'))
-                        ->success()
-                        ->send();
-                }),
-        ];
+        /** @var LogProvider $provider */
+        $provider = app(LogProvider::class);
+
+        $refresh = Action::make('refresh')
+            ->label(__('filament-log-viewer::log.table.actions.refresh.label'))
+            ->icon(Heroicon::ArrowPath)
+            ->iconButton()
+            ->tooltip(__('filament-log-viewer::log.table.actions.refresh.label'))
+            ->action(function (): void {
+                $this->refresh();
+            });
+
+        if (! $provider instanceof CanDeleteLogs) {
+            return [$refresh];
+        }
+
+        $files = $provider->getFiles();
+
+        $deleteEnabled = (bool) config('filament-log-viewer.enable_delete', true);
+
+        $clearAll = ClearAllLogsAction::make();
+
+        if (count($files) <= 1) {
+            return [$refresh, $clearAll];
+        }
+
+        $clearFileGroup = ActionGroup::make(
+            collect($files)
+                ->map(fn (string $file): Action => ClearFileAction::make()->file($file))
+                ->all()
+        )
+            ->icon(Heroicon::ChevronDown)
+            ->iconButton()
+            ->tooltip(__('filament-log-viewer::log.table.actions.clear_file.label'))
+            ->color(Color::Gray)
+            ->visible(fn (): bool => $deleteEnabled)
+            ->dropdownMaxHeight('400px');
+
+        return [$refresh, $clearAll, $clearFileGroup];
     }
 
     /**

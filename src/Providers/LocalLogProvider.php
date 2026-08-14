@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Providers;
 
+use AchyutN\FilamentLogViewer\Contracts\CanDeleteLogs;
 use AchyutN\FilamentLogViewer\Contracts\LogParser;
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
 use AchyutN\FilamentLogViewer\Contracts\StackTraceParser;
@@ -26,7 +27,7 @@ use Symfony\Component\Finder\Finder;
  * }
  * @phpstan-type StackTrace array{trace: string}
  */
-class LocalLogProvider implements LogProvider
+class LocalLogProvider implements CanDeleteLogs, LogProvider
 {
     private const CACHE_KEY = 'filament-log-viewer::rows';
 
@@ -49,6 +50,25 @@ class LocalLogProvider implements LogProvider
             if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
                 file_put_contents($filePath, '');
             }
+        }
+
+        $this->resetCache();
+
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    public function deleteFile(string $file): void
+    {
+        $logFilePath = $this->getLogFilePath();
+
+        if (! in_array($file, $this->getFiles(), true)) {
+            return;
+        }
+
+        $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
+
+        if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
+            file_put_contents($filePath, '');
         }
 
         $this->resetCache();

@@ -113,6 +113,10 @@ If your logs contain mail messages, you can preview them directly from the table
 
 ![Mail Preview](https://hamrocdn.com/hrr5B2GpKSke)
 
+### Clear Logs
+
+The **Clear Logs** button clears every log file. When multiple log files exist, a chevron icon button next to it opens a dropdown listing each file — select one to truncate just that file, leaving the others intact. The per-file dropdown is hidden when only one log file exists, and both controls are hidden when `enable_delete` is `false`.
+
 ### Filters
 
 #### Log Levels
@@ -182,22 +186,23 @@ Set `->registerNavigation(false)` if you want to hide Log Viewer from the sideba
 
 Every component is replaceable through the plugin — either by implementing its contract interface or by extending the default implementation:
 
-| Plugin method | Contract | Default |
-|---|---|---|
-| `pageClass()` | `LogViewerPage` (extends `HasTable`) | `LogTable` |
-| `providerClass()` | `LogProvider` | `LocalLogProvider` |
-| `parserClass()` | `LogParser` | `FileLogParser` |
-| `mailParserClass()` | `MailParser` | `DefaultMailParser` |
-| `stackTraceParserClass()` | `StackTraceParser` | `DefaultStackTraceParser` |
-| `tableSchemaClass()` | `LogTableSchemaInterface` | `LogTableSchema` |
-| `errorSchemaClass()` | `LogEntrySchemaInterface` | `ErrorLogSchema` |
-| `jsonSchemaClass()` | `LogEntrySchemaInterface` | `JSONLogSchema` |
-| `mailSchemaClass()` | `LogEntrySchemaInterface` | `MailLogSchema` |
-| `copyMarkdownActionClass()` | `Filament\Actions\Action` | `CopyMarkdownAction` |
-| `dateRangeFilterClass()` | — | `DateRangeFilter` |
-| `fileFilterClass()` | — | `FileFilter` |
+| Plugin method               | Contract                             | Default                   |
+|-----------------------------|--------------------------------------|---------------------------|
+| `pageClass()`               | `LogViewerPage` (extends `HasTable`) | `LogTable`                |
+| `providerClass()`           | `LogProvider`                        | `LocalLogProvider`        |
+| `parserClass()`             | `LogParser`                          | `FileLogParser`           |
+| `mailParserClass()`         | `MailParser`                         | `DefaultMailParser`       |
+| `stackTraceParserClass()`   | `StackTraceParser`                   | `DefaultStackTraceParser` |
+| `tableSchemaClass()`        | `LogTableSchemaInterface`            | `LogTableSchema`          |
+| `errorSchemaClass()`        | `LogEntrySchemaInterface`            | `ErrorLogSchema`          |
+| `jsonSchemaClass()`         | `LogEntrySchemaInterface`            | `JSONLogSchema`           |
+| `mailSchemaClass()`         | `LogEntrySchemaInterface`            | `MailLogSchema`           | 
+| `copyMarkdownActionClass()` | `Filament\Actions\Action`            | `CopyMarkdownAction`      |
+| `dateRangeFilterClass()`    | —                                    | `DateRangeFilter`         |
+| `fileFilterClass()`         | —                                    | `FileFilter`              |
 
-Defaults are non-final with `protected` extension points, so you can swap in a fully custom implementation or extend a default and override a single behavior:
+> Providers may additionally implement `CanDeleteLogs` (`deleteAll()`, `deleteFile()`). The **Clear Logs** and per-file clear controls only render when the bound provider implements it.  
+> Defaults are non-final with `protected` extension points, so you can swap in a fully custom implementation or extend a default and override a single behavior:
 
 ```php
 use AchyutN\FilamentLogViewer\Contracts\LogProvider;
@@ -226,16 +231,17 @@ FilamentLogViewer::make()
 
 Filament Log Viewer includes built-in translations for:
 
-- [English](src/resources/lang/en/log.php)
-- [Arabic](src/resources/lang/ar/log.php)
-- [German](src/resources/lang/de/log.php)
-- [Spanish](src/resources/lang/es/log.php)
-- [Persian](src/resources/lang/fa/log.php)
-- [French](src/resources/lang/fr/log.php)
-- [Hebrew](src/resources/lang/he/log.php)
-- [Italian](src/resources/lang/it/log.php)
-- [Portuguese (Portugal)](src/resources/lang/pt/log.php)
-- [Portuguese (Brazil)](src/resources/lang/pt_BR/log.php)
+- [English](resources/lang/en/log.php)
+- [Arabic](resources/lang/ar/log.php)
+- [German](resources/lang/de/log.php)
+- [Spanish](resources/lang/es/log.php)
+- [Persian](resources/lang/fa/log.php)
+- [French](resources/lang/fr/log.php)
+- [Hebrew](resources/lang/he/log.php)
+- [Italian](resources/lang/it/log.php)
+- [Portuguese (Portugal)](resources/lang/pt/log.php)
+- [Portuguese (Brazil)](resources/lang/pt_BR/log.php)
+- [Russian](resources/lang/ru/log.php)
 
 Translations are applied automatically based on your application's current locale.
 
