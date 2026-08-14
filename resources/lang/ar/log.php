@@ -64,6 +64,12 @@ return [
                 'label' => 'مسح السجلات',
                 'success' => 'تم مسح جميع السجلات بنجاح!',
             ],
+            'clear_file' => [
+                'label' => 'مسح ملف',
+                'modal_heading' => 'مسح :file',
+                'modal_description' => 'هل أنت متأكد من رغبتك في مسح سجل :file؟',
+                'success' => 'تم مسح :file بنجاح!',
+            ],
             'copy_markdown' => [
                 'label' => 'Copy as Markdown',
                 'success' => 'Markdown copied to clipboard',

@@ -64,6 +64,12 @@ return [
                 'label' => 'Clear Logs',
                 'success' => 'All logs have been cleared!',
             ],
+            'clear_file' => [
+                'label' => 'Clear File',
+                'modal_heading' => 'Clear :file',
+                'modal_description' => 'Are you sure you want to clear the :file log?',
+                'success' => ':file has been cleared!',
+            ],
             'copy_markdown' => [
                 'label' => 'Copy as Markdown',
                 'success' => 'Markdown copied to clipboard',
