@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer;
 
 use AchyutN\FilamentLogViewer\Traits\PluginVariables;
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
@@ -75,7 +76,7 @@ final class FilamentLogViewer implements Plugin
         return $this;
     }
 
-    public function navigationIcon(string|Closure $icon): self
+    public function navigationIcon(string|BackedEnum|Closure $icon): self
     {
         $this->navigationIcon = $icon;
 

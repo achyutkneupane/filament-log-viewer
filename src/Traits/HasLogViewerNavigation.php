@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AchyutN\FilamentLogViewer\Traits;
 
 use AchyutN\FilamentLogViewer\FilamentLogViewer;
+use BackedEnum;
 use Exception;
 use Filament\Facades\Filament;
 use Filament\Panel;
@@ -40,7 +41,7 @@ trait HasLogViewerNavigation
     }
 
     /** @throws Exception */
-    public static function getNavigationIcon(): string
+    public static function getNavigationIcon(): string|BackedEnum
     {
         return self::getPlugin()->getNavigationIcon();
     }
