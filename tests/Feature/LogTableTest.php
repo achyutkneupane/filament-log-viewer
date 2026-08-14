@@ -96,6 +96,45 @@ describe('actions', function () {
     });
 });
 
+describe('clear individual file', function () {
+    it('shows a per-file dropdown when multiple log files exist', function () {
+        livewire(LogTable::class)
+            ->assertActionExists('clear-file-laravel-log', fn (Action $action) => $action->isVisible())
+            ->assertActionExists('clear-file-other-log', fn (Action $action) => $action->isVisible())
+            ->assertActionExists('clear-file-stack-trace-log', fn (Action $action) => $action->isVisible());
+    });
+
+    it('clears only the selected file from the dropdown', function () {
+        livewire(LogTable::class)
+            ->assertCountTableRecords(4)
+            ->callAction('clear-file-other-log')
+            ->assertSuccessful()
+            ->assertCountTableRecords(3);
+
+        expect(file_get_contents(storage_path('logs/other.log')))->toBe('');
+        expect(file_get_contents(storage_path('logs/laravel.log')))->not->toBe('');
+    });
+
+    it('shows a plain clear action when only one log file exists', function () {
+        foreach (Log::getAllLogFiles() as $existingFile) {
+            @unlink(storage_path('logs/'.$existingFile));
+        }
+        $this->writeLog('only.log', '[2024-08-06 20:15:00] local.ERROR: Only log');
+
+        livewire(LogTable::class)
+            ->assertActionExists('clear', fn (Action $action) => $action->isVisible())
+            ->assertActionDoesNotExist('clear-file-only-log');
+    });
+
+    it('hides the per-file actions when delete is disabled', function () {
+        Config::set('filament-log-viewer.enable_delete', false);
+
+        livewire(LogTable::class)
+            ->assertActionExists('clear-file-laravel-log', fn (Action $action) => ! $action->isVisible())
+            ->assertActionExists('clear-file-other-log', fn (Action $action) => ! $action->isVisible());
+    });
+});
+
 describe('columns', function () {
     it('has table columns', function () {
         livewire(LogTable::class)
