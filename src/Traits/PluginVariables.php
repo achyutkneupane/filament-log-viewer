@@ -19,6 +19,7 @@ use AchyutN\FilamentLogViewer\Schema\ErrorLogSchema;
 use AchyutN\FilamentLogViewer\Schema\JSONLogSchema;
 use AchyutN\FilamentLogViewer\Schema\LogTableSchema;
 use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
+use BackedEnum;
 use Closure;
 use Filament\Support\Concerns\EvaluatesClosures;
 use UnitEnum;
@@ -31,7 +32,7 @@ trait PluginVariables
 
     public string|UnitEnum|Closure|null $navigationGroup = null;
 
-    public string|Closure $navigationIcon = 'heroicon-o-document-text';
+    public string|BackedEnum|Closure $navigationIcon = 'heroicon-o-document-text';
 
     public string|Closure|null $navigationLabel = null;
 
@@ -78,9 +79,9 @@ trait PluginVariables
         return $this->evaluate($this->navigationGroup);
     }
 
-    public function getNavigationIcon(): string
+    public function getNavigationIcon(): string|BackedEnum
     {
-        /** @phpstan-var string */
+        /** @var string|BackedEnum */
         return $this->evaluate($this->navigationIcon);
     }
 

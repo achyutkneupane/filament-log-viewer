@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
+use Filament\Support\Icons\Heroicon;
+
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
@@ -28,6 +30,12 @@ it('can customize navigation label', function () {
     $this->get($this->plugin->getNavigationUrl())
         ->assertSuccessful()
         ->assertSee('Custom Log Viewer');
+});
+
+it('accepts a BackedEnum navigation icon', function () {
+    $this->plugin->navigationIcon(Heroicon::OutlinedDocument);
+
+    expect($this->plugin->getNavigationIcon())->toBe(Heroicon::OutlinedDocument);
 });
 
 it('only gives access to authorized users', function () {
