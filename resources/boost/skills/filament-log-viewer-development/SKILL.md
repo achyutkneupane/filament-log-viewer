@@ -121,4 +121,4 @@ Available log levels: `error`, `warning`, `critical`, `alert`, `emergency`, `inf
 - Official Documentation: https://filamentphp.com/plugins/achyutn-log-viewer
 - GitHub Repository: https://github.com/achyutkneupane/filament-log-viewer
 - Laravel Boost: https://laravel.com/docs/boost
-- Skill examples: `resources/boost/skills/filament-log-viewer-development/references/`
+- Skill examples: `references/`
