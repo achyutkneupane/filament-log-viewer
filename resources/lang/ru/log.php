@@ -64,6 +64,12 @@ return [
                 'label' => 'Очистить логи',
                 'success' => 'Все логи успешно удалены!',
             ],
+            'clear_file' => [
+                'label' => 'Очистить файл',
+                'modal_heading' => 'Очистить :file',
+                'modal_description' => 'Вы уверены, что хотите очистить журнал :file?',
+                'success' => ':file очищен!',
+            ],
             'copy_markdown' => [
                 'label' => 'Копировать как Markdown',
                 'success' => 'Markdown скопирован в буфер обмена',
