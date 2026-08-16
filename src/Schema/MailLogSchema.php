@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Schema;
 
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
 use Exception;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
@@ -11,12 +12,12 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
-final class MailLogSchema
+class MailLogSchema implements LogEntrySchemaInterface
 {
     /**
      * @throws Exception
      */
-    public static function configure(Schema $schema): Schema
+    public function configure(Schema $schema): Schema
     {
         $placeholder = __('filament-log-viewer::log.placeholder');
 

@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Schema;
 
-use AchyutN\FilamentLogViewer\Model\Log;
+use AchyutN\FilamentLogViewer\Contracts\LogProvider;
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
 use Exception;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-final class ErrorLogSchema
+class ErrorLogSchema implements LogEntrySchemaInterface
 {
     /**
      * @throws Exception
      */
-    public static function configure(Schema $schema): Schema
+    public function configure(Schema $schema): Schema
     {
         return $schema
             ->key('error-log')
@@ -27,7 +28,10 @@ final class ErrorLogSchema
                             /** @var string $rawStack */
                             $rawStack = $record['raw_stack'];
 
-                            return Log::getStackFromRaw($rawStack);
+                            /** @var LogProvider $provider */
+                            $provider = app(LogProvider::class);
+
+                            return $provider->getStackFromRaw($rawStack);
                         }
                     )
                     ->schema([

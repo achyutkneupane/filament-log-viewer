@@ -1,90 +1,54 @@
 ---
 name: filament-log-viewer-development
-description: Build and work with Filament Log Viewer plugin for Filament v5.
+description: Build, customize, and extend the Filament Log Viewer plugin for Filament v5, including swapping providers, parsers, schemas, actions, and pages through its contract-driven API.
+license: MIT
 tags:
   - filament
   - laravel
   - logs
   - developer-tool
+  - extensibility
+metadata:
+  author: Achyut Neupane
 ---
 
 # Filament Log Viewer Development
 
-Use this skill when working with the Filament Log Viewer package - a Filament plugin to view and manage Laravel log files.
-
 ## Context
 
-A developer-focused Laravel log viewer with stack trace inspection, built for Filament v3 to v5. Provides:
-
-- Log table with searchable entries from `storage/logs`
-- Stack trace inspection in slide-over modals
-- Mail log preview for email logged entries
-- Multiple filter types (log level tabs, date range, file)
-- Dark mode ready
-- Multilingual support (English, Arabic, German, Spanish, Persian, French, Hebrew, Italian, Portuguese)
-- Copy log entries as formatted Markdown strings
-- Visit `/logs` in your Filament panel after installation
+You are working in a Laravel app using `achyutn/filament-log-viewer` — a Filament v5 plugin to view and manage Laravel log files with stack traces, mail previews, filtering, and a contract-driven API for swapping the page, provider, parsers, schemas, and actions.
 
 ## Rules
 
-### Version Compatibility
+- Version compatibility: `^2.x` targets Filament v5 (PHP ≥8.2), `^1.x` targets v4, `^0.x` targets v3.
+- Register the plugin on the panel with `->plugins([FilamentLogViewer::make()])` (`src/FilamentLogViewer.php`).
+- Customize navigation via `->navigationGroup()`, `->navigationIcon()` (string or `Heroicon` enum), `->navigationLabel()`, `->navigationSort()`, `->navigationUrl()`, and `->registerNavigation(false)` to hide it from the sidebar (`src/Traits/PluginVariables.php`, `src/Traits/HasLogViewerNavigation.php`).
+- Control access with `->authorize()`; never leave the viewer open to all users.
+- The table lives at `/logs` and supports log-level tabs, date/file filters, and a per-file clear dropdown.
+- Every component is replaceable through a plugin override method by implementing its contract or extending the non-final default (`src/Traits/PluginVariables.php`).
+- A provider that can delete logs must implement `CanDeleteLogs`; read-only providers (Pail, cloud readers) omit it and the clear buttons are hidden automatically (`src/Contracts/CanDeleteLogs.php`).
+- `AchyutN\FilamentLogViewer\Model\Log` remains as a backward-compatible static facade delegating to the container-resolved `LogProvider`; prefer the contract in new code (`src/Model/Log.php`).
 
-Always use the correct package version for your Filament version:
+## Extending
 
-| Package Version | Filament Version | PHP  |
-|-----------------|------------------|------|
-| `^2.x`          | v5               | ≥8.2 |
-| `^1.x`          | v4               | ≥8.1 |
-| `^0.x`          | v3               | ≥8.0 |
+Contracts and their defaults:
 
-### Customizations
+| Contract | Default | Plugin override |
+|---|---|---|
+| `LogProvider` | `LocalLogProvider` | `providerClass()` |
+| `LogParser` | `FileLogParser` | `parserClass()` |
+| `MailParser` | `DefaultMailParser` | `mailParserClass()` |
+| `StackTraceParser` | `DefaultStackTraceParser` | `stackTraceParserClass()` |
+| `LogViewerPage` | `LogTable` | `pageClass()` |
+| `CanDeleteLogs` | (implemented by `LocalLogProvider`) | — |
+| `LogTableSchemaInterface` | `LogTableSchema` | `tableSchemaClass()` |
+| `LogEntrySchemaInterface` | `ErrorLogSchema`, `JSONLogSchema`, `MailLogSchema` | `errorSchemaClass()`, `jsonSchemaClass()`, `mailSchemaClass()` |
 
-#### Authorization
+Additional overrides: `copyMarkdownActionClass()`, `dateRangeFilterClass()`, `fileFilterClass()`.
 
-Use the `->authorize()` method to control access to the Log Viewer page. You can pass a `Closure` that returns a boolean based on your authorization logic.
+Copy/paste examples for every contract: `references/code-examples.md`. Provider examples by type: `references/providers/read-only-provider.md` and `references/providers/database-provider.md`.
 
-#### Navigation Registration
-
-By default, the Log Viewer will be registered in the Filament sidebar navigation. You can disable this with `->registerNavigation(false)` if you want to link to it directly without showing it in the sidebar.
-
-#### Navigation Customization
-
-You can customize the navigation group, icon, label, sort order, and URL using the respective methods: `->navigationGroup()`, `->navigationIcon()`, `->navigationLabel()`, `->navigationSort()`, and `->navigationUrl()` respectively.
-
-#### Polling Time
-
-The `->pollingTime()` method allows you to set how often the log table should refresh to show new log entries. You can specify this in seconds (e.g., `'60s'`) or set it to `null` to disable polling.
-
-### Production Security
-
-1. **Disable Log Deletion**: Set `LOG_ENABLE_DELETE=false` in production to prevent accidental log deletion.
-
-```php
-// config/filament-log-viewer.php
-'enable_delete' => env('LOG_ENABLE_DELETE', false),
-```
-
-Or in `.env`:
-```
-LOG_ENABLE_DELETE=false
-```
-
-2. **Authorization**: Always use `->authorize()` closure for access control - never leave it open to all users.
-
-```php
-FilamentLogViewer::make()
-    ->authorize(fn (): bool => auth()->user()->is_admin);
-```
-
-### Performance
-
-1. **File Size Limit**: Adjust `LOG_MAX_SIZE_KB` based on available server memory. Default is 2MB.
-
-2. **Disable Polling**: Set `->pollingTime(null)` in production to reduce server load.
-
-```php
-->pollingTime(null) // Disable auto-refresh in production
-```
+> **The row shape.** Every row a provider returns is the `LogRow` array shape (`date`, `env`, `log_level`, `message`, `description`, `context`, `raw_stack`, `has_stack`, `mail`, `file`), and the default table renders those keys. For a database-backed provider, `file` carries the source/channel identifier of each row. To use a completely custom DTO/object shape with your own table design, supply your own page via `pageClass()` — see `references/custom-viewer.md`.
 
 ## Examples
 
@@ -109,23 +73,17 @@ return $panel
 
 ```php
 use AchyutN\FilamentLogViewer\FilamentLogViewer;
+use Filament\Support\Icons\Heroicon;
 
 FilamentLogViewer::make()
     ->authorize(fn (): bool => auth()->user()->is_admin)
     ->registerNavigation(true)
     ->navigationGroup('System')
-    ->navigationIcon('heroicon-o-document-text')
+    ->navigationIcon(Heroicon::OutlinedDocument)
     ->navigationLabel('Log Viewer')
     ->navigationSort(10)
     ->navigationUrl('/logs')
     ->pollingTime('60s');
-```
-
-### Authorization with Filament Shield
-
-```php
-FilamentLogViewer::make()
-    ->authorize(fn (): bool => auth()->check() && auth()->user()->can('View:LogTable'));
 ```
 
 ### Publish Configuration
@@ -141,38 +99,26 @@ return [
     'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
     'enable_delete' => env('LOG_ENABLE_DELETE', true),
     'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
+    'disable_cache' => env('LOG_DISABLE_CACHE', false),
     'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error')),
 ];
 ```
 
-### Copy as Markdown Configuration
+Available log levels: `error`, `warning`, `critical`, `alert`, `emergency`, `info`, `notice`, `debug`, `mail`.
 
-Control which log levels show the "Copy as Markdown" button:
+## Anti-patterns / Gotchas
 
-```php
-// Only error logs (default)
-LOG_COPY_MARKDOWN_LEVELS=error
-
-// Multiple levels
-LOG_COPY_MARKDOWN_LEVELS=error,mail,warning
-
-// Or in config
-'copy_markdown_levels' => ['error', 'mail'],
-```
-
-Available log levels: `error`, `warning`, `critical`, `alert`, `emergency`, `info`, `notice`, `debug`, `mail`
-
-## Anti-patterns
-
-- Using wrong package version for your Filament version - always check compatibility table
-- Not disabling `enable_delete` in production - risks accidental log deletion
-- Missing `authorize()` check - exposes logs to all users including customers
-- Setting very large `max_log_file_size` without considering memory constraints
-- Leaving polling enabled in production without considering server load
-- Not configuring `copy_markdown_levels` for your use case - defaults to error only
+- Using the wrong package version for your Filament version — always check the compatibility table.
+- Not disabling `enable_delete` in production — risks accidental log deletion.
+- Missing `authorize()` — exposes logs to all users including customers.
+- Implementing `CanDeleteLogs` on a read-only provider — shows misleading clear buttons.
+- Calling `Log::getRows()` and other `Log::` statics in new code — prefer the `LogProvider` contract or a plugin override.
+- Overriding a default class without respecting its non-final, `protected`-hook convention.
+- Setting very large `max_log_file_size` without considering memory constraints.
 
 ## References
 
 - Official Documentation: https://filamentphp.com/plugins/achyutn-log-viewer
 - GitHub Repository: https://github.com/achyutkneupane/filament-log-viewer
 - Laravel Boost: https://laravel.com/docs/boost
+- Skill examples: `resources/boost/skills/filament-log-viewer-development/references/`

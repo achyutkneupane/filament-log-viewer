@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Schema;
 
+use AchyutN\FilamentLogViewer\Contracts\Schema\LogEntrySchemaInterface;
 use Exception;
 use Filament\Infolists\Components\CodeEntry;
 use Filament\Schemas\Schema;
 use Phiki\Grammar\Grammar;
 
-final class JSONLogSchema
+class JSONLogSchema implements LogEntrySchemaInterface
 {
     /**
      * @throws Exception
      */
-    public static function configure(Schema $schema): Schema
+    public function configure(Schema $schema): Schema
     {
         return $schema
             ->key('json-log')

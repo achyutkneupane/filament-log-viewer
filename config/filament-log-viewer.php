@@ -35,6 +35,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Disable Parsed Row Cache
+    |--------------------------------------------------------------------------
+    |
+    | Whether to skip caching parsed log rows between requests. The cache is
+    | keyed by a fingerprint of the log files, so it self-invalidates whenever
+    | a file changes. Set to true to disable it entirely.
+    */
+    'disable_cache' => (bool) env('LOG_DISABLE_CACHE', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Copy as Markdown Log Levels
     |--------------------------------------------------------------------------
     |

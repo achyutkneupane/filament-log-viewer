@@ -70,6 +70,16 @@ describe('destroyAllLogs', function () {
     });
 });
 
+describe('destroyLogFile', function () {
+    it('clears a single log file', function () {
+        Log::destroyLogFile('other.log');
+
+        expect(file_get_contents(storage_path('logs/laravel.log')))->not->toBe('');
+        expect(file_get_contents(storage_path('logs/other.log')))->toBe('');
+        expect(file_get_contents(storage_path('logs/stack-trace.log')))->not->toBe('');
+    });
+});
+
 describe('getAllLogFiles', function () {
     beforeEach(function () {
         $this->writeLog('nested-folder/nested.log', '[2024-08-06 20:19:00] nested.NOTICE: Another notice log');

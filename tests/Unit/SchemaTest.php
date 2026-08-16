@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Filament\Support\Colors\Color;
 
 it('renders LogTableSchema', function () {
-    $columns = AchyutN\FilamentLogViewer\Schema\LogTableSchema::columns();
+    $columns = (new AchyutN\FilamentLogViewer\Schema\LogTableSchema())->getColumns();
 
     expect($columns)->toBeArray();
     expect($columns)->toHaveCount(5);
@@ -49,7 +49,7 @@ it('renders LogTableSchema', function () {
 });
 
 it('renders ErrorLogSchema', function () {
-    $schema = AchyutN\FilamentLogViewer\Schema\ErrorLogSchema::configure(new Filament\Schemas\Schema());
+    $schema = (new AchyutN\FilamentLogViewer\Schema\ErrorLogSchema())->configure(new Filament\Schemas\Schema());
     expect($schema)->toBeInstanceOf(Filament\Schemas\Schema::class);
     expect($schema->getKey())->toBe('error-log');
     expect($schema->getComponents())->toHaveCount(1);
@@ -69,7 +69,7 @@ it('renders ErrorLogSchema', function () {
 });
 
 it('renders MailLogSchema', function () {
-    $schema = AchyutN\FilamentLogViewer\Schema\MailLogSchema::configure(new Filament\Schemas\Schema());
+    $schema = (new AchyutN\FilamentLogViewer\Schema\MailLogSchema())->configure(new Filament\Schemas\Schema());
     expect($schema)->toBeInstanceOf(Filament\Schemas\Schema::class);
 
     expect($schema->getComponents())->toHaveCount(3);
