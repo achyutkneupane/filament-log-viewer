@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AchyutN\FilamentLogViewer\Tests\Feature;
 
+use AchyutN\FilamentLogViewer\FilamentLogViewer;
 use Filament\Support\Icons\Heroicon;
 
 use function Pest\Laravel\actingAs;
@@ -36,6 +37,21 @@ it('accepts a BackedEnum navigation icon', function () {
     $this->plugin->navigationIcon(Heroicon::OutlinedDocument);
 
     expect($this->plugin->getNavigationIcon())->toBe(Heroicon::OutlinedDocument);
+});
+
+it('keeps the authorize closure configurable across make calls', function () {
+    $this->plugin->authorize(fn () => auth()->user()?->role === 'admin');
+
+    FilamentLogViewer::make();
+
+    $this->testUser->forceFill(['role' => 'admin'])->save();
+    actingAs($this->testUser);
+
+    expect($this->plugin->isAuthorized())->toBeTrue();
+
+    $this->testUser->forceFill(['role' => 'user'])->save();
+
+    expect($this->plugin->isAuthorized())->toBeFalse();
 });
 
 it('only gives access to authorized users', function () {
