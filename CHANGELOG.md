@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.10.0 - 2026-08-16
+
+### What's Changed
+
+* feat: add Russian (ru) language translation by @saythe0 in https://github.com/achyutkneupane/filament-log-viewer/pull/119
+* feat: adds contract-driven extensibility for all components by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/121
+* feat: adds an action to clear individual log files by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/122
+* feat: accepts a BackedEnum for the navigation icon by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/123
+* docs: updates Laravel Boost skill with extension guide by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/124
+* feat: completes translations across all locales by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/125
+
+### New Contributors
+
+* @saythe0 made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/119
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.9.0...v1.10.0
+
 ## v1.9.0 - 2026-04-28
 
 ### What's Changed
