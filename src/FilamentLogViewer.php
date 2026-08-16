@@ -19,13 +19,6 @@ final class FilamentLogViewer implements Plugin
     {
         $plugin = app(self::class);
 
-        $plugin->authorize($plugin->isAuthorized());
-        $plugin->navigationIcon($plugin->getNavigationIcon());
-        $plugin->navigationSort($plugin->getNavigationSort());
-        $plugin->navigationUrl($plugin->getNavigationUrl());
-        $plugin->pollingTime($plugin->getPollingTime());
-        $plugin->registerNavigation($plugin->shouldRegisterNavigation());
-
         $navigationGroup = $plugin->getNavigationGroup();
         $navigationLabel = $plugin->getNavigationLabel();
 
