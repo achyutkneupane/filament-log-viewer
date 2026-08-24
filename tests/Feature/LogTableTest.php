@@ -147,6 +147,14 @@ describe('clear individual file', function () {
 
         filament('filament-log-viewer')->providerClass(LocalLogProvider::class);
     });
+
+    it('omits empty log files from the per-file clear dropdown', function () {
+        $this->writeLog('empty.log', '');
+
+        livewire(LogTable::class)
+            ->assertActionExists('clear-file-laravel-log')
+            ->assertActionDoesNotExist('clear-file-empty-log');
+    });
 });
 
 describe('columns', function () {
@@ -225,6 +233,16 @@ describe('filters', function () {
                     $filter->getLabel() === 'File' &&
                     $filter->getOptions() === Log::getFilesForFilter() &&
                     $filter->getIndicator() === 'File';
+            });
+    });
+
+    it('omits empty log files from the file filter options', function () {
+        $this->writeLog('empty.log', '');
+
+        livewire(LogTable::class)
+            ->assertTableFilterExists('file', function (SelectFilter $filter) {
+                return ! array_key_exists('empty.log', $filter->getOptions()) &&
+                    array_key_exists('laravel.log', $filter->getOptions());
             });
     });
 

@@ -124,7 +124,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
      */
     public function getFiles(): array
     {
-        return $this->getAllLogFiles();
+        return $this->getFilesWithEntries();
     }
 
     /**
@@ -135,7 +135,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         $initial = [];
 
         /** @var array<string, string|array<string, string>> */
-        return collect($this->getAllLogFiles())
+        return collect($this->getFilesWithEntries())
             ->reduce(function (array $carry, string $file): array {
                 if (str_contains($file, DIRECTORY_SEPARATOR)) {
                     $directory = dirname($file);
@@ -287,6 +287,21 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         }
 
         return $files;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getFilesWithEntries(): array
+    {
+        /** @var array<int, string> $files */
+        $files = [];
+
+        foreach ($this->getRows() as $row) {
+            $files[$row['file']] = $row['file'];
+        }
+
+        return array_values($files);
     }
 
     private function resetCache(): void

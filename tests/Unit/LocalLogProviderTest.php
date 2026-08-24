@@ -124,6 +124,17 @@ describe('LocalLogProvider - files', function () {
         expect($files)->toHaveKey('laravel.log');
         expect($files)->toHaveKey('stack-trace.log');
     });
+
+    it('excludes empty log files from getFiles and getFilesForFilter', function () {
+        $this->writeLog('empty.log', '');
+
+        $files = makeProvider()->getFiles();
+        $filterFiles = makeProvider()->getFilesForFilter();
+
+        expect($files)->not->toContain('empty.log');
+        expect($filterFiles)->not->toHaveKey('empty.log');
+        expect($files)->toContain('laravel.log');
+    });
 });
 
 describe('LocalLogProvider - deleteAll', function () {
