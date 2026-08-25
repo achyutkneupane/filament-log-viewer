@@ -25,6 +25,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Truncate on Clear
+    |--------------------------------------------------------------------------
+    |
+    | Whether clearing a log file truncates its contents (true) or deletes the
+    | file entirely (false). Defaults to truncate, which preserves the file.
+    */
+    'truncate_on_clear' => (bool) env('LOG_TRUNCATE_ON_CLEAR', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Enable Copy as Markdown
     |--------------------------------------------------------------------------
     |

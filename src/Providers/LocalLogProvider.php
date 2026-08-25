@@ -46,10 +46,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         $logFilePath = $this->getLogFilePath();
 
         foreach ($this->getAllLogFiles() as $file) {
-            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
-            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
-                file_put_contents($filePath, '');
-            }
+            $this->clearFile($logFilePath.DIRECTORY_SEPARATOR.$file, $file);
         }
 
         $this->resetCache();
@@ -67,9 +64,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
 
         $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
 
-        if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
-            file_put_contents($filePath, '');
-        }
+        $this->clearFile($filePath, $file);
 
         $this->resetCache();
 
@@ -287,6 +282,25 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         }
 
         return $files;
+    }
+
+    /**
+     * Truncates or deletes a single log file depending on the
+     * `filament-log-viewer.truncate_on_clear` configuration.
+     */
+    private function clearFile(string $filePath, string $file): void
+    {
+        if (! is_file($filePath) || pathinfo($file, PATHINFO_EXTENSION) !== 'log') {
+            return;
+        }
+
+        if (config()->boolean('filament-log-viewer.truncate_on_clear', true)) {
+            file_put_contents($filePath, '');
+
+            return;
+        }
+
+        @unlink($filePath);
     }
 
     /**

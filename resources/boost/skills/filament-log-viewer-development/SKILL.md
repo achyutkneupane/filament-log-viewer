@@ -98,6 +98,7 @@ Then edit `config/filament-log-viewer.php`:
 return [
     'max_log_file_size' => env('LOG_MAX_SIZE_KB', 2048),
     'enable_delete' => env('LOG_ENABLE_DELETE', true),
+    'truncate_on_clear' => env('LOG_TRUNCATE_ON_CLEAR', true),
     'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
     'disable_cache' => env('LOG_DISABLE_CACHE', false),
     'copy_markdown_levels' => explode(',', env('LOG_COPY_MARKDOWN_LEVELS', 'error')),
@@ -110,6 +111,7 @@ Available log levels: `error`, `warning`, `critical`, `alert`, `emergency`, `inf
 
 - Using the wrong package version for your Filament version — always check the compatibility table.
 - Not disabling `enable_delete` in production — risks accidental log deletion.
+- Setting `truncate_on_clear` to `false` — removes log files entirely on clear instead of preserving them.
 - Missing `authorize()` — exposes logs to all users including customers.
 - Implementing `CanDeleteLogs` on a read-only provider — shows misleading clear buttons.
 - Calling `Log::getRows()` and other `Log::` statics in new code — prefer the `LogProvider` contract or a plugin override.
