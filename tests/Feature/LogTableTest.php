@@ -18,6 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 use function Pest\Livewire\livewire;
 
@@ -344,5 +345,33 @@ describe('record actions (slide-over regression)', function () {
         livewire(LogTable::class)
             ->mountTableAction('view', '0')
             ->assertSuccessful();
+    });
+});
+
+describe('pagination', function () {
+    it("accepts the 'all' records-per-page option", function () {
+        $paginator = livewire(LogTable::class)
+            ->set('tableRecordsPerPage', 'all')
+            ->assertSuccessful()
+            ->instance()
+            ->getTableRecords();
+
+        expect($paginator)->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->total())->toBe(4)
+            ->and($paginator->perPage())->toBe(4)
+            ->and($paginator->items())->toHaveCount(4);
+    });
+
+    it('paginates with an integer option', function () {
+        $paginator = livewire(LogTable::class)
+            ->set('tableRecordsPerPage', 2)
+            ->assertSuccessful()
+            ->instance()
+            ->getTableRecords();
+
+        expect($paginator)->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->total())->toBe(4)
+            ->and($paginator->perPage())->toBe(2)
+            ->and($paginator->items())->toHaveCount(2);
     });
 });
