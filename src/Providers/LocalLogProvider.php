@@ -132,7 +132,8 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         /** @var array<string, string|array<string, string>> */
         return collect($this->getFilesWithEntries())
             ->reduce(function (array $carry, string $file): array {
-                if (str_contains($file, DIRECTORY_SEPARATOR)) {
+                // File identifiers are normalized to forward slashes.
+                if (str_contains($file, '/')) {
                     $directory = dirname($file);
                     $filename = basename($file);
 
@@ -278,7 +279,9 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
 
         $files = [];
         foreach ($finder as $file) {
-            $files[] = $file->getRelativePathname();
+            // Normalize to forward slashes so file identifiers are
+            // identical on every OS (Finder uses backslashes on Windows).
+            $files[] = str_replace('\\', '/', $file->getRelativePathname());
         }
 
         return $files;

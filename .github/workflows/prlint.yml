@@ -1,7 +1,8 @@
 name: "Lint & Test PR"
 
 on:
-    pull_request_target:
+    pull_request:
+        types: [ opened, synchronize, reopened ]
 
 permissions:
     pull-requests: read
@@ -9,7 +10,7 @@ permissions:
 jobs:
     main:
         name: Pint, Rector & Test with coverage
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: true
             matrix:
@@ -19,8 +20,6 @@ jobs:
             -   name: Checkout Code
                 uses: actions/checkout@v5
                 with:
-                    ref: ${{ github.event.pull_request.head.ref }}
-                    repository: ${{ github.event.pull_request.head.repo.full_name }}
                     fetch-depth: 0
 
             -   name: "Check PR title"
@@ -32,7 +31,7 @@ jobs:
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php }}
-                    extensions: json, dom, curl, libxml, mbstring
+                    extensions: json, dom, curl, libxml, mbstring, fileinfo, intl, zip, iconv, sqlite3, pdo_sqlite
                     coverage: xdebug
 
             -   name: "Install Composer Dependencies"
