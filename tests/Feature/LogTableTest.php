@@ -374,4 +374,31 @@ describe('pagination', function () {
             ->and($paginator->perPage())->toBe(2)
             ->and($paginator->items())->toHaveCount(2);
     });
+
+    it('treats numeric strings like browsers submit them', function () {
+        $paginator = livewire(LogTable::class)
+            ->set('tableRecordsPerPage', '2')
+            ->assertSuccessful()
+            ->instance()
+            ->getTableRecords();
+
+        expect($paginator)->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->total())->toBe(4)
+            ->and($paginator->perPage())->toBe(2)
+            ->and($paginator->items())->toHaveCount(2);
+    });
+
+    it("shows an empty page instead of crashing for 'all' without logs", function () {
+        $this->deleteAllLogs();
+
+        $paginator = livewire(LogTable::class)
+            ->set('tableRecordsPerPage', 'all')
+            ->assertSuccessful()
+            ->instance()
+            ->getTableRecords();
+
+        expect($paginator)->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->total())->toBe(0)
+            ->and($paginator->items())->toBeEmpty();
+    });
 });

@@ -83,11 +83,14 @@ class LogTable extends Page implements HasTable
                     $records = filled($sortColumn)
                         ? $records->sortBy($sortColumn, SORT_DESC, $sortDirection === 'desc')
                         : $records->sortByDesc('date');
-                    // Filament allows 'all' as a pagination option: resolve any
-                    // non-integer option to the total record count, mirroring
-                    // CanPaginateRecords. Guard against zero so the paginator
-                    // never receives perPage: 0 on empty tables.
-                    $perPage = is_int($recordsPerPage) ? $recordsPerPage : max(count($records), 1);
+                    // Filament allows 'all' as a pagination option: resolve it to the
+                    // total record count, mirroring CanPaginateRecords. Anything
+                    // else is cast to int because browsers submit select values
+                    // (even numeric ones) as strings. Guard against zero so the
+                    // paginator never receives perPage: 0 on empty tables.
+                    $perPage = $recordsPerPage === 'all'
+                        ? max(count($records), 1)
+                        : max((int) $recordsPerPage, 1);
                     $paginatedRecords = $records
                         ->forPage($page, $perPage);
 
