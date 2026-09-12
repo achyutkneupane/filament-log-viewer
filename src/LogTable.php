@@ -70,7 +70,7 @@ class LogTable extends Page implements HasTable
             ->modelLabel(__('filament-log-viewer::log.table.model_label'))
             ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
             ->records(
-                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int $recordsPerPage): LengthAwarePaginator {
+                function (?array $filters, ?string $sortColumn, ?string $sortDirection, ?string $search, int $page, int|string $recordsPerPage): LengthAwarePaginator {
                     /** @var LogProvider $provider */
                     $provider = app(LogProvider::class);
                     $records = Collection::wrap($provider->getRows());
@@ -83,13 +83,21 @@ class LogTable extends Page implements HasTable
                     $records = filled($sortColumn)
                         ? $records->sortBy($sortColumn, SORT_DESC, $sortDirection === 'desc')
                         : $records->sortByDesc('date');
+                    // Filament allows 'all' as a pagination option: resolve it to the
+                    // total record count, mirroring CanPaginateRecords. Anything
+                    // else is cast to int because browsers submit select values
+                    // (even numeric ones) as strings. Guard against zero so the
+                    // paginator never receives perPage: 0 on empty tables.
+                    $perPage = $recordsPerPage === 'all'
+                        ? max(count($records), 1)
+                        : max((int) $recordsPerPage, 1);
                     $paginatedRecords = $records
-                        ->forPage($page, $recordsPerPage);
+                        ->forPage($page, $perPage);
 
                     return new LengthAwarePaginator(
                         $paginatedRecords,
                         total: count($records),
-                        perPage: $recordsPerPage,
+                        perPage: $perPage,
                         currentPage: $page,
                     );
                 })
