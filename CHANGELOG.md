@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.11.0 - 2026-09-12
+
+### What's Changed
+
+* fix: hides empty log files from filter and clear by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/128
+* feat: adds option to delete log files on clear by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/129
+* fix: use pull_request trigger for fork-safe CI by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/132
+* feat: add Polish translation by @finus16 in https://github.com/achyutkneupane/filament-log-viewer/pull/130
+* fix: supports 'all' pagination option by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/133
+
+### New Contributors
+
+* @finus16 made their first contribution in https://github.com/achyutkneupane/filament-log-viewer/pull/130
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.10.1...v1.11.0
+
 ## v2.4.1 - 2026-08-16
 
 ### What's Changed
