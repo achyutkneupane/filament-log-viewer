@@ -46,10 +46,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         $logFilePath = $this->getLogFilePath();
 
         foreach ($this->getAllLogFiles() as $file) {
-            $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
-            if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
-                file_put_contents($filePath, '');
-            }
+            $this->clearFile($logFilePath.DIRECTORY_SEPARATOR.$file, $file);
         }
 
         $this->resetCache();
@@ -67,9 +64,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
 
         $filePath = $logFilePath.DIRECTORY_SEPARATOR.$file;
 
-        if (is_file($filePath) && pathinfo($file, PATHINFO_EXTENSION) === 'log') {
-            file_put_contents($filePath, '');
-        }
+        $this->clearFile($filePath, $file);
 
         $this->resetCache();
 
@@ -124,7 +119,7 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
      */
     public function getFiles(): array
     {
-        return $this->getAllLogFiles();
+        return $this->getFilesWithEntries();
     }
 
     /**
@@ -135,9 +130,10 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
         $initial = [];
 
         /** @var array<string, string|array<string, string>> */
-        return collect($this->getAllLogFiles())
+        return collect($this->getFilesWithEntries())
             ->reduce(function (array $carry, string $file): array {
-                if (str_contains($file, DIRECTORY_SEPARATOR)) {
+                // File identifiers are normalized to forward slashes.
+                if (str_contains($file, '/')) {
                     $directory = dirname($file);
                     $filename = basename($file);
 
@@ -283,10 +279,46 @@ class LocalLogProvider implements CanDeleteLogs, LogProvider
 
         $files = [];
         foreach ($finder as $file) {
-            $files[] = $file->getRelativePathname();
+            // Normalize to forward slashes so file identifiers are
+            // identical on every OS (Finder uses backslashes on Windows).
+            $files[] = str_replace('\\', '/', $file->getRelativePathname());
         }
 
         return $files;
+    }
+
+    /**
+     * Truncates or deletes a single log file depending on the
+     * `filament-log-viewer.truncate_on_clear` configuration.
+     */
+    private function clearFile(string $filePath, string $file): void
+    {
+        if (! is_file($filePath) || pathinfo($file, PATHINFO_EXTENSION) !== 'log') {
+            return;
+        }
+
+        if (config()->boolean('filament-log-viewer.truncate_on_clear', true)) {
+            file_put_contents($filePath, '');
+
+            return;
+        }
+
+        @unlink($filePath);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getFilesWithEntries(): array
+    {
+        /** @var array<int, string> $files */
+        $files = [];
+
+        foreach ($this->getRows() as $row) {
+            $files[$row['file']] = $row['file'];
+        }
+
+        return array_values($files);
     }
 
     private function resetCache(): void

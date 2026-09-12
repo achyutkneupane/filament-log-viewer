@@ -1,5 +1,23 @@
 # Changelog
 
+## v2.4.1 - 2026-08-16
+
+### What's Changed
+
+* fix: points skill reference to the relative references path by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/126
+* fix: stops plugin make from freezing the authorize closure by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/127
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v2.4.0...v2.4.1
+
+## v1.10.1 - 2026-08-16
+
+### What's Changed
+
+* fix: points skill reference to the relative references path by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/126
+* fix: stops plugin make from freezing the authorize closure by @achyutkneupane in https://github.com/achyutkneupane/filament-log-viewer/pull/127
+
+**Full Changelog**: https://github.com/achyutkneupane/filament-log-viewer/compare/v1.10.0...v1.10.1
+
 ## v2.4.0 - 2026-08-16
 
 ### What's Changed

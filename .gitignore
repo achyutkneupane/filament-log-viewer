@@ -5,3 +5,4 @@ vendor
 /.vscode
 Thumbs.db
 Generators
+opencode.json

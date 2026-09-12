@@ -50,6 +50,7 @@ The default file size limit is set to `2 MB`. To override these settings, you ca
 ```
 LOG_MAX_SIZE_KB=20480
 LOG_ENABLE_DELETE=false
+LOG_TRUNCATE_ON_CLEAR=true
 LOG_ENABLE_COPY_MARKDOWN=false
 LOG_COPY_MARKDOWN_LEVELS=error,warning
 LOG_DISABLE_CACHE=false
@@ -57,6 +58,7 @@ LOG_DISABLE_CACHE=false
 
 - Set `LOG_MAX_SIZE_KB` to the maximum log file size in kilobytes (e.g., `20480` for 20 MB).
 - Set `LOG_ENABLE_DELETE=false` in production to disable the **Clear Logs** button and protect log files from accidental deletion.
+- Set `LOG_TRUNCATE_ON_CLEAR=false` to delete log files entirely when clearing instead of truncating their contents. Defaults to `true` (truncate).
 - Set `LOG_ENABLE_COPY_MARKDOWN=false` to disable the **Copy as Markdown** button.
 - Set `LOG_COPY_MARKDOWN_LEVELS` to comma-separated list of log levels that show the copy button (e.g., `error,warning` or just `error`).
 - Set `LOG_DISABLE_CACHE=true` to skip caching parsed log rows between requests.
@@ -76,6 +78,9 @@ return [
 
     // Disable deleting logs from the UI
     'enable_delete' => env('LOG_ENABLE_DELETE', false),
+
+    // Truncate log contents on clear (false to delete the files entirely)
+    'truncate_on_clear' => env('LOG_TRUNCATE_ON_CLEAR', true),
 
     // Disable copying logs as markdown
     'enable_copy_markdown' => env('LOG_ENABLE_COPY_MARKDOWN', true),
@@ -115,7 +120,9 @@ If your logs contain mail messages, you can preview them directly from the table
 
 ### Clear Logs
 
-The **Clear Logs** button clears every log file. When multiple log files exist, a chevron icon button next to it opens a dropdown listing each file — select one to truncate just that file, leaving the others intact. The per-file dropdown is hidden when only one log file exists, and both controls are hidden when `enable_delete` is `false`.
+The **Clear Logs** button clears every log file. When multiple log files exist, a chevron icon button next to it opens a dropdown listing each file — select one to clear just that file, leaving the others intact. The per-file dropdown is hidden when only one log file exists, and both controls are hidden when `enable_delete` is `false`.
+
+By default, clearing truncates the log file's contents, preserving the file itself. Set `truncate_on_clear` to `false` (or `LOG_TRUNCATE_ON_CLEAR=false`) to delete the log files entirely instead.
 
 ### Filters
 

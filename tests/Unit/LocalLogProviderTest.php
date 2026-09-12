@@ -124,6 +124,17 @@ describe('LocalLogProvider - files', function () {
         expect($files)->toHaveKey('laravel.log');
         expect($files)->toHaveKey('stack-trace.log');
     });
+
+    it('excludes empty log files from getFiles and getFilesForFilter', function () {
+        $this->writeLog('empty.log', '');
+
+        $files = makeProvider()->getFiles();
+        $filterFiles = makeProvider()->getFilesForFilter();
+
+        expect($files)->not->toContain('empty.log');
+        expect($filterFiles)->not->toHaveKey('empty.log');
+        expect($files)->toContain('laravel.log');
+    });
 });
 
 describe('LocalLogProvider - deleteAll', function () {
@@ -132,6 +143,45 @@ describe('LocalLogProvider - deleteAll', function () {
 
         expect(file_get_contents(storage_path('logs/laravel.log')))->toBe('');
         expect(file_get_contents(storage_path('logs/other.log')))->toBe('');
+    });
+});
+
+describe('LocalLogProvider - truncate vs delete', function () {
+    it('truncates files by default', function () {
+        Config::set('filament-log-viewer.truncate_on_clear', true);
+
+        makeProvider()->deleteAll();
+
+        expect(file_exists(storage_path('logs/laravel.log')))->toBeTrue();
+        expect(file_get_contents(storage_path('logs/laravel.log')))->toBe('');
+    });
+
+    it('deletes all log files when truncate_on_clear is false', function () {
+        Config::set('filament-log-viewer.truncate_on_clear', false);
+
+        makeProvider()->deleteAll();
+
+        expect(file_exists(storage_path('logs/laravel.log')))->toBeFalse();
+        expect(file_exists(storage_path('logs/other.log')))->toBeFalse();
+        expect(file_exists(storage_path('logs/stack-trace.log')))->toBeFalse();
+    });
+
+    it('deletes only the given file when truncate_on_clear is false', function () {
+        Config::set('filament-log-viewer.truncate_on_clear', false);
+
+        makeProvider()->deleteFile('other.log');
+
+        expect(file_exists(storage_path('logs/other.log')))->toBeFalse();
+        expect(file_exists(storage_path('logs/laravel.log')))->toBeTrue();
+        expect(file_exists(storage_path('logs/stack-trace.log')))->toBeTrue();
+    });
+
+    it('never deletes non-log files in delete mode', function () {
+        Config::set('filament-log-viewer.truncate_on_clear', false);
+
+        makeProvider()->deleteFile('not-a-log.txt');
+
+        expect(file_exists(storage_path('logs/not-a-log.txt')))->toBeTrue();
     });
 });
 
