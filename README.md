@@ -189,6 +189,20 @@ FilamentLogViewer::make()
 
 Set `->registerNavigation(false)` if you want to hide Log Viewer from the sidebar while still linking to it directly (for example, from a custom dashboard action).
 
+### Record Actions
+
+By default, the row actions (view, view JSON, read mail, copy as Markdown) are rendered inline after the columns. You can group them into a dropdown and/or move them:
+
+```php
+use Filament\Tables\Enums\RecordActionsPosition;
+
+FilamentLogViewer::make()
+    ->groupRecordActions() // wrap them in a single ActionGroup dropdown
+    ->recordActionsPosition(RecordActionsPosition::BeforeColumns);
+```
+
+Both accept a closure. Leaving `recordActionsPosition()` unset (or `null`) keeps the table's default, including any app-wide `Table::configureUsing()` position.
+
 ### Swapping Components
 
 Every component is replaceable through the plugin — either by implementing its contract interface or by extending the default implementation:
