@@ -9,6 +9,7 @@ use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Tables\Enums\RecordActionsPosition;
 use UnitEnum;
 
 final class FilamentLogViewer implements Plugin
@@ -184,6 +185,20 @@ final class FilamentLogViewer implements Plugin
     public function pollingTime(string|null|Closure $time): self
     {
         $this->pollingTime = $time;
+
+        return $this;
+    }
+
+    public function groupRecordActions(bool|Closure $condition = true): self
+    {
+        $this->groupRecordActions = $condition;
+
+        return $this;
+    }
+
+    public function recordActionsPosition(RecordActionsPosition|Closure|null $position): self
+    {
+        $this->recordActionsPosition = $position;
 
         return $this;
     }

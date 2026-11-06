@@ -66,6 +66,13 @@ class LogTable extends Page implements HasTable
         /** @var class-string<CopyMarkdownAction> $copyMarkdownClass */
         $copyMarkdownClass = $plugin->getCopyMarkdownActionClass();
 
+        $recordActions = [
+            $this->getViewAction($errorSchema),
+            $this->getViewJsonAction($jsonSchema),
+            $this->getReadMailAction($mailSchema),
+            $copyMarkdownClass::make(),
+        ];
+
         return $table
             ->modelLabel(__('filament-log-viewer::log.table.model_label'))
             ->pluralModelLabel(__('filament-log-viewer::log.table.plural_model_label'))
@@ -102,12 +109,10 @@ class LogTable extends Page implements HasTable
                     );
                 })
             ->columns($tableSchema->getColumns())
-            ->recordActions([
-                $this->getViewAction($errorSchema),
-                $this->getViewJsonAction($jsonSchema),
-                $this->getReadMailAction($mailSchema),
-                $copyMarkdownClass::make(),
-            ])
+            ->recordActions(
+                $plugin->shouldGroupRecordActions() ? [ActionGroup::make($recordActions)] : $recordActions,
+                position: $plugin->getRecordActionsPosition(),
+            )
             ->poll($plugin->getPollingTime())
             ->filters(
                 [

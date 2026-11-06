@@ -22,6 +22,7 @@ use AchyutN\FilamentLogViewer\Schema\MailLogSchema;
 use BackedEnum;
 use Closure;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Filament\Tables\Enums\RecordActionsPosition;
 use UnitEnum;
 
 trait PluginVariables
@@ -43,6 +44,10 @@ trait PluginVariables
     public string|null|Closure $pollingTime = null;
 
     public bool|null|Closure $registerNavigation = true;
+
+    public bool|Closure $groupRecordActions = false;
+
+    public RecordActionsPosition|Closure|null $recordActionsPosition = null;
 
     public string|Closure|null $pageClass = LogTable::class;
 
@@ -112,6 +117,17 @@ trait PluginVariables
     public function shouldRegisterNavigation(): bool
     {
         return (bool) $this->evaluate($this->registerNavigation);
+    }
+
+    public function shouldGroupRecordActions(): bool
+    {
+        return (bool) $this->evaluate($this->groupRecordActions);
+    }
+
+    public function getRecordActionsPosition(): ?RecordActionsPosition
+    {
+        /** @var RecordActionsPosition|null */
+        return $this->evaluate($this->recordActionsPosition);
     }
 
     /** @return class-string<LogTable> */

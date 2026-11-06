@@ -82,7 +82,6 @@ class FileLogParser implements LogParser
 
         preg_match('/\[(?<date>[\d\-:\s]+)\]\s(?<env>\w+)\.(?<level>\w+):\s(?<message>.*)/s', $entry, $matches);
 
-        // @phpstan-ignore-next-line
         if (! isset($matches['level']) || ! isset($matches['message']) || ! isset($matches['date']) || ! isset($matches['env'])) {
             return null;
         }

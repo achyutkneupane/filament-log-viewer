@@ -19,28 +19,28 @@ final class LogViewerProvider extends BaseServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(
-            dirname(__DIR__).'/resources/views',
+            __DIR__.'/../resources/views',
             'filament-log-viewer'
         );
 
         $this->loadTranslationsFrom(
-            dirname(__DIR__).'/resources/lang',
+            __DIR__.'/../resources/lang',
             'filament-log-viewer'
         );
 
         $this->publishes([
-            dirname(__DIR__).'/resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/filament-log-viewer'),
         ], 'filament-log-viewer-lang');
 
         $this->publishes([
-            dirname(__DIR__).'/config/filament-log-viewer.php' => config_path('filament-log-viewer.php'),
+            __DIR__.'/../config/filament-log-viewer.php' => config_path('filament-log-viewer.php'),
         ], 'filament-log-viewer-config');
     }
 
     public function register(): void
     {
         $this->mergeConfigFrom(
-            dirname(__DIR__).'/config/filament-log-viewer.php',
+            __DIR__.'/../config/filament-log-viewer.php',
             'filament-log-viewer'
         );
 
