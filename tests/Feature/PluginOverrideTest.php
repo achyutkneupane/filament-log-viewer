@@ -16,6 +16,7 @@ use AchyutN\FilamentLogViewer\Tests\Feature\Stubs\StubLogParser;
 use AchyutN\FilamentLogViewer\Tests\Feature\Stubs\StubLogProvider;
 use Filament\Actions\ActionGroup;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Table;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
@@ -40,7 +41,18 @@ it('keeps record actions ungrouped in the default position by default', function
     $table = livewire(LogTable::class)->instance()->getTable();
 
     expect($table->getRecordActions())->each->not->toBeInstanceOf(ActionGroup::class)
-        ->and($table->getRecordActionsPosition())->toBe(RecordActionsPosition::AfterColumns);
+        ->and($table->getRecordActionsPosition())->toBe(RecordActionsPosition::AfterColumns)
+        ->and(array_keys($table->getFlatActions()))->toContain('view', 'view-json', 'read', 'copy_markdown');
+});
+
+it('keeps an app-wide record actions position when the plugin leaves it unset', function () {
+    // `during` scopes the global configuration to this callback, so nothing leaks into other tests.
+    $table = Table::configureUsing(
+        fn (Table $table): Table => $table->recordActionsPosition(RecordActionsPosition::BeforeColumns),
+        during: fn (): Table => livewire(LogTable::class)->instance()->getTable(),
+    );
+
+    expect($table->getRecordActionsPosition())->toBe(RecordActionsPosition::BeforeColumns);
 });
 
 it('groups record actions and moves them through the plugin', function () {
@@ -52,7 +64,7 @@ it('groups record actions and moves them through the plugin', function () {
     expect($table->getRecordActions())->toHaveCount(1)
         ->and($table->getRecordActions()[0])->toBeInstanceOf(ActionGroup::class)
         ->and($table->getRecordActionsPosition())->toBe(RecordActionsPosition::BeforeColumns)
-        ->and(array_keys($table->getFlatActions()))->toContain('view', 'copy_markdown');
+        ->and(array_keys($table->getFlatActions()))->toContain('view', 'view-json', 'read', 'copy_markdown');
 });
 
 it('Route A: swaps the data provider through the plugin', function () {
